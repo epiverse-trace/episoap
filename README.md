@@ -1,2 +1,3 @@
-# data_pipelines
-A collection of outbreak analytics pipelines using different infrastructures for automation.
+# Welcome to our data pipelines repository
+
+This repository provides a collection of curated outbreak analytics pipelines using different infrastructures for automation.
