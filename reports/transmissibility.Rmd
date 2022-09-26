@@ -1,0 +1,472 @@
+---
+title: "Estimating transmissibility with population stratification"
+author: Thibaut Jombart
+date: "`r Sys.Date()`"
+params:
+  solution: FALSE
+output:
+  rmdformats::readthedown:
+    highlight: kate
+    css: "../../css/style.css"
+link-citations: no
+bibliography: "../../biblio/biblio.bib"
+---
+
+
+```{r settings, echo = FALSE}
+
+# Note: use this to get dynamically the css; sadly not compatible with having an
+# anchor (.here) within the practical's folder
+# css: !expr here::here('css', 'style.css')
+
+# knitr options
+knitr::opts_chunk$set(
+  fig.width = 8,
+  fig.height = 5,
+  collapse = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+
+```
+
+
+
+# Introduction
+
+## On the tidyverse
+
+The [tidyverse](https://www.tidyverse.org/) is a collection of **R** packages
+designed for data science. Developed with high standards of coding practices and
+software development, these packages form a consistent ecosystem to handle and
+visualise data. In this practical, we will mostly rely on the following
+packages:
+
+* [*dplyr*](https://dplyr.tidyverse.org/) for handling data, making new
+  variables, building summaries, number-crunching
+  
+* [*tidyr*](https://tidyr.tidyverse.org/) to re-arrange tidy/data
+
+* [*ggplot2*](https://ggplot2.tidyverse.org/) to visualise data
+
+* [*magrittr*](https://magrittr.tidyverse.org/) for the piping operator (`%>%`)
+
+
+Most of these functionalities are summarised in handy cheatsheets. We provide
+links to the most relevant ones below:
+
+* [basics of R](http://github.com/rstudio/cheatsheets/raw/master/base-r.pdf)
+  (not tidyverse, but they remain very useful)
+
+* [data transformation using *dplyr*](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf) 
+
+* [data visualisation using *ggplot2*](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf) 
+
+
+
+
+
+*****************************
+## Other packages
+
+Other packages we will use include:
+
+* [*rmarkdown*](https://rmarkdown.rstudio.com/) for automated report generation
+
+* [*rio*](https://cran.r-project.org/web/packages/rio/index.html) to read
+  `.xlsx` files in
+  
+
+Cheatsheets and other resources:
+
+* the *rmarkdown* [cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf)
+
+* the *knitr* [website](https://yihui.org/knitr/) documenting many options used
+  in *rmarkdown*'s settings and code chunks
+
+
+
+
+*****************************
+## On outbreak analytics packages
+
+We will use several packages specific to outbreak analytics, including:
+
+* [*linelist*](https://epiverse-trace.github.io/linelist/) to identify key
+  epidemiological variables in the data
+
+* [*incidence2*](https://repidemicsconsortium.org/incidence2) to build and
+  handle epidemic curves
+  
+* [*i2extras*](https://repidemicsconsortium.org/i2extras) for estimating growth
+  rates using different GLMs from *incidence2* objects
+
+
+For some of these packages, we recommend using the *github* (development)
+version, either because it is more up-to-date, or because they have not been
+released on CRAN yet.
+   
+```{r install, eval = FALSE}
+
+## instructions for github packages (latest versions)
+remotes::install_github("reconhub/i2extras")
+
+```
+
+
+
+*****************************
+## What we will do today
+
+This practical will use different outbreak data to illustrate how the various
+packages mentioned above can be combined to explore outbreak data and carry out
+analyses specific to the outbreak response context. Building on material seen in
+previous sessions, we will particularly look at:
+
+* cleaning / standardising 'dirty' data
+* building epidemic curves
+* derive empirical distributions of key delays
+* fit delays to discretized Gamma distributions using Maximum Likelihood, and
+  summarising the results
+* visualise and analyse transmission chains / contact tracing data
+* estimate the growth rate and doubling time from epidemic curves
+* estimate the reproduction number from epidemic curvse
+* perform short-term forecasting of case incidence
+
+In addition, we strongly recommend storing all analyses into one or several
+*rmarkdown* reports.
+  
+
+
+
+*****************************
+## How this document works
+
+This practical will take you through initial exploratory analyses of different
+datasets. Some parts will be used merely to illustrate a technical point
+(e.g. how to count cases by different groups), some will focus more on the
+epidemiological meaning of a result, and some will do both. These analyses are
+merely meant as a guide, and are by no means an exhaustive exploration of the
+data. **Be curious**: feel free to ask new questions and try to answer them. In
+all instances, try to first answer your own questions: try/error is a great way
+to learn **R**. But if you feel stuck, do not hesitate to questions to the
+demonstrators: they are here to help.
+
+In this practical, most command lines are provided, but not all. In the few
+instances where code is not provided, you will typically need to re-use and
+adapt previous code to produce the result requested. In most cases, copy-paste
+should be sufficient to reproduce the results.
+
+However, it is important that you understand what the code does. Look at
+relevant documentation, try tweaking the code, experiment, and do not hesitate
+to ask questions. It is not essential to go through all examples to illustrate
+important points, so take your time, especially if you are new to **R**. Also
+note that the solutions provided are by not means the only options for solving a
+given problem - feel free to explore alternatives and discuss them with the
+trainers.
+
+<br>
+
+
+
+*****************************
+*****************************
+# COVID-19 in the UK
+
+For the second part of this practical, we look at real data reporting COVID-19
+hospitalisation in England, broken down to the hospital and National Health
+Service (NHS) region level. The data is available online from the NHS England's
+[website](https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/).
+The dataset analysed here is a simplified version, providing incidence of
+hospital admissions by NHS trust, stored in the file *covid_admissions_uk_2020_10_24.xlsx*.
+
+
+
+*****************************
+## Importing the data
+
+Download this dataset, save it in the `data/` folder, and then import the data
+by typing:
+
+```{r }
+
+path_to_file <- here::here("data", "covid_admissions_uk_2020_10_24.xlsx")
+covid_eng <- path_to_file %>%
+  rio::import() %>%
+  tibble() %>%
+  mutate(date = as.Date(date)) # date-time -> date
+covid_eng
+
+```
+
+The dataset includes:
+
+* `date`: the date of admission
+* `region`: the NHS region
+* `org_name`: the full name of the NHS trust
+* `org_code`: a short code for the NHS trust
+* `n`: number of new, confirmed COVID-19 cases admitted, including inpatients
+  who tested positive on that day, and new admissions with a positive test
+
+
+
+
+*****************************
+## Distribution of cases by NHS region
+
+Here, we try to get an overall picture of the distribution of hospital
+admissions across England. The following code sums the number of cases reported
+by region:
+
+```{r }
+
+covid_eng %>%
+  group_by(region) %>%
+  summarise(cases = sum(n))
+
+```
+
+<br>
+<div class="exercise">
+
+**Exercise:** Adapt this code to derive total number of cases by region and NHS
+trust, and provide a visual representation of the resulting numbers and
+interpret the results; your plot may resemble:
+
+</div>
+<br>
+
+
+```{r echo = params$solution}
+
+covid_eng %>%
+  group_by(region, org_name) %>%
+  summarise(cases = sum(n)) %>%
+  ggplot(aes(x = cases)) +
+  geom_histogram() +
+  theme_bw() +
+  facet_wrap(~ region) +
+  labs(title = "COVID-19 admissions by NHS region",
+       x = "Number of COVID-19 cases in a single trust",
+       y = "Frequency")
+
+```
+
+
+
+
+*****************************
+## Epidemic curves
+
+Unlike linelists of cases, this dataset contains pre-calculated counts by date,
+NHS region and trust. While *incidence2* is primarily designed to handle
+linelist-like data, it can also convert pre-computed incidences using the
+`count` argument:
+
+```{r }
+
+library(incidence2)
+
+# build the incidence2 object
+i_covid <- covid_eng %>%
+  incidence2::incidence(date,
+                        interval = "week",
+                        count = n,
+                        groups = region)
+
+# summary
+i_covid %>%
+  summary()
+
+# plot with regions as colors
+i_covid %>%
+  plot(fill = region, col_pal = muted, angle = 45, legend = "bottom") +
+  labs(title = "Weekly incidence of COVID-19 hospital admissions in England")
+
+# variant with facets
+# ...
+
+```
+
+<br>
+<div class="exercise">
+
+**Exercise:** Use `facet_plot`, tweaking the arguments `angle`, `format` and the
+one specifying the number of dates on the x-axis, to reproduce the plot below;
+which do you think is best at representing dynamics of COVID-19 in England?
+
+</div>
+<br>
+
+```{r echo = params$solution}
+
+i_covid %>%
+  facet_plot(angle = 45,
+             date_format = "%d %b %y",
+             n_breaks = 6)
+
+```
+
+
+
+```{r echo = FALSE, eval = params$solution, results = "asis"}
+
+cat("**Explanation:**<br><br>")
+
+cat(
+  "Both plots are interesting, with different emphasis: the colored plot is better for assessing the global tendencies, while the facetted plot is better for appreciating individual dynamics of the regions.<br>")
+
+```
+
+
+*****************************
+## Growth rates
+
+The new package *i2extras* adds a number of tools for *incidence2* objects,
+including the implementation of different GLMs to fit epicurves, and derive
+growth rates.
+
+To illustrate these approaches, we first select the data so that:
+
+* we use daily incidences by region
+* we keep the last 4 weeks of data
+* we exclude the last week of data, as it may be prone to biases due to
+  reporting delays
+
+```{r }
+
+last_date <- covid_eng %>%
+  pull(date) %>%
+  max()
+last_date
+
+# version using keep_first and keep_last from i2extras
+i_recent <- covid_eng %>%
+  incidence2::incidence(date,
+                        count = n,
+                        groups = region) %>% 
+  keep_last(4 * 7) %>%  # keep last 4 weeks of data
+  keep_first(3 * 7) # remove last week of data as incomplete
+
+## # 'old' version using 'filter'
+## i_recent <- covid_eng %>%
+##   incidence2::incidence(date,
+##                         count = n,
+##                         groups = region) %>% 
+##   filter(date_index > (last_date - 28), # keep last 4 weeks of data
+##          date_index <= (last_date - 7)) # remove last week of data
+
+i_recent %>%
+  summary()
+
+i_recent %>% 
+  facet_plot()
+
+```
+
+
+
+<br>
+<div class="exercise">
+
+**Exercise:** We can now fit models to these data. To do so, try doing the following:
+
+1. load the package *i2extras*; if not installed, follow instructions from the package's 
+[website](https://www.repidemicsconsortium.org/i2extras/)
+
+2. use the function `fit_curve()` to fit a negative binomial model to the
+   incidence data by region, save the output as a new object `last_trends`, and
+   plot it
+   
+3. feed this output to the function `growth_rate()` to obtain estimates of
+   growth rates, doubling times and their confidence intervals, for each region;
+   the results should resemble:
+
+</div>
+<br>
+
+```{r echo = params$solution}
+
+library(i2extras)
+
+last_trends <- i_recent %>%
+  fit_curve(model = "poisson")
+# version with negbin model needs more iterations to converge
+# fit_curve(model = "negbin", control = glm.control(maxit = 1e3))
+last_trends
+plot(last_trends)
+
+last_trends %>%
+  growth_rate()
+
+```
+
+The code below can be used to visualise the results:
+
+```{r }
+
+last_trends %>%
+  growth_rate() %>%
+  ggplot(aes(y = region, x = r)) +
+  geom_point() +
+  geom_errorbar(aes(xmin = r_lower, xmax = r_upper)) +
+  geom_vline(xintercept = 0, linetype = 2) +
+  theme_bw() +
+  labs(title = "Estimates of daily growth rates of COVID-19 in England",
+       subtitle = sprintf(
+         "based on hospital admissions, %s - %s",
+         format(min(get_dates(i_recent)), "%d %B %Y"),
+         format(max(get_dates(i_recent)), "%d %B %Y")),
+       y = "",
+       x = "Daily growth rate")
+
+```
+
+
+<br>
+<div class="exercise">
+
+**Exercise:** repeat the same figure with doubling times. Taken together, what
+do these results suggest about the evolution of COVID-19 in the UK over the next
+weeks? What would be the doubling time for growth rates (*r*) close to 0? When
+would you recommend using doubling times for communicating results on the
+evolution of an epidemic?
+
+</div>
+<br>
+
+
+```{r echo = params$solution}
+
+last_trends %>%
+  growth_rate %>%
+  ggplot(aes(y = region, x = time)) +
+  geom_point() +
+  geom_errorbar(aes(xmin = time_lower, xmax = time_upper)) +
+  theme_bw() +
+   labs(title = "Estimates of doubling times of COVID-19 in England",
+        subtitle = sprintf(
+          "based on hospital admissions, %s - %s",
+          format(min(get_dates(i_recent)), "%d %B %Y"),
+          format(max(get_dates(i_recent)), "%d %B %Y")),
+        y = "",
+        x = "Doubling time (days)")
+
+```
+
+
+
+```{r echo = FALSE, eval = params$solution, results = "asis"}
+
+cat("**Explanation:**<br><br>")
+
+cat(
+  "These results show that all regions display significant growth, and we expect cases to keep growing exponentially in the absence of changes in transmission. Doubling times are fine as all confidence intervals of *r* exclude zero. Otherwise, confidence intervals for doubling times would effectively be exclusion intervals, which are a lot harder to communicate. Doubling times should only be reported when the outbreak is significantly growing.<br>")
+
+```
+
+
+
+*************************
+*************************
+# References
