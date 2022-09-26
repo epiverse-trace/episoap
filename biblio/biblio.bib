@@ -1,0 +1,352 @@
+
+@ARTICLE{Campbell2018-rr,
+  title    = "When are pathogen genome sequences informative of transmission
+              events?",
+  author   = "Campbell, Finlay and Strang, Camilla and Ferguson, Neil and Cori,
+              Anne and Jombart, Thibaut",
+  abstract = "Recent years have seen the development of numerous methodologies
+              for reconstructing transmission trees in infectious disease
+              outbreaks from densely sampled whole genome sequence data.
+              However, a fundamental and as of yet poorly addressed limitation
+              of such approaches is the requirement for genetic diversity to
+              arise on epidemiological timescales. Specifically, the position
+              of infected individuals in a transmission tree can only be
+              resolved by genetic data if mutations have accumulated between
+              the sampled pathogen genomes. To quantify and compare the useful
+              genetic diversity expected from genetic data in different
+              pathogen outbreaks, we introduce here the concept of
+              'transmission divergence', defined as the number of mutations
+              separating whole genome sequences sampled from transmission
+              pairs. Using parameter values obtained by literature review, we
+              simulate outbreak scenarios alongside sequence evolution using
+              two models described in the literature to describe transmission
+              divergence of ten major outbreak-causing pathogens. We find that
+              while mean values vary significantly between the pathogens
+              considered, their transmission divergence is generally very low,
+              with many outbreaks characterised by large numbers of genetically
+              identical transmission pairs. We describe the impact of
+              transmission divergence on our ability to reconstruct outbreaks
+              using two outbreak reconstruction tools, the R packages
+              outbreaker and phybreak, and demonstrate that, in agreement with
+              previous observations, genetic sequence data of rapidly evolving
+              pathogens such as RNA viruses can provide valuable information on
+              individual transmission events. Conversely, sequence data of
+              pathogens with lower mean transmission divergence, including
+              Streptococcus pneumoniae, Shigella sonnei and Clostridium
+              difficile, provide little to no information about individual
+              transmission events. Our results highlight the informational
+              limitations of genetic sequence data in certain outbreak
+              scenarios, and demonstrate the need to expand the toolkit of
+              outbreak reconstruction tools to integrate other types of
+              epidemiological data.",
+  journal  = "PLoS Pathog.",
+  volume   =  14,
+  number   =  2,
+  pages    = "e1006885",
+  month    =  feb,
+  year     =  2018,
+  language = "en"
+}
+
+@ARTICLE{Jombart2014-ab,
+  title    = "Bayesian reconstruction of disease outbreaks by combining
+              epidemiologic and genomic data",
+  author   = "Jombart, Thibaut and Cori, Anne and Didelot, Xavier and
+              Cauchemez, Simon and Fraser, Christophe and Ferguson, Neil",
+  abstract = "Recent years have seen progress in the development of
+              statistically rigorous frameworks to infer outbreak transmission
+              trees (``who infected whom'') from epidemiological and genetic
+              data. Making use of pathogen genome sequences in such analyses
+              remains a challenge, however, with a variety of heuristic
+              approaches having been explored to date. We introduce a
+              statistical method exploiting both pathogen sequences and
+              collection dates to unravel the dynamics of densely sampled
+              outbreaks. Our approach identifies likely transmission events and
+              infers dates of infections, unobserved cases and separate
+              introductions of the disease. It also proves useful for inferring
+              numbers of secondary infections and identifying heterogeneous
+              infectivity and super-spreaders. After testing our approach using
+              simulations, we illustrate the method with the analysis of the
+              beginning of the 2003 Singaporean outbreak of Severe Acute
+              Respiratory Syndrome (SARS), providing new insights into the
+              early stage of this epidemic. Our approach is the first tool for
+              disease outbreak reconstruction from genetic data widely
+              available as free software, the R package outbreaker. It is
+              applicable to various densely sampled epidemics, and improves
+              previous approaches by detecting unobserved and imported cases,
+              as well as allowing multiple introductions of the pathogen.
+              Because of its generality, we believe this method will become a
+              tool of choice for the analysis of densely sampled disease
+              outbreaks, and will form a rigorous framework for subsequent
+              methodological developments.",
+  journal  = "PLoS Comput. Biol.",
+  volume   =  10,
+  number   =  1,
+  pages    = "e1003457",
+  month    =  jan,
+  year     =  2014,
+  language = "en"
+}
+
+@ARTICLE{Campbell2018-pb,
+  title    = "outbreaker2: a modular platform for outbreak reconstruction",
+  author   = "Campbell, Finlay and Didelot, Xavier and Fitzjohn, Rich and
+              Ferguson, Neil and Cori, Anne and Jombart, Thibaut",
+  abstract = "BACKGROUND: Reconstructing individual transmission events in an
+              infectious disease outbreak can provide valuable information and
+              help inform infection control policy. Recent years have seen
+              considerable progress in the development of methodologies for
+              reconstructing transmission chains using both epidemiological and
+              genetic data. However, only a few of these methods have been
+              implemented in software packages, and with little consideration
+              for customisability and interoperability. Users are therefore
+              limited to a small number of alternatives, incompatible tools
+              with fixed functionality, or forced to develop their own
+              algorithms at considerable personal effort. RESULTS: Here we
+              present outbreaker2, a flexible framework for outbreak
+              reconstruction. This R package re-implements and extends the
+              original model introduced with outbreaker, but most importantly
+              also provides a modular platform allowing users to specify custom
+              models within an optimised inferential framework. As a proof of
+              concept, we implement the within-host evolutionary model
+              introduced with TransPhylo, which is very distinct from the
+              original genetic model in outbreaker, and demonstrate how even
+              complex model results can be successfully included with minimal
+              effort. CONCLUSIONS: outbreaker2 provides a valuable starting
+              point for future outbreak reconstruction tools, and represents a
+              unifying platform that promotes customisability and
+              interoperability. Implemented in the R software, outbreaker2
+              joins a growing body of tools for outbreak analysis.",
+  journal  = "BMC Bioinformatics",
+  volume   =  19,
+  number   = "Suppl 11",
+  pages    = "363",
+  month    =  oct,
+  year     =  2018,
+  keywords = "Bayesian; Chain; Epidemics; Genomics; Likelihood; MCMC; Software;
+              Transmission; Tree",
+  language = "en"
+}
+
+@ARTICLE{Campbell2019-vu,
+  title    = "Bayesian inference of transmission chains using timing of
+              symptoms, pathogen genomes and contact data",
+  author   = "Campbell, Finlay and Cori, Anne and Ferguson, Neil and Jombart,
+              Thibaut",
+  abstract = "There exists significant interest in developing statistical and
+              computational tools for inferring 'who infected whom' in an
+              infectious disease outbreak from densely sampled case data, with
+              most recent studies focusing on the analysis of whole genome
+              sequence data. However, genomic data can be poorly informative of
+              transmission events if mutations accumulate too slowly to resolve
+              individual transmission pairs or if there exist multiple
+              pathogens lineages within-host, and there has been little focus
+              on incorporating other types of outbreak data. We present here a
+              methodology that uses contact data for the inference of
+              transmission trees in a statistically rigorous manner, alongside
+              genomic data and temporal data. Contact data is frequently
+              collected in outbreaks of pathogens spread by close contact,
+              including Ebola virus (EBOV), severe acute respiratory syndrome
+              coronavirus (SARS-CoV) and Mycobacterium tuberculosis (TB), and
+              routinely used to reconstruct transmission chains. As an
+              improvement over previous, ad-hoc approaches, we developed a
+              probabilistic model that relates a set of contact data to an
+              underlying transmission tree and integrated this in the
+              outbreaker2 inference framework. By analyzing simulated outbreaks
+              under various contact tracing scenarios, we demonstrate that
+              contact data significantly improves our ability to reconstruct
+              transmission trees, even under realistic limitations on the
+              coverage of the contact tracing effort and the amount of
+              non-infectious mixing between cases. Indeed, contact data is
+              equally or more informative than fully sampled whole genome
+              sequence data in certain scenarios. We then use our method to
+              analyze the early stages of the 2003 SARS outbreak in Singapore
+              and describe the range of transmission scenarios consistent with
+              contact data and genetic sequence in a probabilistic manner for
+              the first time. This simple yet flexible model can easily be
+              incorporated into existing tools for outbreak reconstruction and
+              should permit a better integration of genomic and epidemiological
+              data for inferring transmission chains.",
+  journal  = "PLoS Comput. Biol.",
+  volume   =  15,
+  number   =  3,
+  pages    = "e1006930",
+  month    =  mar,
+  year     =  2019,
+  language = "en"
+}
+
+@ARTICLE{WHO_Ebola_Response_Team2014-mr,
+  title    = "Ebola virus disease in West Africa--the first 9 months of the
+              epidemic and forward projections",
+  author   = "{WHO Ebola Response Team}",
+  abstract = "BACKGROUND: On March 23, 2014, the World Health Organization
+              (WHO) was notified of an outbreak of Ebola virus disease (EVD) in
+              Guinea. On August 8, the WHO declared the epidemic to be a
+              ``public health emergency of international concern.'' METHODS: By
+              September 14, 2014, a total of 4507 probable and confirmed cases,
+              including 2296 deaths from EVD (Zaire species) had been reported
+              from five countries in West Africa--Guinea, Liberia, Nigeria,
+              Senegal, and Sierra Leone. We analyzed a detailed subset of data
+              on 3343 confirmed and 667 probable Ebola cases collected in
+              Guinea, Liberia, Nigeria, and Sierra Leone as of September 14.
+              RESULTS: The majority of patients are 15 to 44 years of age
+              (49.9\% male), and we estimate that the case fatality rate is
+              70.8\% (95\% confidence interval [CI], 69 to 73) among persons
+              with known clinical outcome of infection. The course of
+              infection, including signs and symptoms, incubation period (11.4
+              days), and serial interval (15.3 days), is similar to that
+              reported in previous outbreaks of EVD. On the basis of the
+              initial periods of exponential growth, the estimated basic
+              reproduction numbers (R0 ) are 1.71 (95\% CI, 1.44 to 2.01) for
+              Guinea, 1.83 (95\% CI, 1.72 to 1.94) for Liberia, and 2.02 (95\%
+              CI, 1.79 to 2.26) for Sierra Leone. The estimated current
+              reproduction numbers (R) are 1.81 (95\% CI, 1.60 to 2.03) for
+              Guinea, 1.51 (95\% CI, 1.41 to 1.60) for Liberia, and 1.38 (95\%
+              CI, 1.27 to 1.51) for Sierra Leone; the corresponding doubling
+              times are 15.7 days (95\% CI, 12.9 to 20.3) for Guinea, 23.6 days
+              (95\% CI, 20.2 to 28.2) for Liberia, and 30.2 days (95\% CI, 23.6
+              to 42.3) for Sierra Leone. Assuming no change in the control
+              measures for this epidemic, by November 2, 2014, the cumulative
+              reported numbers of confirmed and probable cases are predicted to
+              be 5740 in Guinea, 9890 in Liberia, and 5000 in Sierra Leone,
+              exceeding 20,000 in total. CONCLUSIONS: These data indicate that
+              without drastic improvements in control measures, the numbers of
+              cases of and deaths from EVD are expected to continue increasing
+              from hundreds to thousands per week in the coming months.",
+  journal  = "N. Engl. J. Med.",
+  volume   =  371,
+  number   =  16,
+  pages    = "1481--1495",
+  month    =  oct,
+  year     =  2014
+}
+
+
+@ARTICLE{Cori2013-ll,
+  title    = "A new framework and software to estimate time-varying
+              reproduction numbers during epidemics",
+  author   = "Cori, Anne and Ferguson, Neil M and Fraser, Christophe and
+              Cauchemez, Simon",
+  abstract = "The quantification of transmissibility during epidemics is
+              essential to designing and adjusting public health responses.
+              Transmissibility can be measured by the reproduction number R,
+              the average number of secondary cases caused by an infected
+              individual. Several methods have been proposed to estimate R over
+              the course of an epidemic; however, they are usually difficult to
+              implement for people without a strong background in statistical
+              modeling. Here, we present a ready-to-use tool for estimating R
+              from incidence time series, which is implemented in popular
+              software including Microsoft Excel (Microsoft Corporation,
+              Redmond, Washington). This tool produces novel, statistically
+              robust analytical estimates of R and incorporates uncertainty in
+              the distribution of the serial interval (the time between the
+              onset of symptoms in a primary case and the onset of symptoms in
+              secondary cases). We applied the method to 5 historical
+              outbreaks; the resulting estimates of R are consistent with those
+              presented in the literature. This tool should help
+              epidemiologists quantify temporal changes in the transmission
+              intensity of future epidemics by using surveillance data.",
+  journal  = "Am. J. Epidemiol.",
+  volume   =  178,
+  number   =  9,
+  pages    = "1505--1512",
+  month    =  nov,
+  year     =  2013,
+  keywords = "SARS; incidence; influenza; measles; reproduction number;
+              smallpox; software",
+  language = "en"
+}
+
+@ARTICLE{Thompson2019-zz,
+  title    = "Improved inference of time-varying reproduction numbers during
+              infectious disease outbreaks",
+  author   = "Thompson, R N and Stockwin, J E and van Gaalen, R D and Polonsky,
+              J A and Kamvar, Z N and Demarsh, P A and Dahlqwist, E and Li, S
+              and Miguel, E and Jombart, T and Lessler, J and Cauchemez, S and
+              Cori, A",
+  abstract = "Accurate estimation of the parameters characterising infectious
+              disease transmission is vital for optimising control
+              interventions during epidemics. A valuable metric for assessing
+              the current threat posed by an outbreak is the time-dependent
+              reproduction number, i.e. the expected number of secondary cases
+              caused by each infected individual. This quantity can be
+              estimated using data on the numbers of observed new cases at
+              successive times during an epidemic and the distribution of the
+              serial interval (the time between symptomatic cases in a
+              transmission chain). Some methods for estimating the reproduction
+              number rely on pre-existing estimates of the serial interval
+              distribution and assume that the entire outbreak is driven by
+              local transmission. Here we show that accurate inference of
+              current transmissibility, and the uncertainty associated with
+              this estimate, requires: (i) up-to-date observations of the
+              serial interval to be included, and; (ii) cases arising from
+              local transmission to be distinguished from those imported from
+              elsewhere. We demonstrate how pathogen transmissibility can be
+              inferred appropriately using datasets from outbreaks of H1N1
+              influenza, Ebola virus disease and Middle-East Respiratory
+              Syndrome. We present a tool for estimating the reproduction
+              number in real-time during infectious disease outbreaks
+              accurately, which is available as an R software package (EpiEstim
+              2.2). It is also accessible as an interactive, user-friendly
+              online interface (EpiEstim App), permitting its use by
+              non-specialists. Our tool is easy to apply for assessing the
+              transmission potential, and hence informing control, during
+              future outbreaks of a wide range of invading pathogens.",
+  journal  = "Epidemics",
+  volume   =  29,
+  pages    = "100356",
+  month    =  dec,
+  year     =  2019,
+  keywords = "Disease control; Infectious disease epidemiology; Mathematical
+              modelling; Parameter inference; Reproduction number; Serial
+              interval",
+  language = "en"
+}
+
+@ARTICLE{Neal2004-ah,
+  title    = "Statistical inference and model selection for the 1861 Hagelloch
+              measles epidemic",
+  author   = "Neal, Peter J and Roberts, Gareth O",
+  abstract = "A stochastic epidemic model is proposed which incorporates
+              heterogeneity in the spread of a disease through a population. In
+              particular, three factors are considered: the spatial location of
+              an individual's home and the household and school class to which
+              the individual belongs. The model is applied to an extremely
+              informative measles data set and the model is compared with
+              nested models, which incorporate some, but not all, of the
+              aforementioned factors. A reversible jump Markov chain Monte
+              Carlo algorithm is then introduced which assists in selecting the
+              most appropriate model to fit the data.",
+  journal  = "Biostatistics",
+  volume   =  5,
+  number   =  2,
+  pages    = "249--261",
+  month    =  apr,
+  year     =  2004,
+  language = "en"
+}
+
+@PHDTHESIS{Oesterle1993-kx,
+  title  = "Statistische Reanalyse einer Masernepidemie 1861 in Hagelloch",
+  author = "Oesterle, Heike",
+  year   =  1993,
+  school = "Uitgever niet vastgesteld"
+}
+
+@MISC{Fang2016-ro,
+  title   = "Transmission dynamics of Ebola virus disease and intervention
+             effectiveness in Sierra Leone",
+  author  = "Fang, Li-Qun and Yang, Yang and Jiang, Jia-Fu and Yao, Hong-Wu and
+             Kargbo, David and Li, Xin-Lou and Jiang, Bao-Gui and Kargbo, Brima
+             and Tong, Yi-Gang and Wang, Ya-Wei and Liu, Kun and Kamara, Abdul
+             and Dafae, Foday and Kanu, Alex and Jiang, Rui-Ruo and Sun, Ye and
+             Sun, Ruo-Xi and Chen, Wan-Jun and Ma, Mai-Juan and Dean, Natalie E
+             and Thomas, Harold and Longini, Ira M and Elizabeth Halloran, M
+             and Cao, Wu-Chun",
+  journal = "Proceedings of the National Academy of Sciences",
+  volume  =  113,
+  number  =  16,
+  pages   = "4488--4493",
+  year    =  2016
+}
