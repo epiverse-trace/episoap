@@ -34,13 +34,52 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-## On the tidyverse
+## Outline of the report  
+
+### Estimating transmissibility from stratified population
+
+This report provides a template for estimating transmissibility (i.e., how fast
+a disease spreads) from a stratified population. It performs basic descriptive
+analyses, and uses different approaches for estimating transmissibility. The key
+steps of the report include:
+
+* importing the data from an external file
+* identifying key variables in the data
+* producing global and stratified epidemic curves
+* estimating the growth rate and doubling time from epidemic curves
+* estimating the instantaneous reproduction number from epidemic curvse
+
+### The data
+
+To illustrate the different analyses, we use real data reporting daily numbers
+of COVID-19 hospitalisations in England as of the 24 October 2020, broken down
+to the hospital and National Health Service (NHS) region level. The data is
+available online from the NHS England's
+[website](https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/).
+The dataset analysed here is a simplified version, providing incidence of
+hospital admissions by NHS trust, stored in the file
+[covid_admissions_uk_2020_10_24.xlsx](https://github.com/epiverse-trace/data_pipelines/raw/main/data/covid_admissions_uk_2020_10_24.xlsx).
+
+
+### Target audience
+
+The analyses presented here are largely automated, and should be of use to any
+outbreak analyst. A basic R literacy will be required to adapt the report to
+other datasets, most importantly for identifying the variables to be used for
+dates of events and stratification. The data used in this report are daily case
+incidence. For raw linelists, alternative commands will be supplied in the
+section on building epicurves.
+
+
+
+## Packages used in this report
+
+### tidyverse
 
 The [tidyverse](https://www.tidyverse.org/) is a collection of **R** packages
 designed for data science. Developed with high standards of coding practices and
 software development, these packages form a consistent ecosystem to handle and
-visualise data. In this practical, we will mostly rely on the following
-packages:
+visualise data. Here, we use the following packages:
 
 * [*dplyr*](https://dplyr.tidyverse.org/) for handling data, making new
   variables, building summaries, number-crunching
@@ -64,18 +103,43 @@ links to the most relevant ones below:
 
 
 
+### Outbreak analytics packages
 
+We use several packages specific to outbreak analytics, including:
 
-*****************************
-## Other packages
+* [*linelist*](https://epiverse-trace.github.io/linelist/) to identify key
+  epidemiological variables in the data
 
-Other packages we will use include:
+* [*incidence2*](https://repidemicsconsortium.org/incidence2) to build and
+  handle epidemic curves
+  
+* [*i2extras*](https://repidemicsconsortium.org/i2extras) for estimating growth
+  rates using different GLMs from *incidence2* objects
+  
+* [*EpiEstim*](https://github.com/mrc-ide/EpiEstim) and
+  [*EpiNow2*](https://epiforecasts.io/EpiNow2/) for estimating the instantaneous
+  reproduction number
+
+For some of these packages, we recommend using the *github* (development)
+versions, which can be installed using:
+   
+```{r install, eval = FALSE}
+
+## instructions for github packages (latest versions)
+remotes::install_github("reconhub/i2extras")
+
+```
+
+### Other packages
+
+Other packages we use include:
 
 * [*rmarkdown*](https://rmarkdown.rstudio.com/) for automated report generation
 
 * [*rio*](https://cran.r-project.org/web/packages/rio/index.html) to read
   `.xlsx` files in
-  
+
+* [*here*](https://here.r-lib.org/) for locating files
 
 Cheatsheets and other resources:
 
@@ -87,98 +151,12 @@ Cheatsheets and other resources:
 
 
 
-*****************************
-## On outbreak analytics packages
-
-We will use several packages specific to outbreak analytics, including:
-
-* [*linelist*](https://epiverse-trace.github.io/linelist/) to identify key
-  epidemiological variables in the data
-
-* [*incidence2*](https://repidemicsconsortium.org/incidence2) to build and
-  handle epidemic curves
-  
-* [*i2extras*](https://repidemicsconsortium.org/i2extras) for estimating growth
-  rates using different GLMs from *incidence2* objects
-
-
-For some of these packages, we recommend using the *github* (development)
-version, either because it is more up-to-date, or because they have not been
-released on CRAN yet.
-   
-```{r install, eval = FALSE}
-
-## instructions for github packages (latest versions)
-remotes::install_github("reconhub/i2extras")
-
-```
-
-
-
-*****************************
-## What we will do today
-
-This practical will use different outbreak data to illustrate how the various
-packages mentioned above can be combined to explore outbreak data and carry out
-analyses specific to the outbreak response context. Building on material seen in
-previous sessions, we will particularly look at:
-
-* cleaning / standardising 'dirty' data
-* building epidemic curves
-* derive empirical distributions of key delays
-* fit delays to discretized Gamma distributions using Maximum Likelihood, and
-  summarising the results
-* visualise and analyse transmission chains / contact tracing data
-* estimate the growth rate and doubling time from epidemic curves
-* estimate the reproduction number from epidemic curvse
-* perform short-term forecasting of case incidence
-
-In addition, we strongly recommend storing all analyses into one or several
-*rmarkdown* reports.
-  
-
-
-
-*****************************
-## How this document works
-
-This practical will take you through initial exploratory analyses of different
-datasets. Some parts will be used merely to illustrate a technical point
-(e.g. how to count cases by different groups), some will focus more on the
-epidemiological meaning of a result, and some will do both. These analyses are
-merely meant as a guide, and are by no means an exhaustive exploration of the
-data. **Be curious**: feel free to ask new questions and try to answer them. In
-all instances, try to first answer your own questions: try/error is a great way
-to learn **R**. But if you feel stuck, do not hesitate to questions to the
-demonstrators: they are here to help.
-
-In this practical, most command lines are provided, but not all. In the few
-instances where code is not provided, you will typically need to re-use and
-adapt previous code to produce the result requested. In most cases, copy-paste
-should be sufficient to reproduce the results.
-
-However, it is important that you understand what the code does. Look at
-relevant documentation, try tweaking the code, experiment, and do not hesitate
-to ask questions. It is not essential to go through all examples to illustrate
-important points, so take your time, especially if you are new to **R**. Also
-note that the solutions provided are by not means the only options for solving a
-given problem - feel free to explore alternatives and discuss them with the
-trainers.
-
-<br>
 
 
 
 *****************************
 *****************************
 # COVID-19 in the UK
-
-For the second part of this practical, we look at real data reporting COVID-19
-hospitalisation in England, broken down to the hospital and National Health
-Service (NHS) region level. The data is available online from the NHS England's
-[website](https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/).
-The dataset analysed here is a simplified version, providing incidence of
-hospital admissions by NHS trust, stored in the file *covid_admissions_uk_2020_10_24.xlsx*.
 
 
 
