@@ -32,6 +32,7 @@ knitr::opts_chunk$set(
 
 
 
+********************************
 # Preambule
 
 ## Outline of the report
@@ -153,6 +154,8 @@ Cheatsheets and other resources:
 
 
 
+
+********************************
 # Data preparation
 
 ## Loading libraries
@@ -185,11 +188,11 @@ the file in the script below:
 ```{r }
 
 path_to_file <- here::here("data", "covid_admissions_uk_2020_10_24.xlsx")
-dat <- path_to_file %>%
+dat_raw <- path_to_file %>%
   rio::import() %>%
   tibble() %>%
   mutate(date = as.Date(date)) # date-time -> date
-dat
+dat_raw
 
 ```
 
@@ -204,115 +207,65 @@ Once imported into __R__, the dataset called `dat` includes:
 
 
 
+## Identifying key data
+
+__Note__: this is not used for now, as there is no integration of linelist with
+other existing tools.
+
+Here we identify the key data needed in the analyses, including:
+
+* the dates to be used, here, dates of hospital admission
+* the strata of the population, here, coarse geographic locations (NHS regions)
+* the case counts; this would not be needed if the data was a raw linelist, and
+  not already aggregated counts
+
+```{r }
+
+dat <- dat_raw %>%
+  make_linelist(date_admission = "date",
+                location = "region",
+                counts = "n",
+                allow_extra = TRUE)
+dat
+
+```
 
 
+
+
+
+********************************
 # Descriptive analyses
 
-## Distribution of cases by NHS region
-
-Here, we try to get an overall picture of the distribution of hospital
-admissions across England. The following code sums the number of cases reported
-by region:
-
-```{r }
-
-dat %>%
-  group_by(region) %>%
-  summarise(cases = sum(n))
-
-```
-
-<br>
-<div class="exercise">
-
-**Exercise:** Adapt this code to derive total number of cases by region and NHS
-trust, and provide a visual representation of the resulting numbers and
-interpret the results; your plot may resemble:
-
-</div>
-<br>
-
-
-```{r echo = params$solution}
-
-dat %>%
-  group_by(region, org_name) %>%
-  summarise(cases = sum(n)) %>%
-  ggplot(aes(x = cases)) +
-  geom_histogram() +
-  theme_bw() +
-  facet_wrap(~ region) +
-  labs(title = "COVID-19 admissions by NHS region",
-       x = "Number of COVID-19 cases in a single trust",
-       y = "Frequency")
-
-```
-
-
-
-
-*****************************
 ## Epidemic curves
 
-Unlike linelists of cases, this dataset contains pre-calculated counts by date,
-NHS region and trust. While *incidence2* is primarily designed to handle
-linelist-like data, it can also convert pre-computed incidences using the
-`count` argument:
-
 ```{r }
 
-library(incidence2)
-
-# build the incidence2 object
-i_covid <- dat %>%
-  incidence2::incidence(date,
-                        interval = "week",
-                        count = n,
-                        groups = region)
+# convert daily incidence into weekly incidence using incidence2
+dat_i <- dat_raw %>%
+  incidence("date",
+            interval = "week",
+            counts = "n",
+            groups = "region")
 
 # summary
-i_covid %>%
+dat_i %>%
   summary()
 
 # plot with regions as colors
-i_covid %>%
+dat_i %>%
   plot(fill = region, col_pal = muted, angle = 45, legend = "bottom") +
-  labs(title = "Weekly incidence of COVID-19 hospital admissions in England")
+  labs(title = "Weekly incidence of cases")
 
-# variant with facets
-# ...
 
-```
-
-<br>
-<div class="exercise">
-
-**Exercise:** Use `facet_plot`, tweaking the arguments `angle`, `format` and the
-one specifying the number of dates on the x-axis, to reproduce the plot below;
-which do you think is best at representing dynamics of COVID-19 in England?
-
-</div>
-<br>
-
-```{r echo = params$solution}
-
-i_covid %>%
+dat_i %>%
   facet_plot(angle = 45,
              date_format = "%d %b %y",
-             n_breaks = 6)
+             n_breaks = 6, nrow = 7)
 
 ```
 
 
-
-```{r echo = FALSE, eval = params$solution, results = "asis"}
-
-cat("**Explanation:**<br><br>")
-
-cat(
-  "Both plots are interesting, with different emphasis: the colored plot is better for assessing the global tendencies, while the facetted plot is better for appreciating individual dynamics of the regions.<br>")
-
-```
 
 
 *****************************
