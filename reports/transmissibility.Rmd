@@ -172,13 +172,15 @@ if (!require(pacman)) {
   install.packages("pacman")
   library(pacman)
 }
-p_load(tidyverse)
-p_load(here)
-p_load(rio)
-p_load(linelist)
-p_load(incidence2)
-p_load(i2extras)
+p_load("tidyverse")
+p_load("here")
+p_load("rio")
+p_load("linelist")
+p_load("incidence2")
+p_load("i2extras")
 p_load("rmdformats")
+p_load("scales")
+p_load("kableExtra")
 
 ```
 
@@ -296,6 +298,35 @@ dat_i %>%
 
 
 
+## Numbers of cases
+
+This graph shows the total number of cases per group:
+
+```{r out.width = "60%"}
+
+total_cases <- dat %>%
+  select_tags(location, counts) %>%
+  group_by(location) %>%
+  summarise(cases = sum(counts)) %>%
+  arrange(location)
+
+ggplot(total_cases, aes(x = total, y = location)) +
+  geom_col() +
+  theme_bw() +
+  labs(x = "Total number of cases", y = NULL)
+
+total_cases %>%
+  mutate(percentage = total/sum(total),
+         percentage = paste(round(percentage*100, 2), "%")) %>% 
+  adorn_totals() %>%
+  mutate(total = format(total, scientific = FALSE, big.mark = " ")) %>% 
+  kbl(caption = "Total numbers of cases") %>%
+  kable_paper("striped", full_width = FALSE)
+
+
+
+```
+
 
 
 ```{r }
@@ -306,6 +337,10 @@ knitr::opts_chunk$set(
 )
 
 ```
+
+
+
+
 *****************************
 # Growth rates
 
