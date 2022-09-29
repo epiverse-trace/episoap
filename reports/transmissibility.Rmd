@@ -7,9 +7,9 @@ params:
 output:
   rmdformats::readthedown:
     highlight: kate
-    css: "../../css/style.css"
+    css: "../css/style.css"
 link-citations: no
-bibliography: "../../biblio/biblio.bib"
+bibliography: "../biblio/biblio.bib"
 ---
 
 
@@ -21,11 +21,13 @@ bibliography: "../../biblio/biblio.bib"
 
 # knitr options
 knitr::opts_chunk$set(
-  fig.width = 8,
+  fig.width = 9,
   fig.height = 5,
+  dpi = 90,
   collapse = TRUE,
   message = FALSE,
-  warning = FALSE
+  warning = FALSE,
+  out.width = "80%"
 )
 
 ```
@@ -176,6 +178,7 @@ p_load(rio)
 p_load(linelist)
 p_load(incidence2)
 p_load(i2extras)
+p_load("rmdformats")
 
 ```
 
@@ -221,10 +224,14 @@ Here we identify the key data needed in the analyses, including:
 
 ```{r }
 
+date_var <- "date"
+group_var <- "region"
+count_var <- "n"
+
 dat <- dat_raw %>%
-  make_linelist(date_admission = "date",
-                location = "region",
-                counts = "n",
+  make_linelist(date_admission = date_var,
+                location = group_var,
+                counts = count_var,
                 allow_extra = TRUE)
 dat
 
@@ -245,31 +252,62 @@ dat
 dat_i <- dat_raw %>%
   incidence("date",
             interval = "week",
-            counts = "n",
-            groups = "region")
+            counts = count_var,
+            groups = group_var)
 
 # summary
 dat_i %>%
   summary()
 
-# plot with regions as colors
-dat_i %>%
-  plot(fill = region, col_pal = muted, angle = 45, legend = "bottom") +
-  labs(title = "Weekly incidence of cases")
+# general variables for automatic customisation of plots
+n_groups <- length(unique(unlist(dat_i[group_var])))
+small_counts <- max(dat_i[count_var]) < 20
 
+# plot with regions as colors if less than 9 categories
+if (n_groups <= 9L) {
+dat_i %>%
+  plot(fill = group_var, col_pal = muted, color = "white",
+       angle = 45, legend = "bottom",
+       show_cases = small_counts) +
+  guides(fill=guide_legend(title=NULL)) +
+  labs(title = "Incidence of cases over time")
+} else {
+dat_i %>%
+  regroup() %>% 
+  plot(angle = 45, color = "white", legend = "bottom",
+       show_cases = small_counts) +
+  labs(title = "Incidence of cases over time")
+}
+
+
+```
+
+```{r fig.height = 5 / 3 * n_groups}
 
 dat_i %>%
   facet_plot(angle = 45,
              date_format = "%d %b %y",
-             n_breaks = 6, nrow = 7)
+             color = "white",
+             n_breaks = 6,
+             nrow = n_groups,
+             show_cases = small_counts)
 
 ```
 
 
 
 
+
+```{r }
+
+# knitr options
+knitr::opts_chunk$set(
+  eval = FALSE
+)
+
+```
 *****************************
-## Growth rates
+# Growth rates
 
 The new package *i2extras* adds a number of tools for *incidence2* objects,
 including the implementation of different GLMs to fit epicurves, and derive
@@ -314,26 +352,6 @@ i_recent %>%
 ```
 
 
-
-<br>
-<div class="exercise">
-
-**Exercise:** We can now fit models to these data. To do so, try doing the following:
-
-1. load the package *i2extras*; if not installed, follow instructions from the package's 
-[website](https://www.repidemicsconsortium.org/i2extras/)
-
-2. use the function `fit_curve()` to fit a negative binomial model to the
-   incidence data by region, save the output as a new object `last_trends`, and
-   plot it
-   
-3. feed this output to the function `growth_rate()` to obtain estimates of
-   growth rates, doubling times and their confidence intervals, for each region;
-   the results should resemble:
-
-</div>
-<br>
-
 ```{r echo = params$solution}
 
 library(i2extras)
@@ -372,17 +390,6 @@ last_trends %>%
 ```
 
 
-<br>
-<div class="exercise">
-
-**Exercise:** repeat the same figure with doubling times. Taken together, what
-do these results suggest about the evolution of COVID-19 in the UK over the next
-weeks? What would be the doubling time for growth rates (*r*) close to 0? When
-would you recommend using doubling times for communicating results on the
-evolution of an epidemic?
-
-</div>
-<br>
 
 
 ```{r echo = params$solution}
@@ -405,17 +412,7 @@ last_trends %>%
 
 
 
-```{r echo = FALSE, eval = params$solution, results = "asis"}
-
-cat("**Explanation:**<br><br>")
-
-cat(
-  "These results show that all regions display significant growth, and we expect cases to keep growing exponentially in the absence of changes in transmission. Doubling times are fine as all confidence intervals of *r* exclude zero. Otherwise, confidence intervals for doubling times would effectively be exclusion intervals, which are a lot harder to communicate. Doubling times should only be reported when the outbreak is significantly growing.<br>")
-
-```
 
 
-
-*************************
 *************************
 # References
