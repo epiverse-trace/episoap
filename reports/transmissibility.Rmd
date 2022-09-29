@@ -321,9 +321,9 @@ total_cases %>%
   adorn_totals() %>%
   mutate(total = format(total, scientific = FALSE, big.mark = " ")) %>% 
   kbl(caption = "Total numbers of cases") %>%
-  kable_paper("striped", full_width = FALSE)
-
-
+  kable_paper("striped", full_width = FALSE) %>%
+  row_spec((1:nrow(total_cases))[c(FALSE, TRUE)],
+           font_size = 14, background = "#94B8BA")
 
 ```
 
