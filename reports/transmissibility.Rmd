@@ -3,7 +3,8 @@ title: "Estimating transmissibility with population stratification"
 author: Thibaut Jombart
 date: "`r Sys.Date()`"
 params:
-  solution: FALSE
+  incomplete_days: 7
+  r_estim_window: 21
 output:
   rmdformats::readthedown:
     highlight: kate
@@ -27,7 +28,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   message = FALSE,
   warning = FALSE,
-  out.width = "80%"
+  out.width = "100%"
 )
 
 ```
@@ -303,7 +304,7 @@ dat_i %>%
 
 This graph shows the total number of cases per group:
 
-```{r out.width = "60%"}
+```{r }
 
 total_cases <- dat %>%
   select_tags(location, counts) %>%
@@ -322,21 +323,10 @@ total_cases %>%
   adorn_totals() %>%
   mutate(cases = format(cases, scientific = FALSE, big.mark = " ")) %>% 
   set_names(toupper) %>%   
-  kbl(caption = "Total numbers of cases") %>%
+  kbl() %>%
   kable_paper("striped", font_size = 18, full_width = FALSE) %>%
   row_spec((1:nrow(total_cases))[c(FALSE, TRUE)],
            background = "#94B8BA")
-
-```
-
-
-
-```{r }
-
-# knitr options
-knitr::opts_chunk$set(
-  eval = FALSE
-)
 
 ```
 
@@ -346,18 +336,13 @@ knitr::opts_chunk$set(
 *****************************
 # Growth rates
 
-The new package *i2extras* adds a number of tools for *incidence2* objects,
-including the implementation of different GLMs to fit epicurves, and derive
-growth rates.
+The package *i2extras* provides tools for fitting GLMs to epidemic curves, and
+estimating the corresponding growth rates. Such estimate can be biased by
+reporting delays. Here, we exclude the last `r params$incomplete_days` days as
+incomplete, and retain a total of `r params$r_estim_window` days to estimate the
+growth rate.
 
-To illustrate these approaches, we first select the data so that:
-
-* we use daily incidences by region
-* we keep the last 4 weeks of data
-* we exclude the last week of data, as it may be prone to biases due to
-  reporting delays
-
-```{r }
+```{r fig.height = 5 / 3 * n_groups}
 
 last_date <- dat %>%
   pull(date) %>%
@@ -365,88 +350,72 @@ last_date <- dat %>%
 last_date
 
 # version using keep_first and keep_last from i2extras
-i_recent <- dat %>%
-  incidence2::incidence(date,
-                        count = n,
-                        groups = region) %>% 
-  keep_last(4 * 7) %>%  # keep last 4 weeks of data
-  keep_first(3 * 7) # remove last week of data as incomplete
-
-## # 'old' version using 'filter'
-## i_recent <- dat %>%
-##   incidence2::incidence(date,
-##                         count = n,
-##                         groups = region) %>% 
-##   filter(date_index > (last_date - 28), # keep last 4 weeks of data
-##          date_index <= (last_date - 7)) # remove last week of data
-
-i_recent %>%
-  summary()
-
-i_recent %>% 
-  facet_plot()
-
-```
-
-
-```{r echo = params$solution}
-
-library(i2extras)
+days_to_keep <- params$incomplete_days + params$r_estim_window
+i_recent <- dat_i %>% 
+  keep_last(days_to_keep) %>%  # keep data for fitting 
+  keep_first(params$r_estim_window) # remove incomplete data
 
 last_trends <- i_recent %>%
   fit_curve(model = "poisson")
 # version with negbin model needs more iterations to converge
 # fit_curve(model = "negbin", control = glm.control(maxit = 1e3))
 last_trends
-plot(last_trends)
-
-last_trends %>%
-  growth_rate()
+plot(last_trends,
+     angle = 45,
+     date_format = "%d %b %y",
+     color = "white",
+     n_breaks = 6,
+     nrow = n_groups,
+     show_cases = small_counts)
 
 ```
 
-The code below can be used to visualise the results:
 
 ```{r }
 
 last_trends %>%
-  growth_rate() %>%
-  ggplot(aes(y = region, x = r)) +
-  geom_point() +
+  growth_rate %>%
+  ggplot(aes(y = region)) +
+  geom_point(aes(x = r)) +
   geom_errorbar(aes(xmin = r_lower, xmax = r_upper)) +
-  geom_vline(xintercept = 0, linetype = 2) +
   theme_bw() +
-  labs(title = "Estimates of daily growth rates of COVID-19 in England",
+  scale_x_continuous(labels = scales::percent) +
+  labs(title = "Estimates of daily growth rates",
        subtitle = sprintf(
-         "based on hospital admissions, %s - %s",
+         "based on data from %s - %s",
          format(min(get_dates(i_recent)), "%d %B %Y"),
          format(max(get_dates(i_recent)), "%d %B %Y")),
        y = "",
-       x = "Daily growth rate")
-
-```
-
-
-
-
-```{r echo = params$solution}
+       x = "Daily rate of change")
 
 last_trends %>%
-  growth_rate %>%
-  ggplot(aes(y = region, x = time)) +
-  geom_point() +
-  geom_errorbar(aes(xmin = time_lower, xmax = time_upper)) +
-  theme_bw() +
-   labs(title = "Estimates of doubling times of COVID-19 in England",
-        subtitle = sprintf(
-          "based on hospital admissions, %s - %s",
-          format(min(get_dates(i_recent)), "%d %B %Y"),
-          format(max(get_dates(i_recent)), "%d %B %Y")),
-        y = "",
-        x = "Doubling time (days)")
+  growth_rate() %>%
+  select(-c(1,3)) %>%
+  rename(period = growth_or_decay) %>% 
+  mutate("period type" = paste(period, "time"),
+         r = paste(round(r * 100, 1), "%"),
+         r_ci = sprintf(
+           "[%1.1f %% ; %1.1f %% ]",
+           r_lower * 100,
+           r_upper * 100),
+         time = round(time, 1),
+         time_ci = sprintf(
+           "[%.1f ; %.1f]",
+           time_lower,
+           time_upper)
+         ) %>%
+  select("Daily growth rate" = r,
+         "Growth rate (95% CI)" = r_ci,
+         "period type",
+         "Duration (days)" = time,
+         "Duration (95% CI)" = time_ci) %>%
+  set_names(toupper) %>%   
+  kbl() %>%
+  kable_paper("striped", font_size = 18, full_width = FALSE) %>%
+  row_spec((1:nrow(total_cases))[c(FALSE, TRUE)],
+           background = "#94B8BA")
 
 ```
-
 
 
 
