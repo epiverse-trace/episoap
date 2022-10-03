@@ -176,11 +176,12 @@ p_load("tidyverse")
 p_load("here")
 p_load("rio")
 p_load("linelist")
+p_load("scales")
+p_load("janitor")
+p_load("rmdformats")
+p_load("kableExtra")
 p_load("incidence2")
 p_load("i2extras")
-p_load("rmdformats")
-p_load("scales")
-p_load("kableExtra")
 
 ```
 
@@ -271,7 +272,7 @@ dat_i %>%
   plot(fill = group_var, col_pal = muted, color = "white",
        angle = 45, legend = "bottom",
        show_cases = small_counts) +
-  guides(fill=guide_legend(title=NULL)) +
+  #guides(fill = guide_legend(title=NULL)) +
   labs(title = "Incidence of cases over time")
 } else {
 dat_i %>%
@@ -310,20 +311,21 @@ total_cases <- dat %>%
   summarise(cases = sum(counts)) %>%
   arrange(location)
 
-ggplot(total_cases, aes(x = total, y = location)) +
+ggplot(total_cases, aes(x = cases, y = location)) +
   geom_col() +
   theme_bw() +
   labs(x = "Total number of cases", y = NULL)
 
 total_cases %>%
-  mutate(percentage = total/sum(total),
-         percentage = paste(round(percentage*100, 2), "%")) %>% 
+  mutate(percentage = cases / sum(cases),
+         percentage = paste(round(percentage * 100, 2), "%")) %>% 
   adorn_totals() %>%
-  mutate(total = format(total, scientific = FALSE, big.mark = " ")) %>% 
+  mutate(cases = format(cases, scientific = FALSE, big.mark = " ")) %>% 
+  set_names(toupper) %>%   
   kbl(caption = "Total numbers of cases") %>%
-  kable_paper("striped", full_width = FALSE) %>%
+  kable_paper("striped", font_size = 18, full_width = FALSE) %>%
   row_spec((1:nrow(total_cases))[c(FALSE, TRUE)],
-           font_size = 14, background = "#94B8BA")
+           background = "#94B8BA")
 
 ```
 
