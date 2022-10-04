@@ -6,8 +6,13 @@ params:
   incomplete_days: 7
   r_estim_window: 21
 output:
-  rmdformats::readthedown:
-    highlight: kate
+  rmdformats::downcute:
+    highlight: pygments
+    thumbnails: false
+    lightbox: true
+    gallery: true
+    self_contained: true
+    code_folding: hide
     css: "../css/style.css"
 link-citations: no
 bibliography: "../biblio/biblio.bib"
@@ -248,6 +253,36 @@ dat
 ********************************
 # Descriptive analyses
 
+```{r echo = FALSE}
+
+custom_grey <- "#505B5B"
+green_grey <- "#5E7E80"
+pale_green <- "#b2d1cc"
+
+theme_custom <- theme(
+  plot.background = element_rect(fill = "white"),
+  panel.grid.major = element_line(colour = "#96a3a3"),
+  panel.grid.minor = element_line(colour = "#9DC1C2", linetype = "dotted"),
+  panel.background = element_rect(colour = custom_grey, fill = "white"),
+  strip.background = element_rect(fill = green_grey, color = "white", size = 1),
+  strip.text = element_text(colour = "white"),
+  text = element_text(size = 16, colour = custom_grey),
+  axis.ticks = element_line(colour = custom_grey)
+  #aspect.ratio = 9 / 16
+)
+## dat_i %>%
+##   plot(fill = group_var, col_pal = muted, color = "white",
+##        angle = 45, legend = "bottom",
+##        show_cases = small_counts) +
+##   theme_custom +
+##   guides(fill = guide_legend(title=NULL)) +
+##   labs(title = "Incidence of cases over time")
+
+#theme_old <- theme_get()
+#theme_set(theme_custom)
+
+```
+
 ## Epidemic curves
 
 ```{r }
@@ -271,16 +306,20 @@ small_counts <- max(dat_i[count_var]) < 20
 if (n_groups <= 9L) {
 dat_i %>%
   plot(fill = group_var, col_pal = muted, color = "white",
-       angle = 45, legend = "bottom",
+       alpha = 1, angle = 45, legend = "bottom",
        show_cases = small_counts) +
-  #guides(fill = guide_legend(title=NULL)) +
+  theme_custom +
+  guides(fill = guide_legend(title=NULL)) +
   labs(title = "Incidence of cases over time")
 } else {
 dat_i %>%
   regroup() %>% 
-  plot(angle = 45, color = "white", legend = "bottom",
+  plot(angle = 45, color = "white",
+       fill = green_grey,
+       alpha = 1,
        show_cases = small_counts) +
-  labs(title = "Incidence of cases over time")
+  labs(title = "Incidence of cases over time") +
+  theme_custom
 }
 
 
@@ -292,9 +331,12 @@ dat_i %>%
   facet_plot(angle = 45,
              date_format = "%d %b %y",
              color = "white",
+             fill = green_grey,
+             alpha = 1,
              n_breaks = 6,
              nrow = n_groups,
-             show_cases = small_counts)
+             show_cases = small_counts) +
+  theme_custom
 
 ```
 
@@ -313,8 +355,8 @@ total_cases <- dat %>%
   arrange(location)
 
 ggplot(total_cases, aes(x = cases, y = location)) +
-  geom_col() +
-  theme_bw() +
+  geom_col(fill = green_grey) +
+  theme_custom + 
   labs(x = "Total number of cases", y = NULL)
 
 total_cases %>%
@@ -326,7 +368,7 @@ total_cases %>%
   kbl() %>%
   kable_paper("striped", font_size = 18, full_width = FALSE) %>%
   row_spec((1:nrow(total_cases))[c(FALSE, TRUE)],
-           background = "#94B8BA")
+           background = pale_green)
 
 ```
 
@@ -364,9 +406,12 @@ plot(last_trends,
      angle = 45,
      date_format = "%d %b %y",
      color = "white",
+     fill = green_grey,
+     alpha = 1,
      n_breaks = 6,
      nrow = n_groups,
-     show_cases = small_counts)
+     show_cases = small_counts) +
+  theme_custom
 
 ```
 
@@ -375,10 +420,10 @@ plot(last_trends,
 
 last_trends %>%
   growth_rate %>%
-  ggplot(aes(y = region)) +
+  ggplot(aes(y = region), fill = custom_grey) +
   geom_point(aes(x = r)) +
   geom_errorbar(aes(xmin = r_lower, xmax = r_upper)) +
-  theme_bw() +
+  theme_custom +
   scale_x_continuous(labels = scales::percent) +
   labs(title = "Estimates of daily growth rates",
        subtitle = sprintf(
@@ -413,7 +458,7 @@ last_trends %>%
   kbl() %>%
   kable_paper("striped", font_size = 18, full_width = FALSE) %>%
   row_spec((1:nrow(total_cases))[c(FALSE, TRUE)],
-           background = "#94B8BA")
+           background = pale_green)
 
 ```
 
