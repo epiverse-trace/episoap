@@ -3,8 +3,10 @@ title: "Estimating transmissibility with population stratification"
 author: Thibaut Jombart
 date: "`r Sys.Date()`"
 params:
+  epicurve_unit: week
   incomplete_days: 7
   r_estim_window: 21
+  data_file: "covid_admissions_uk_2020_10_24.xlsx"
 output:
   rmdformats::downcute:
     highlight: pygments
@@ -78,6 +80,39 @@ other datasets, most importantly for identifying the variables to be used for
 dates of events and stratification. The data used in this report are daily case
 incidence. For raw linelists, alternative commands will be supplied in the
 section on building epicurves.
+
+
+
+
+
+## Parameters of this report
+
+Parameters are variables which can be specified when compiling the document
+using `rmarkdown::render(..., params = list(a_parameter = some_value))`. Here we
+list the parameters and indicate their default values in italic font:
+
+* __data_file__: (_"covid_admissions_uk_2020_10_24.xlsx"_) a character string
+  matching the data file inside the _data/_ folder, to be used for the analysis;
+  regular expression are used for matching; if there are several matches, the
+  first one is used
+* __epicurve_unit__: (_week_) the time period over which to calculate the
+  case incidence for epidemic curves; numbers will be interpreted as days
+* __incomplete_days__: (_7_) the number of recent days for which data may be
+  incomplete (_e.g._ due to reporting delays)
+* __r_estim_window__: (_21_) the number of days of data to be used to estimate the
+  recent growth rate
+
+For instance, to generate a report with epicurves showing daily incidence, and
+with no incomplete data, one can use:
+
+```{r eval = FALSE}
+
+rmarkdown::render('transmissibility.Rmd',
+                  params = list(epicurve_unit = 1,
+                                incomplete_days = 0))
+
+```
+
 
 
 
@@ -162,7 +197,6 @@ Cheatsheets and other resources:
 
 
 
-
 ********************************
 # Data preparation
 
@@ -195,11 +229,29 @@ p_load("i2extras")
 
 The data file is named "*covid_admissions_uk_2020_10_24.xlsx*" and is located in
 the *data/* folder. To adapt this report to another dataset, change the name of
-the file in the script below:
+the file in the script below. Note that incomplete file names can be used: the
+first matching file in `data/` will be used.
 
 ```{r }
 
-path_to_file <- here::here("data", "covid_admissions_uk_2020_10_24.xlsx")
+path_to_file <- list.files(
+  here::here("data"),
+  recursive = TRUE,
+  full.names = TRUE,
+  pattern = params$data_file)
+if (length(path_to_file) == 0L) {
+  msg <- sprintf(
+    "No file matching `%s` could be found in `data/`",
+    params$data_file)
+  stop(msg)
+}
+if (length(path_to_file) > 1L) {
+  msg <- sprintf(
+    "Several files matching `%s` found in `data/`; using the first one",
+    params$data_file)
+  warning(msg)
+}
+
 dat_raw <- path_to_file %>%
   rio::import() %>%
   tibble() %>%
@@ -253,7 +305,12 @@ dat
 ********************************
 # Descriptive analyses
 
-```{r echo = FALSE}
+## Custom theme and colors
+
+This section defines a customized theme and colors used in the graphs and
+tables.
+
+```{r }
 
 custom_grey <- "#505B5B"
 green_grey <- "#5E7E80"
@@ -270,27 +327,19 @@ theme_custom <- theme(
   axis.ticks = element_line(colour = custom_grey)
   #aspect.ratio = 9 / 16
 )
-## dat_i %>%
-##   plot(fill = group_var, col_pal = muted, color = "white",
-##        angle = 45, legend = "bottom",
-##        show_cases = small_counts) +
-##   theme_custom +
-##   guides(fill = guide_legend(title=NULL)) +
-##   labs(title = "Incidence of cases over time")
-
-#theme_old <- theme_get()
-#theme_set(theme_custom)
 
 ```
 
 ## Epidemic curves
+
+This section creates epidemic curves ("_epicurves_"), with or without stratification.
 
 ```{r }
 
 # convert daily incidence into weekly incidence using incidence2
 dat_i <- dat_raw %>%
   incidence("date",
-            interval = "week",
+            interval = params$epicurve_unit,
             counts = count_var,
             groups = group_var)
 
@@ -393,7 +442,10 @@ last_date
 
 # version using keep_first and keep_last from i2extras
 days_to_keep <- params$incomplete_days + params$r_estim_window
-i_recent <- dat_i %>% 
+i_recent <- dat_raw %>%
+  incidence("date",
+            counts = count_var,
+            groups = group_var) %>% 
   keep_last(days_to_keep) %>%  # keep data for fitting 
   keep_first(params$r_estim_window) # remove incomplete data
 
@@ -407,8 +459,8 @@ plot(last_trends,
      date_format = "%d %b %y",
      color = "white",
      fill = green_grey,
-     alpha = 1,
-     n_breaks = 6,
+     alpha = .8,
+     n_breaks = 12,
      nrow = n_groups,
      show_cases = small_counts) +
   theme_custom
