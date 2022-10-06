@@ -626,6 +626,16 @@ with the provided serial interval.
 
 ## Results
 
+This section contains:
+
+* a graph showing the distribution of $R$ values estimated from the daily growth
+  rates; each violin shows the density of values based on a sample of 500 from
+  the Student distribution associated with the estimate of $r$; the line range
+  represents the 95% confidence interval (horizontal segment) and the median
+  (dot)
+  
+* a table summarizing the estimated distributions of $R$ values 
+
 ```{r }
 
 res_R_wl <- last_trends %>%
@@ -655,8 +665,26 @@ res_R_wl %>%
        y = "",
        x = "Reproduction number")
 
+res_R_wl_smry %>%
+  mutate(
+    mean = round(mean, 2),
+    median = round(median, 2),
+    `95% ci` = sprintf(
+           "[%1.2f ; %1.2f]",
+           q_0.025,
+           q_0.975)) %>%
+  select(-c(q_0.025, q_0.975)) %>%
+  rename(
+    "mean $R$" = mean,
+    "median $R$" = median) %>% 
+  set_names(toupper) %>%   
+  kbl() %>%
+  kable_paper("striped", font_size = 18, full_width = FALSE) %>%
+  row_spec((1:nrow(res_R_wl_smry))[c(FALSE, TRUE)],
+           background = pale_green)
 
 ```
+
 
 
 
@@ -666,6 +694,9 @@ res_R_wl %>%
 ## Explanations
 
 ## Results
+
+
+
 
 
 *************************
