@@ -425,13 +425,43 @@ total_cases %>%
 
 
 *****************************
-# Growth rates
+# Growth rates and doubling/halving times
 
-The package *i2extras* provides tools for fitting GLMs to epidemic curves, and
-estimating the corresponding growth rates. Such estimate can be biased by
-reporting delays. Here, we exclude the last `r params$incomplete_days` days as
-incomplete, and retain a total of `r params$r_estim_window` days to estimate the
-growth rate.
+## Explanations
+
+The package *i2extras* is used to estimate daily growth rates '_r_', using Poisson
+GLMs fitted to epidemic curves. These estimates can be biased by reporting
+delays. Here, we exclude the last `r params$incomplete_days` days as incomplete,
+and retain a total of `r params$r_estim_window` days to estimate the growth
+rate.
+
+Growth rates can be interpreted as the percent change in daily
+incidence. Positive numbers indicate growth, while negative numbers indicate
+decline, of the epidemic. For instance:
+
+* $r = 0.02$ means that the number of new cases increases on average by 2% each day
+* $r = -0.13$ means that the number of new cases decreases on average by 13% each day
+
+Growth rates can also be converted to _doubling times_ (when $r > 0$) or
+_halving times_ (when $r < 0$), defined as the time it takes for the daily
+incidence to double (respectively, halve).
+
+For more information on growth rates, see this [blog post by Pr Julia Gog](https://plus.maths.org/content/epidemic-growth-rate).
+
+
+## Results
+
+This section contains:
+
+* graphs showing the models fitted to epidemic curves, with their associated 95% confidence
+intervals (CI)
+
+* graphs showing the estimates of the growth rates ($r$) with their 95% CI
+
+* a table summarizing estimtes of $r$ and the associated period (doubling or
+  halving time); all results show point estimates and their 95% CI
+
+
 
 ```{r fig.height = 5 / 3 * n_groups}
 
@@ -513,6 +543,33 @@ last_trends %>%
            background = pale_green)
 
 ```
+
+
+
+*************************
+# Estimating $R_t$ using _EpiEstim_ 
+
+## Explanations
+
+## Results
+
+
+*************************
+# Estimating $R_t$ using _R0_
+
+## Explanations
+
+## Results
+
+
+
+
+*************************
+# Estimating $R_t$ using _EpiNow2_ 
+
+## Explanations
+
+## Results
 
 
 
