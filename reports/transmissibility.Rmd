@@ -202,26 +202,24 @@ Cheatsheets and other resources:
 
 ## Loading libraries
 
-The following code loads required packages; missing packages will be installed
-automatically, but will require a working internet connection for the
-installation to be successful.
+The following code loads required packages; if you are using _Rstudio_ and are
+missing some of the packages, you will be prompted for installing them
+automatically. If you are using this report in a
+[_reportfactory_](https://www.reconverse.org/reportfactory/), you can run
+`reportfactory::install_deps()` to install all missing dependencies.
 
 ```{r }
 
-if (!require(pacman)) {
-  install.packages("pacman")
-  library(pacman)
-}
-p_load("tidyverse")
-p_load("here")
-p_load("rio")
-p_load("linelist")
-p_load("scales")
-p_load("janitor")
-p_load("rmdformats")
-p_load("kableExtra")
-p_load("incidence2")
-p_load("i2extras")
+library("tidyverse")
+library("here")
+library("rio")
+library("linelist")
+library("scales")
+library("janitor")
+library("rmdformats")
+library("kableExtra")
+library("incidence2")
+library("i2extras")
 
 ```
 
