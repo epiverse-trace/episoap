@@ -1,6 +1,6 @@
 ---
 title: "Estimating transmissibility with population stratification"
-author: Thibaut Jombart
+author: Thibaut Jombart, Hugo Gruson
 date: "`r Sys.Date()`"
 params:
   epicurve_unit: week
