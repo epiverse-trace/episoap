@@ -458,7 +458,7 @@ si <- distcrete("gamma",
                 w = 0,
                 shape = si_params$shape,
                 scale = si_params$scale)
-si_x <- seq(0, to = si$q(.999), by = 1L)
+si_x <- seq(1L, to = si$q(.999), by = 1L)
 
 ggplot(data.frame(delay = si_x, prob = si$d(si_x)),
        aes(x = delay, y = prob)) +
