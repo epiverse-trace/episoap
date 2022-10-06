@@ -317,6 +317,7 @@ tables.
 custom_grey <- "#505B5B"
 green_grey <- "#5E7E80"
 pale_green <- "#b2d1cc"
+dark_green <- "#005C5D"
 
 theme_custom <- theme(
   plot.background = element_rect(fill = "white"),
@@ -554,7 +555,7 @@ plot(last_trends,
 
 last_trends %>%
   growth_rate %>%
-  ggplot(aes(y = region), fill = custom_grey) +
+  ggplot(aes(y = .data[[group_var]]), fill = custom_grey) +
   geom_point(aes(x = r)) +
   geom_errorbar(aes(xmin = r_lower, xmax = r_upper)) +
   theme_custom +
@@ -625,6 +626,37 @@ with the provided serial interval.
 
 ## Results
 
+```{r }
+
+res_R_wl <- last_trends %>%
+  mutate(R = map(model, epitrix::lm2R0_sample, w = si, 500)) %>%
+  select({{group_var}}, R) %>%
+  unnest(R)
+
+res_R_wl_smry <- res_R_wl %>%
+  group_by(.data[[group_var]]) %>%
+  summarise(mean = mean(R),
+            median = median(R),
+            q_0.025 = quantile(R, 0.025),
+            q_0.975 = quantile(R, 0.975))
+
+res_R_wl %>%
+  ggplot(aes(y = .data[[group_var]]), fill = custom_grey) +
+  geom_violin(aes(x = R), fill = pale_green, color = green_grey) +
+  geom_pointrange(data = res_R_wl_smry,
+                  aes(x = median, xmin = q_0.025, xmax = q_0.975),
+                  color = dark_green) +
+  theme_custom +
+  labs(title = "Reproduction numbers estimated from growth rates",
+       subtitle = sprintf(
+         "based on data from %s - %s",
+         format(min(get_dates(i_recent)), "%d %B %Y"),
+         format(max(get_dates(i_recent)), "%d %B %Y")),
+       y = "",
+       x = "Reproduction number")
+
+
+```
 
 
 
