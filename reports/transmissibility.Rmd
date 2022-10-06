@@ -6,6 +6,8 @@ params:
   epicurve_unit: week
   incomplete_days: 7
   r_estim_window: 21
+  si_mean: 4.2
+  si_sd: 4.9
   data_file: "covid_admissions_uk_2020_10_24.xlsx"
 output:
   rmdformats::downcute:
@@ -220,6 +222,8 @@ library("rmdformats")
 library("kableExtra")
 library("incidence2")
 library("i2extras")
+library("distcrete")
+library("epitrix")
 
 ```
 
@@ -422,6 +426,56 @@ total_cases %>%
 
 
 
+*************************
+# Serial interval distribution
+
+## Explanations
+
+The _serial interval_ ($si$) is the delay between the date of symptom onsets of primary
+case and the secondary cases they have infected. Because this delay varies from
+one transmission pair to another, we will characterise this variation using a
+probability distribution. This distribution is a key input to methods use for
+estimating the reproduction number ($R$). 
+
+Here, we assume that the mean and standard deviation of the $si $is known, and
+provided as an input by the user. We model the $si$ distribution as a
+discretized Gamma, using the *distcrete package*. The package *epitrix* is used
+to translate the mean and standard deviations into _shape_ and _scale_ (the
+default parametrisation of Gamma distributions in R).
+
+
+## Results
+
+```{r }
+
+si_mean <- params$si_mean
+si_sd <- params$si_sd
+si_cv <- si_sd / si_mean
+si_params <- epitrix::gamma_mucv2shapescale(mu = si_mean, cv = si_cv)
+si <- distcrete("gamma",
+                interval = 1,
+                w = 0,
+                shape = si_params$shape,
+                scale = si_params$scale)
+si_x <- seq(0, to = si$q(.999), by = 1L)
+
+ggplot(data.frame(delay = si_x, prob = si$d(si_x)),
+       aes(x = delay, y = prob)) +
+  geom_col(fill = green_grey) +
+  theme_custom +
+  labs(title = "Serial interval distribution",
+       x = "Days from primary to secondary onset",
+       y = "Probability",
+       subtitle = sprintf(
+         "Gamma distribution | mean: %.1f days ; sd: %.1f days",
+         si_mean, si_sd))
+
+```
+
+
+
+
+
 *****************************
 # Growth rates and doubling/halving times
 
@@ -541,6 +595,7 @@ last_trends %>%
            background = pale_green)
 
 ```
+
 
 
 
