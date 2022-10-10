@@ -318,6 +318,7 @@ custom_grey <- "#505B5B"
 green_grey <- "#5E7E80"
 pale_green <- "#b2d1cc"
 dark_green <- "#005C5D"
+dark_pink <- "#B45D75"
 
 theme_custom <- theme(
   plot.background = element_rect(fill = "white"),
@@ -761,24 +762,24 @@ dat_i_day <- dat_raw %>%
 # Run EpiEstim
 ee_config <- make_config(si_distr = wrap_si(si))
 
-res_epiestim <- dat_i_day %>% 
+res_epiestim_global <- dat_i_day %>% 
   regroup() %>%
   pull(n) %>%
   estimate_R(config = ee_config) %>%
   wrap_res(dat_i_day)
 
 # Graph of all values over time
-ggplot(res_epiestim, aes(x = end)) +
+ggplot(res_epiestim_global, aes(x = end)) +
   geom_ribbon(aes(ymin = lower, ymax = upper), fill = pale_green) +
   geom_line(aes(y = median), color = dark_green) +
-  geom_hline(yintercept = 1, color = "#B45D75") +
+  geom_hline(yintercept = 1, color = dark_pink) +
   scale_x_date(breaks = scales::pretty_breaks(n = 8), date_label = "%d %b %Y") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
   theme_custom +
   labs(x = "", y = "Instantaneous reproduction number (Rt)")
 
 # Table
-res_epiestim %>%
+res_epiestim_global %>%
   tail(14) %>% 
   mutate(
     date = end,
@@ -802,8 +803,57 @@ res_epiestim %>%
 ```
 
 
+
 ### Transmissibility by group
 
+```{r }
+
+# Get results by group, keeping only the last 14 days of data
+dat_i_day_recent <- dat_i_day %>%
+  keep_last(14)
+res_epiestim_group <- dat_i_day_recent %>% 
+  nest(data = c(date_index, n)) %>%
+  mutate(res_epiestim = map(data, ~ wrap_res(estimate_R(.$n, config = ee_config), dat_i_day_recent))) %>%
+  unnest(res_epiestim) %>%
+  select(-data) %>% 
+  filter(end == max(end))
+
+# Plot of latest estimates
+res_epiestim_group %>%
+  ggplot(aes(y = .data[[group_var]]), fill = custom_grey) +
+  geom_point(aes(x = median), color = dark_green) +
+  geom_errorbar(aes(xmin = lower, xmax = upper), color = dark_green) +
+  geom_vline(xintercept = 1, color = dark_pink) +
+  theme_custom +
+  labs(title = "Estimates of Rt (EpiEstim)",
+       subtitle = sprintf(
+         "based on data from %s - %s",
+         format(max(get_dates(dat_i_day_recent) - 7), "%d %B %Y"),
+         format(max(get_dates(dat_i_day_recent)), "%d %B %Y")),
+       y = "",
+       x = "Instantaneous Reproduction Number (Rt)")
+
+
+res_epiestim_group %>%
+  mutate(
+    mean = round(mean, 2),
+    median = round(median, 2),
+    `95% ci` = sprintf(
+           "[%1.2f ; %1.2f]",
+           lower,
+           upper)) %>%
+  select(-c(sd, lower, upper)) %>%
+#  select(date, everything()) %>%
+  rename(
+    "mean $R$" = mean,
+    "median $R$" = median) %>% 
+  set_names(toupper) %>%   
+  kbl() %>%
+  kable_paper("striped", font_size = 18, full_width = FALSE) %>%
+  row_spec((1:nrow(res_epiestim_group))[c(FALSE, TRUE)],
+           background = pale_green)
+
+```
 
 
 
