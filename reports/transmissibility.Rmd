@@ -705,7 +705,7 @@ stratification. Results include:
 * a graph of the estimates of $R_t$ over time, with associated 95% credibility
   intervals
   
-* a table summarising these results
+* a table summarising these results for the last two weeks
 
 
 ```{r }
@@ -777,9 +777,35 @@ ggplot(res_epiestim, aes(x = end)) +
   theme_custom +
   labs(x = "", y = "Instantaneous reproduction number (Rt)")
 
-
+# Table
+res_epiestim %>%
+  tail(14) %>% 
+  mutate(
+    date = end,
+    mean = round(mean, 2),
+    median = round(median, 2),
+    `95% ci` = sprintf(
+           "[%1.2f ; %1.2f]",
+           lower,
+           upper)) %>%
+  select(-c(start, end, sd, lower, upper)) %>%
+  select(date, everything()) %>%
+  rename(
+    "mean $R$" = mean,
+    "median $R$" = median) %>% 
+  set_names(toupper) %>%   
+  kbl() %>%
+  kable_paper("striped", font_size = 18, full_width = FALSE) %>%
+  row_spec((1:14)[c(FALSE, TRUE)],
+           background = pale_green)
 
 ```
+
+
+### Transmissibility by group
+
+
+
 
 
 
