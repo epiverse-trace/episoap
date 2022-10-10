@@ -693,9 +693,66 @@ res_R_wl_smry %>%
 
 ## Explanations
 
+
+
 ## Results
 
+```{r }
 
+# Function to process a distrcrete object and output `si_discr` argument for
+# EpiEstim::make_config
+
+wrap_si <- function(x) {
+  stopifnot(inherits(x, "distcrete"))
+  max_x <- x$q(.999)
+  x <- si$d(seq_len(max_x))
+  x[1] <- 0
+  x <- x / sum(x)
+  x  
+}
+
+ee_config <- make_config(si_distr = wrap_si(si))
+
+res_epiestim <- dat_i %>%
+  regroup() %>%
+  pull(n) %>%
+  estimate_R(config = ee_config)
+
+# Function to process output from `EpiEstim::estimate_R` and output a tibble
+# with dates, mean R, and associated confidence intervals
+#'
+#' @param x An `estimate_R` object
+#' @param incid (Optional) The incidence2 object on which R values have been
+#'   estimated.
+wrap_res <- function(x, incid = NULL) {
+  stopifnot(inherits(x, "estimate_R"))
+  out <- tibble::tibble(x$R)
+  out <- dplyr::select(out,
+                       start = t_start,
+                       end = t_end,
+                       mean = `Mean(R)`,
+                       sd = `Std(R)`,
+                       median = `Median(R)`,
+                       lower = `Quantile.0.025(R)`,
+                       higher = `Quantile.0.975(R)`)
+  if (!is.null(incid)) {
+    stopifnot(inherits(incid, "incidence2"))
+    dates <- incidence2::get_dates(incid)
+    out$start <- dates[out$start]
+    out$end <- dates[out$end]
+  }
+  
+  class(out) <- c("R_estimate", class(out))
+  out
+}
+
+  
+
+plot(res_epiestim)
+
+
+
+```
 
 
 
