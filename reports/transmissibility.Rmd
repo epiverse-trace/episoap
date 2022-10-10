@@ -810,20 +810,35 @@ res_epiestim_global %>%
 
 ### Transmissibility by group
 
-```{r }
+```{r fig.height = 5 / 3 * n_groups}
 
 # Get results by group, keeping only the last 14 days of data
-dat_i_day_recent <- dat_i_day %>%
-  keep_last(14)
-res_epiestim_group <- dat_i_day_recent %>% 
+res_epiestim_group <- dat_i_day %>% 
   nest(data = c(date_index, n)) %>%
-  mutate(res_epiestim = map(data, ~ wrap_res(estimate_R(.$n, config = ee_config), dat_i_day_recent))) %>%
+  mutate(res_epiestim = map(data, ~ wrap_res(estimate_R(.$n, config = ee_config), dat_i_day))) %>%
   unnest(res_epiestim) %>%
-  select(-data) %>% 
-  filter(end == max(end))
+  select(-data)
+
+# Graph of all values over time
+ggplot(res_epiestim_group, aes(x = end)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = pale_green) +
+  geom_line(aes(y = median), color = dark_green) +
+  geom_hline(yintercept = 1, color = dark_pink) +
+  scale_x_date(breaks = scales::pretty_breaks(n = 8), date_label = "%d %b %Y") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  theme_custom +
+  facet_wrap( ~ .data[[group_var]], ncol = 1) +
+  labs(x = "",
+       y = "Instantaneous reproduction number\\(Rt)",
+       title = "Estimates of Rt (EpiEstim)")
+
+```
+
+```{r }
 
 # Plot of latest estimates
 res_epiestim_group %>%
+  filter(end == max(end)) %>%
   ggplot(aes(y = .data[[group_var]]), fill = custom_grey) +
   geom_point(aes(x = median), color = dark_green) +
   geom_errorbar(aes(xmin = lower, xmax = upper), color = dark_green) +
@@ -832,13 +847,13 @@ res_epiestim_group %>%
   labs(title = "Estimates of Rt (EpiEstim)",
        subtitle = sprintf(
          "based on data from %s - %s",
-         format(max(get_dates(dat_i_day_recent) - 7), "%d %B %Y"),
-         format(max(get_dates(dat_i_day_recent)), "%d %B %Y")),
+         format(max(get_dates(dat_i_day) - 7), "%d %B %Y"),
+         format(max(get_dates(dat_i_day)), "%d %B %Y")),
        y = "",
        x = "Instantaneous Reproduction Number (Rt)")
 
-
 res_epiestim_group %>%
+  filter(end == max(end)) %>% 
   mutate(
     mean = round(mean, 2),
     median = round(median, 2),
@@ -847,19 +862,16 @@ res_epiestim_group %>%
            lower,
            upper)) %>%
   select(-c(sd, lower, upper)) %>%
-#  select(date, everything()) %>%
   rename(
     "mean $R$" = mean,
     "median $R$" = median) %>% 
   set_names(toupper) %>%   
   kbl() %>%
   kable_paper("striped", font_size = 18, full_width = FALSE) %>%
-  row_spec((1:nrow(res_epiestim_group))[c(FALSE, TRUE)],
+  row_spec((1:n_groups)[c(FALSE, TRUE)],
            background = pale_green)
 
 ```
-
-
 
 
 
