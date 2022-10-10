@@ -557,10 +557,11 @@ plot(last_trends,
 last_trends %>%
   growth_rate %>%
   ggplot(aes(y = .data[[group_var]]), fill = custom_grey) +
-  geom_point(aes(x = r)) +
-  geom_errorbar(aes(xmin = r_lower, xmax = r_upper)) +
+  geom_point(aes(x = r), color = dark_green) +
+  geom_errorbar(aes(xmin = r_lower, xmax = r_upper), color = dark_green) +
   theme_custom +
   scale_x_continuous(labels = scales::percent) +
+  geom_vline(xintercept = 0, color = dark_pink) +
   labs(title = "Estimates of daily growth rates",
        subtitle = sprintf(
          "based on data from %s - %s",
@@ -657,6 +658,7 @@ res_R_wl %>%
   geom_pointrange(data = res_R_wl_smry,
                   aes(x = median, xmin = q_0.025, xmax = q_0.975),
                   color = dark_green) +
+  geom_vline(xintercept = 1, color = dark_pink) +
   theme_custom +
   labs(title = "Reproduction numbers estimated from growth rates",
        subtitle = sprintf(
@@ -776,7 +778,9 @@ ggplot(res_epiestim_global, aes(x = end)) +
   scale_x_date(breaks = scales::pretty_breaks(n = 8), date_label = "%d %b %Y") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
   theme_custom +
-  labs(x = "", y = "Instantaneous reproduction number (Rt)")
+  labs(x = "",
+       y = "Instantaneous reproduction number\\(Rt)",
+       title = "Estimates of Rt (EpiEstim)")
 
 # Table
 res_epiestim_global %>%
