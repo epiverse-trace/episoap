@@ -697,6 +697,17 @@ res_R_wl_smry %>%
 
 ## Results
 
+### Global transmissibility
+
+These analyses present results for the global incidence, i.e. without
+stratification. Results include:
+ 
+* a graph of the estimates of $R_t$ over time, with associated 95% credibility
+  intervals
+  
+* a table summarising these results
+
+
 ```{r }
 
 # Function to process a distrcrete object and output `si_discr` argument for
@@ -711,12 +722,6 @@ wrap_si <- function(x) {
   x  
 }
 
-ee_config <- make_config(si_distr = wrap_si(si))
-
-res_epiestim <- dat_i %>%
-  regroup() %>%
-  pull(n) %>%
-  estimate_R(config = ee_config)
 
 # Function to process output from `EpiEstim::estimate_R` and output a tibble
 # with dates, mean R, and associated confidence intervals
@@ -734,10 +739,10 @@ wrap_res <- function(x, incid = NULL) {
                        sd = `Std(R)`,
                        median = `Median(R)`,
                        lower = `Quantile.0.025(R)`,
-                       higher = `Quantile.0.975(R)`)
+                       upper = `Quantile.0.975(R)`)
   if (!is.null(incid)) {
     stopifnot(inherits(incid, "incidence2"))
-    dates <- incidence2::get_dates(incid)
+    dates <- unique(incidence2::get_dates(incid))
     out$start <- dates[out$start]
     out$end <- dates[out$end]
   }
@@ -746,9 +751,31 @@ wrap_res <- function(x, incid = NULL) {
   out
 }
 
-  
+# Daily incidence
+dat_i_day <- dat_raw %>%
+  incidence("date",
+            interval = 1L,
+            counts = count_var,
+            groups = group_var)
 
-plot(res_epiestim)
+# Run EpiEstim
+ee_config <- make_config(si_distr = wrap_si(si))
+
+res_epiestim <- dat_i_day %>% 
+  regroup() %>%
+  pull(n) %>%
+  estimate_R(config = ee_config) %>%
+  wrap_res(dat_i_day)
+
+# Graph of all values over time
+ggplot(res_epiestim, aes(x = end)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = pale_green) +
+  geom_line(aes(y = median), color = dark_green) +
+  geom_hline(yintercept = 1, color = "#B45D75") +
+  scale_x_date(breaks = scales::pretty_breaks(n = 8), date_label = "%d %b %Y") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  theme_custom +
+  labs(x = "", y = "Instantaneous reproduction number (Rt)")
 
 
 
