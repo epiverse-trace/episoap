@@ -713,6 +713,8 @@ stratification. Results include:
 
 ```{r }
 
+library(EpiEstim)
+
 # Function to process a distrcrete object and output `si_discr` argument for
 # EpiEstim::make_config
 
