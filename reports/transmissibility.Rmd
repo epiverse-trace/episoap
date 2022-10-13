@@ -17,9 +17,9 @@ output:
     gallery: true
     self_contained: true
     code_folding: hide
-    css: "../css/style.css"
+    # css: "../css/style.css"
 link-citations: no
-bibliography: "../biblio/biblio.bib"
+# bibliography: "../biblio/biblio.bib"
 ---
 
 
@@ -235,26 +235,7 @@ the file in the script below. Note that incomplete file names can be used: the
 first matching file in `data/` will be used.
 
 ```{r }
-
-path_to_file <- list.files(
-  here::here("data"),
-  recursive = TRUE,
-  full.names = TRUE,
-  pattern = params$data_file)
-if (length(path_to_file) == 0L) {
-  msg <- sprintf(
-    "No file matching `%s` could be found in `data/`",
-    params$data_file)
-  stop(msg)
-}
-if (length(path_to_file) > 1L) {
-  msg <- sprintf(
-    "Several files matching `%s` found in `data/`; using the first one",
-    params$data_file)
-  warning(msg)
-}
-
-dat_raw <- path_to_file %>%
+dat_raw <- "https://github.com/epiverse-trace/data_pipelines/raw/main/data/covid_admissions_uk_2020_10_24.xlsx" %>%
   rio::import() %>%
   tibble() %>%
   mutate(date = as.Date(date)) # date-time -> date
@@ -939,4 +920,3 @@ last_trends_r0 %>%
 
 
 *************************
-# References
