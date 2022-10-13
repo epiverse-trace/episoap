@@ -318,6 +318,7 @@ custom_grey <- "#505B5B"
 green_grey <- "#5E7E80"
 pale_green <- "#b2d1cc"
 dark_green <- "#005C5D"
+dark_pink <- "#B45D75"
 
 theme_custom <- theme(
   plot.background = element_rect(fill = "white"),
@@ -556,10 +557,11 @@ plot(last_trends,
 last_trends %>%
   growth_rate %>%
   ggplot(aes(y = .data[[group_var]]), fill = custom_grey) +
-  geom_point(aes(x = r)) +
-  geom_errorbar(aes(xmin = r_lower, xmax = r_upper)) +
+  geom_point(aes(x = r), color = dark_green) +
+  geom_errorbar(aes(xmin = r_lower, xmax = r_upper), color = dark_green) +
   theme_custom +
   scale_x_continuous(labels = scales::percent) +
+  geom_vline(xintercept = 0, color = dark_pink) +
   labs(title = "Estimates of daily growth rates",
        subtitle = sprintf(
          "based on data from %s - %s",
@@ -656,6 +658,7 @@ res_R_wl %>%
   geom_pointrange(data = res_R_wl_smry,
                   aes(x = median, xmin = q_0.025, xmax = q_0.975),
                   color = dark_green) +
+  geom_vline(xintercept = 1, color = dark_pink) +
   theme_custom +
   labs(title = "Reproduction numbers estimated from growth rates",
        subtitle = sprintf(
@@ -693,9 +696,184 @@ res_R_wl_smry %>%
 
 ## Explanations
 
+
+
 ## Results
 
+### Global transmissibility
 
+These analyses present results for the global incidence, i.e. without
+stratification. Results include:
+ 
+* a graph of the estimates of $R_t$ over time, with associated 95% credibility
+  intervals
+  
+* a table summarising these results for the last two weeks
+
+
+```{r }
+
+library(EpiEstim)
+
+# Function to process a distrcrete object and output `si_discr` argument for
+# EpiEstim::make_config
+
+wrap_si <- function(x) {
+  stopifnot(inherits(x, "distcrete"))
+  max_x <- x$q(.999)
+  x <- si$d(seq_len(max_x))
+  x[1] <- 0
+  x <- x / sum(x)
+  x  
+}
+
+
+# Function to process output from `EpiEstim::estimate_R` and output a tibble
+# with dates, mean R, and associated confidence intervals
+#'
+#' @param x An `estimate_R` object
+#' @param incid (Optional) The incidence2 object on which R values have been
+#'   estimated.
+wrap_res <- function(x, incid = NULL) {
+  stopifnot(inherits(x, "estimate_R"))
+  out <- tibble::tibble(x$R)
+  out <- dplyr::select(out,
+                       start = t_start,
+                       end = t_end,
+                       mean = `Mean(R)`,
+                       sd = `Std(R)`,
+                       median = `Median(R)`,
+                       lower = `Quantile.0.025(R)`,
+                       upper = `Quantile.0.975(R)`)
+  if (!is.null(incid)) {
+    stopifnot(inherits(incid, "incidence2"))
+    dates <- unique(incidence2::get_dates(incid))
+    out$start <- dates[out$start]
+    out$end <- dates[out$end]
+  }
+  
+  class(out) <- c("R_estimate", class(out))
+  out
+}
+
+# Daily incidence
+dat_i_day <- dat_raw %>%
+  incidence("date",
+            interval = 1L,
+            counts = count_var,
+            groups = group_var)
+
+# Run EpiEstim
+ee_config <- make_config(si_distr = wrap_si(si))
+
+res_epiestim_global <- dat_i_day %>% 
+  regroup() %>%
+  pull(n) %>%
+  estimate_R(config = ee_config) %>%
+  wrap_res(dat_i_day)
+
+# Graph of all values over time
+ggplot(res_epiestim_global, aes(x = end)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = pale_green) +
+  geom_line(aes(y = median), color = dark_green) +
+  geom_hline(yintercept = 1, color = dark_pink) +
+  scale_x_date(breaks = scales::pretty_breaks(n = 8), date_label = "%d %b %Y") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  theme_custom +
+  labs(x = "",
+       y = "Instantaneous reproduction number\\(Rt)",
+       title = "Estimates of Rt (EpiEstim)")
+
+# Table
+res_epiestim_global %>%
+  tail(14) %>% 
+  mutate(
+    date = end,
+    mean = round(mean, 2),
+    median = round(median, 2),
+    `95% ci` = sprintf(
+           "[%1.2f ; %1.2f]",
+           lower,
+           upper)) %>%
+  select(-c(start, end, sd, lower, upper)) %>%
+  select(date, everything()) %>%
+  rename(
+    "mean $R$" = mean,
+    "median $R$" = median) %>% 
+  set_names(toupper) %>%   
+  kbl() %>%
+  kable_paper("striped", font_size = 18, full_width = FALSE) %>%
+  row_spec((1:14)[c(FALSE, TRUE)],
+           background = pale_green)
+
+```
+
+
+
+### Transmissibility by group
+
+```{r fig.height = 5 / 3 * n_groups}
+
+# Get results by group, keeping only the last 14 days of data
+res_epiestim_group <- dat_i_day %>% 
+  nest(data = c(date_index, n)) %>%
+  mutate(res_epiestim = map(data, ~ wrap_res(estimate_R(.$n, config = ee_config), dat_i_day))) %>%
+  unnest(res_epiestim) %>%
+  select(-data)
+
+# Graph of all values over time
+ggplot(res_epiestim_group, aes(x = end)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = pale_green) +
+  geom_line(aes(y = median), color = dark_green) +
+  geom_hline(yintercept = 1, color = dark_pink) +
+  scale_x_date(breaks = scales::pretty_breaks(n = 8), date_label = "%d %b %Y") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  theme_custom +
+  facet_wrap( ~ .data[[group_var]], ncol = 1) +
+  labs(x = "",
+       y = "Instantaneous reproduction number\\(Rt)",
+       title = "Estimates of Rt (EpiEstim)")
+
+```
+
+```{r }
+
+# Plot of latest estimates
+res_epiestim_group %>%
+  filter(end == max(end)) %>%
+  ggplot(aes(y = .data[[group_var]]), fill = custom_grey) +
+  geom_point(aes(x = median), color = dark_green) +
+  geom_errorbar(aes(xmin = lower, xmax = upper), color = dark_green) +
+  geom_vline(xintercept = 1, color = dark_pink) +
+  theme_custom +
+  labs(title = "Estimates of Rt (EpiEstim)",
+       subtitle = sprintf(
+         "based on data from %s - %s",
+         format(max(get_dates(dat_i_day) - 7), "%d %B %Y"),
+         format(max(get_dates(dat_i_day)), "%d %B %Y")),
+       y = "",
+       x = "Instantaneous Reproduction Number (Rt)")
+
+res_epiestim_group %>%
+  filter(end == max(end)) %>% 
+  mutate(
+    mean = round(mean, 2),
+    median = round(median, 2),
+    `95% ci` = sprintf(
+           "[%1.2f ; %1.2f]",
+           lower,
+           upper)) %>%
+  select(-c(sd, lower, upper)) %>%
+  rename(
+    "mean $R$" = mean,
+    "median $R$" = median) %>% 
+  set_names(toupper) %>%   
+  kbl() %>%
+  kable_paper("striped", font_size = 18, full_width = FALSE) %>%
+  row_spec((1:n_groups)[c(FALSE, TRUE)],
+           background = pale_green)
+
+```
 
 
 
