@@ -18,7 +18,9 @@ shinyApp(
             #                downloadButton("report", "Download report")
         ),
         dashboardBody(
-            htmlOutput("report")
+            shinycssloaders::withSpinner(
+              htmlOutput("report")
+            )
         )
     ),
     server = function(input, output) {
