@@ -2,7 +2,7 @@ library(shinydashboard)
 
 shinyApp(
     ui = dashboardPage(
-        dashboardHeader(title = "Automated reports for transmissibility estimation"),
+        dashboardHeader(title = "Automated reports"),
         dashboardSidebar(
             fileInput("inputData", "Data file (ignored for now)"),
             radioButtons("transmissibilityPkg", "Reproduction number estimation", c("EpiEstim", "EpiNow2", "R0")),
