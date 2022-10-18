@@ -654,7 +654,7 @@ res_epiestim_group %>%
 ```{r}
 library(R0)
 
-mGT <- generation.time("gamma", c(3, 1.5))
+mGT <- generation.time("empirical", si_x)
 
 # Helper function to get R0 outputs in a tidy format, compatible with pipelines
 r0_quantiles <- function(Rt) {
