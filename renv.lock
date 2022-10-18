@@ -1302,6 +1302,14 @@
         "zip"
       ]
     },
+    "packrat": {
+      "Package": "packrat",
+      "Version": "0.8.1",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "d84055adcb6bb1f4f0ce8c5f235bc328",
+      "Requirements": []
+    },
     "pillar": {
       "Package": "pillar",
       "Version": "1.8.1",
@@ -1610,6 +1618,22 @@
       "Repository": "RSPM",
       "Hash": "1de7ab598047a87bba48434ba35d497d",
       "Requirements": []
+    },
+    "rsconnect": {
+      "Package": "rsconnect",
+      "Version": "0.8.27",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "114103fbb50af041e93921ee67db8fa0",
+      "Requirements": [
+        "curl",
+        "digest",
+        "jsonlite",
+        "openssl",
+        "packrat",
+        "rstudioapi",
+        "yaml"
+      ]
     },
     "rstudioapi": {
       "Package": "rstudioapi",
