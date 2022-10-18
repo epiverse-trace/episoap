@@ -614,6 +614,21 @@
         "rlang"
       ]
     },
+    "epiparameter": {
+      "Package": "epiparameter",
+      "Version": "0.0.0.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "epiverse-trace",
+      "RemoteRepo": "epiparameter",
+      "RemoteRef": "main",
+      "RemoteSha": "97011fe44c552d291df391d24a4a941e657000dc",
+      "Hash": "0b050b10190e42fdd54ed564f08a15ea",
+      "Requirements": [
+        "dplyr"
+      ]
+    },
     "epitrix": {
       "Package": "epitrix",
       "Version": "0.2.2",
