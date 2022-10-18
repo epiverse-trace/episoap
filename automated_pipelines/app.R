@@ -13,7 +13,9 @@ shinyApp(
             radioButtons("transmissibilityPkg", "R package" , c("EpiEstim", "EpiNow2", "i2extras", "R0")),
             sliderInput("r_estim_window", "Estimation window", min = 7L, max = 35L, value = 21L, ticks = FALSE, step = 1L, post = " days"),
             h4("Final size estimation"),
-            radioButtons("contactdataPkg", "Contact data", c("conmat", "contactdata", "socialmixr"))
+            radioButtons("contactdataPkg", "Contact data", c("conmat", "contactdata", "socialmixr")),
+            hr(),
+            actionButton("renderReport", "Render report", icon = icon("play"))
         ),
         dashboardBody(
             shinycssloaders::withSpinner(
@@ -22,15 +24,20 @@ shinyApp(
         )
     ),
     server = function(input, output) {
+
+        parms <- eventReactive(
+            input$renderReport,
+            list(
+                epicurve_unit = input$epicurve_unit,
+                incomplete_days = input$incomplete_days,
+                r_estim_window = input$r_estim_window
+            )
+        )
         output$report <- renderUI({
             includeHTML(
                 rmarkdown::render(
                     "../reports/transmissibility.Rmd",
-                    params = list(
-                        epicurve_unit = input$epicurve_unit,
-                        incomplete_days = input$incomplete_days,
-                        r_estim_window = input$r_estim_window
-                    )
+                    params = parms()
                 )
             )
         })
