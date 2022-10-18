@@ -5,17 +5,17 @@ date: "`r Sys.Date()`"
 output:
   rmarkdown::html_document
 link-citations: no
+params:
+  epicurve_unit: "week"
+  incomplete_days: 7
+  r_estim_window: 21
+  si_mean: 4.2
+  si_sd: 4.9
 # bibliography: "../biblio/biblio.bib"
 ---
 
 
 ```{r settings, echo = FALSE}
-
-# Note: use this to get dynamically the css; sadly not compatible with having an
-# anchor (.here) within the practical's folder
-# css: !expr here::here('css', 'style.css')
-
-# knitr options
 knitr::opts_chunk$set(
   fig.width = 9,
   fig.height = 5,
@@ -23,181 +23,12 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   message = FALSE,
   warning = FALSE,
-  out.width = "100%"
+  out.width = "100%",
+  echo = FALSE
 )
-
 ```
 
-
-
-********************************
-# Preambule
-
-## Outline of the report
-
-### Estimating transmissibility from stratified population
-
-This report provides a template for estimating transmissibility (i.e., how fast
-a disease spreads) from a stratified population. It performs basic descriptive
-analyses, and uses different approaches for estimating transmissibility. The key
-steps of the report include:
-
-* importing the data from an external file
-* identifying key variables in the data
-* producing global and stratified epidemic curves
-* estimating the growth rate and doubling time from epidemic curves
-* estimating the instantaneous reproduction number from epidemic curvse
-
-### The data
-
-To illustrate the different analyses, we use real data reporting daily numbers
-of COVID-19 hospitalisations in England as of the 24 October 2020, broken down
-to the hospital and National Health Service (NHS) region level. The data is
-available online from the NHS England's
-[website](https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/).
-The dataset analysed here is a simplified version, providing incidence of
-hospital admissions by NHS trust, stored in the file
-[covid_admissions_uk_2020_10_24.xlsx](https://github.com/epiverse-trace/data_pipelines/raw/main/data/covid_admissions_uk_2020_10_24.xlsx).
-
-
-### Target audience
-
-The analyses presented here are largely automated, and should be of use to any
-outbreak analyst. A basic R literacy will be required to adapt the report to
-other datasets, most importantly for identifying the variables to be used for
-dates of events and stratification. The data used in this report are daily case
-incidence. For raw linelists, alternative commands will be supplied in the
-section on building epicurves.
-
-
-
-
-
-## Parameters of this report
-
-Parameters are variables which can be specified when compiling the document
-using `rmarkdown::render(..., params = list(a_parameter = some_value))`. Here we
-list the parameters and indicate their default values in italic font:
-
-* __data_file__: (_"covid_admissions_uk_2020_10_24.xlsx"_) a character string
-  matching the data file inside the _data/_ folder, to be used for the analysis;
-  regular expression are used for matching; if there are several matches, the
-  first one is used
-* __epicurve_unit__: (_week_) the time period over which to calculate the
-  case incidence for epidemic curves; numbers will be interpreted as days
-* __incomplete_days__: (_7_) the number of recent days for which data may be
-  incomplete (_e.g._ due to reporting delays)
-* __r_estim_window__: (_21_) the number of days of data to be used to estimate the
-  recent growth rate
-
-For instance, to generate a report with epicurves showing daily incidence, and
-with no incomplete data, one can use:
-
-```{r eval = FALSE}
-
-rmarkdown::render('transmissibility.Rmd',
-                  params = list(epicurve_unit = 1,
-                                incomplete_days = 0))
-
-```
-
-
-
-
-## Packages used in this report
-
-### tidyverse
-
-The [tidyverse](https://www.tidyverse.org/) is a collection of **R** packages
-designed for data science. Developed with high standards of coding practices and
-software development, these packages form a consistent ecosystem to handle and
-visualise data. Here, we use the following packages:
-
-* [*dplyr*](https://dplyr.tidyverse.org/) for handling data, making new
-  variables, building summaries, number-crunching
-  
-* [*tidyr*](https://tidyr.tidyverse.org/) to re-arrange tidy/data
-
-* [*ggplot2*](https://ggplot2.tidyverse.org/) to visualise data
-
-* [*magrittr*](https://magrittr.tidyverse.org/) for the piping operator (`%>%`)
-
-
-Most of these functionalities are summarised in handy cheatsheets. We provide
-links to the most relevant ones below:
-
-* [basics of R](http://github.com/rstudio/cheatsheets/raw/master/base-r.pdf)
-  (not tidyverse, but they remain very useful)
-
-* [data transformation using *dplyr*](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf) 
-
-* [data visualisation using *ggplot2*](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf) 
-
-
-
-### Outbreak analytics packages
-
-We use several packages specific to outbreak analytics, including:
-
-* [*linelist*](https://epiverse-trace.github.io/linelist/) to identify key
-  epidemiological variables in the data
-
-* [*incidence2*](https://repidemicsconsortium.org/incidence2) to build and
-  handle epidemic curves
-  
-* [*i2extras*](https://repidemicsconsortium.org/i2extras) for estimating growth
-  rates using different GLMs from *incidence2* objects
-  
-* [*EpiEstim*](https://github.com/mrc-ide/EpiEstim) and
-  [*EpiNow2*](https://epiforecasts.io/EpiNow2/) for estimating the instantaneous
-  reproduction number
-
-For some of these packages, we recommend using the *github* (development)
-versions, which can be installed using:
-   
-```{r install, eval = FALSE}
-
-## instructions for github packages (latest versions)
-remotes::install_github("reconhub/i2extras")
-
-```
-
-### Other packages
-
-Other packages we use include:
-
-* [*pacman*](https://github.com/trinker/pacman) for loading and installing packages
-
-* [*rmarkdown*](https://rmarkdown.rstudio.com/) for automated report generation
-
-* [*rio*](https://cran.r-project.org/web/packages/rio/index.html) to read
-  `.xlsx` files in
-
-* [*here*](https://here.r-lib.org/) for locating files
-
-Cheatsheets and other resources:
-
-* the *rmarkdown* [cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf)
-
-* the *knitr* [website](https://yihui.org/knitr/) documenting many options used
-  in *rmarkdown*'s settings and code chunks
-
-
-
-
-********************************
-# Data preparation
-
-## Loading libraries
-
-The following code loads required packages; if you are using _Rstudio_ and are
-missing some of the packages, you will be prompted for installing them
-automatically. If you are using this report in a
-[_reportfactory_](https://www.reconverse.org/reportfactory/), you can run
-`reportfactory::install_deps()` to install all missing dependencies.
-
-```{r }
-
+```{r}
 library("tidyverse")
 library("here")
 library("rio")
@@ -210,77 +41,9 @@ library("incidence2")
 library("i2extras")
 library("distcrete")
 library("epitrix")
-
 ```
 
-##  Importing the data
-
-The data file is named "*covid_admissions_uk_2020_10_24.xlsx*" and is located in
-the *data/* folder. To adapt this report to another dataset, change the name of
-the file in the script below. Note that incomplete file names can be used: the
-first matching file in `data/` will be used.
-
-```{r }
-dat_raw <- "https://github.com/epiverse-trace/data_pipelines/raw/main/data/covid_admissions_uk_2020_10_24.xlsx" %>%
-  rio::import() %>%
-  tibble() %>%
-  mutate(date = as.Date(date)) # date-time -> date
-dat_raw
-
-```
-
-Once imported into __R__, the dataset called `dat` includes:
-
-* `date`: the date of admission
-* `region`: the NHS region
-* `org_name`: the full name of the NHS trust
-* `org_code`: a short code for the NHS trust
-* `n`: number of new, confirmed COVID-19 cases admitted, including inpatients
-  who tested positive on that day, and new admissions with a positive test
-
-
-
-## Identifying key data
-
-__Note__: this is not used for now, as there is no integration of linelist with
-other existing tools.
-
-Here we identify the key data needed in the analyses, including:
-
-* the dates to be used, here, dates of hospital admission
-* the strata of the population, here, coarse geographic locations (NHS regions)
-* the case counts; this would not be needed if the data was a raw linelist, and
-  not already aggregated counts
-
-```{r }
-
-date_var <- "date"
-group_var <- "region"
-count_var <- "n"
-
-dat <- dat_raw %>%
-  make_linelist(date_admission = date_var,
-                location = group_var,
-                counts = count_var,
-                allow_extra = TRUE)
-dat
-
-```
-
-
-
-
-
-********************************
-# Descriptive analyses
-
-## Custom theme and colors
-
-This section defines a customized theme and colors used in the graphs and
-tables.
-
-```{r }
-
+```{r}
 custom_grey <- "#505B5B"
 green_grey <- "#5E7E80"
 pale_green <- "#b2d1cc"
@@ -298,15 +61,35 @@ theme_custom <- theme(
   axis.ticks = element_line(colour = custom_grey)
   #aspect.ratio = 9 / 16
 )
-
+theme_set(theme_custom)
 ```
+
+```{r}
+dat_raw <- "https://github.com/epiverse-trace/data_pipelines/raw/main/data/covid_admissions_uk_2020_10_24.xlsx" %>%
+  rio::import() %>%
+  tibble() %>%
+  mutate(date = as.Date(date)) # date-time -> date
+```
+
+```{r}
+date_var <- "date"
+group_var <- "region"
+count_var <- "n"
+
+dat <- dat_raw %>%
+  make_linelist(date_admission = date_var,
+                location = group_var,
+                counts = count_var,
+                allow_extra = TRUE)
+```
+
+# Descriptive analyses
 
 ## Epidemic curves
 
 This section creates epidemic curves ("_epicurves_"), with or without stratification.
 
-```{r }
-
+```{r}
 # convert daily incidence into weekly incidence using incidence2
 dat_i <- dat_raw %>%
   incidence("date",
@@ -341,12 +124,9 @@ dat_i %>%
   labs(title = "Incidence of cases over time") +
   theme_custom
 }
-
-
 ```
 
 ```{r fig.height = 5 / 3 * n_groups}
-
 dat_i %>%
   facet_plot(angle = 45,
              date_format = "%d %b %y",
@@ -357,17 +137,13 @@ dat_i %>%
              nrow = n_groups,
              show_cases = small_counts) +
   theme_custom
-
 ```
-
-
 
 ## Numbers of cases
 
 This graph shows the total number of cases per group:
 
 ```{r }
-
 total_cases <- dat %>%
   select_tags(location, counts) %>%
   group_by(location) %>%
@@ -389,11 +165,7 @@ total_cases %>%
   kable_paper("striped", font_size = 18, full_width = FALSE) %>%
   row_spec((1:nrow(total_cases))[c(FALSE, TRUE)],
            background = pale_green)
-
 ```
-
-
-
 
 *************************
 # Serial interval distribution
@@ -406,17 +178,13 @@ one transmission pair to another, we will characterise this variation using a
 probability distribution. This distribution is a key input to methods use for
 estimating the reproduction number ($R$). 
 
-Here, we assume that the mean and standard deviation of the $si $is known, and
+Here, we assume that the mean and standard deviation of the $si$ is known, and
 provided as an input by the user. We model the $si$ distribution as a
-discretized Gamma, using the *distcrete package*. The package *epitrix* is used
-to translate the mean and standard deviations into _shape_ and _scale_ (the
-default parametrisation of Gamma distributions in R).
-
+discretized Gamma. 
 
 ## Results
 
-```{r }
-
+```{r}
 si_mean <- params$si_mean
 si_sd <- params$si_sd
 si_cv <- si_sd / si_mean
@@ -431,21 +199,14 @@ si_x <- seq(1L, to = si$q(.999), by = 1L)
 ggplot(data.frame(delay = si_x, prob = si$d(si_x)),
        aes(x = delay, y = prob)) +
   geom_col(fill = green_grey) +
-  theme_custom +
   labs(title = "Serial interval distribution",
        x = "Days from primary to secondary onset",
        y = "Probability",
        subtitle = sprintf(
          "Gamma distribution | mean: %.1f days ; sd: %.1f days",
          si_mean, si_sd))
-
 ```
 
-
-
-
-
-*****************************
 # Growth rates and doubling/halving times
 
 ## Explanations
@@ -469,7 +230,6 @@ incidence to double (respectively, halve).
 
 For more information on growth rates, see this [blog post by Pr Julia Gog](https://plus.maths.org/content/epidemic-growth-rate).
 
-
 ## Results
 
 This section contains:
@@ -482,14 +242,10 @@ intervals (CI)
 * a table summarizing estimtes of $r$ and the associated period (doubling or
   halving time); all results show point estimates and their 95% CI
 
-
-
 ```{r fig.height = 5 / 3 * n_groups}
-
 last_date <- dat %>%
   pull(date) %>%
   max()
-last_date
 
 # version using keep_first and keep_last from i2extras
 days_to_keep <- params$incomplete_days + params$r_estim_window
@@ -504,7 +260,6 @@ last_trends <- i_recent %>%
   fit_curve(model = "poisson")
 # version with negbin model needs more iterations to converge
 # fit_curve(model = "negbin", control = glm.control(maxit = 1e3))
-last_trends
 plot(last_trends,
      angle = 45,
      date_format = "%d %b %y",
@@ -513,14 +268,10 @@ plot(last_trends,
      alpha = .8,
      n_breaks = 12,
      nrow = n_groups,
-     show_cases = small_counts) +
-  theme_custom
-
+     show_cases = small_counts)
 ```
 
-
-```{r }
-
+```{r}
 last_trends %>%
   growth_rate %>%
   ggplot(aes(y = .data[[group_var]]), fill = custom_grey) +
@@ -563,13 +314,8 @@ last_trends %>%
   kable_paper("striped", font_size = 18, full_width = FALSE) %>%
   row_spec((1:nrow(total_cases))[c(FALSE, TRUE)],
            background = pale_green)
-
 ```
 
-
-
-
-*************************
 # Estimating $R$ from the growth rates
 
 ## Explanations
@@ -592,7 +338,6 @@ Here, we use the procedure implemented in `epitrix` to derive samples of $R$
 values compatible with the values of $r$ estimated in the previous section, and
 with the provided serial interval.
 
-
 ## Results
 
 This section contains:
@@ -606,7 +351,6 @@ This section contains:
 * a table summarizing the estimated distributions of $R$ values 
 
 ```{r }
-
 res_R_wl <- last_trends %>%
   mutate(R = map(model, epitrix::lm2R0_sample, w = si, 500)) %>%
   dplyr::select({{group_var}}, R) %>%
@@ -652,17 +396,11 @@ res_R_wl_smry %>%
   kable_paper("striped", font_size = 18, full_width = FALSE) %>%
   row_spec((1:nrow(res_R_wl_smry))[c(FALSE, TRUE)],
            background = pale_green)
-
 ```
 
-
-
-
-*************************
 # Estimating $R_t$ using _EpiEstim_ 
 
 ## Explanations
-
 
 
 ## Results
@@ -679,7 +417,6 @@ stratification. Results include:
 
 
 ```{r }
-
 library(EpiEstim)
 
 # Function to process a distrcrete object and output `si_discr` argument for
@@ -772,7 +509,6 @@ res_epiestim_global %>%
   kable_paper("striped", font_size = 18, full_width = FALSE) %>%
   row_spec((1:14)[c(FALSE, TRUE)],
            background = pale_green)
-
 ```
 
 
@@ -780,7 +516,6 @@ res_epiestim_global %>%
 ### Transmissibility by group
 
 ```{r fig.height = 5 / 3 * n_groups}
-
 # Get results by group, keeping only the last 14 days of data
 res_epiestim_group <- dat_i_day %>% 
   nest(data = c(date_index, n)) %>%
@@ -800,11 +535,9 @@ ggplot(res_epiestim_group, aes(x = end)) +
   labs(x = "",
        y = "Instantaneous reproduction number\\(Rt)",
        title = "Estimates of Rt (EpiEstim)")
-
 ```
 
 ```{r }
-
 # Plot of latest estimates
 res_epiestim_group %>%
   filter(end == max(end)) %>%
@@ -839,7 +572,6 @@ res_epiestim_group %>%
   kable_paper("striped", font_size = 18, full_width = FALSE) %>%
   row_spec((1:n_groups)[c(FALSE, TRUE)],
            background = pale_green)
-
 ```
 
 
