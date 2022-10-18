@@ -46,15 +46,12 @@ shinyApp(
                 epicurve_unit = input$epicurve_unit,
                 incomplete_days = input$incomplete_days,
                 r_estim_window = input$r_estim_window,
-<<<<<<< HEAD
-                local = FALSE
-=======
+                local = FALSE,
                 use_epiparameter = identical(input$use_epiparameter, "from epiparameter"),
                 si_dist = input$si_dist,
                 si_mean = input$si_mean,
                 si_sd = input$si_sd,
                 epiparameter_pathogen = input$epiparameter_pathogen
->>>>>>> 28b6a78 (Add option in shiny app to use epiparameter)
             )
         )
 

@@ -12,6 +12,9 @@ params:
   r_estim_window: 21
   si_mean: 4.2
   si_sd: 4.9
+  si_dist: "gamma"
+  use_epiparameter: true
+  epiparameter_pathogen: "SARS_CoV_2_wildtype"
   local: true
   data_file: "covid_admissions_uk_2020_10_24.xlsx"
 # bibliography: "../biblio/biblio.bib"
@@ -244,18 +247,32 @@ discretized Gamma.
 
 ## Results
 
-```{r}
+```{r, eval = params$use_epiparameter}
+si_epiparameter <- epiparameter::epidist(params$epiparameter_pathogen, "serial_interval")
+si_params <- si_epiparameter$param
+si_dist <- si_epiparameter$dist
+si_mean <- si_params[[1]]
+si_sd   <- si_params[[2]]
+```
+
+```{r, eval = !params$use_epiparameter}
 si_mean <- params$si_mean
 si_sd <- params$si_sd
+si_dist <- params$si_dist
 si_cv <- si_sd / si_mean
 si_params <- epitrix::gamma_mucv2shapescale(mu = si_mean, cv = si_cv)
-si <- distcrete("gamma",
+```
+
+```{r}
+si <- distcrete(si_dist,
                 interval = 1,
                 w = 0,
-                shape = si_params$shape,
-                scale = si_params$scale)
+                si_params[[1]],
+                si_params[[2]])
 si_x <- seq(1L, to = si$q(.999), by = 1L)
+```
 
+```{r}
 ggplot(data.frame(delay = si_x, prob = si$d(si_x)),
        aes(x = delay, y = prob)) +
   geom_col(fill = green_grey) +
@@ -263,8 +280,8 @@ ggplot(data.frame(delay = si_x, prob = si$d(si_x)),
        x = "Days from primary to secondary onset",
        y = "Probability",
        subtitle = sprintf(
-         "Gamma distribution | mean: %.1f days ; sd: %.1f days",
-         si_mean, si_sd))
+         "%s distribution | mean: %.1f days ; sd: %.1f days",
+         si_dist, si_mean, si_sd))
 ```
 
 # Growth rate ($r$) and reproduction number ($R$) {.tabset}
