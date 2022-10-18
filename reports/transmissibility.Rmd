@@ -68,6 +68,7 @@ library("incidence2")
 library("i2extras")
 library("distcrete")
 library("epitrix")
+library("epiparameter")
 ```
 
 ```{r}
