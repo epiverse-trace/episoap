@@ -25,13 +25,6 @@ shinyApp(
     ),
     server = function(input, output) {
         output$report <- renderUI({
-            params <- list(
-                epicurve_unit = "week",
-                incomplete_days = 7L,
-                r_estim_window = 21L,
-                si_mean = 4.2,
-                si_sd = 4.9
-            )
             includeHTML(
                 rmarkdown::render("../reports/transmissibility.Rmd")
             )
