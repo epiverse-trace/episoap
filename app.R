@@ -36,7 +36,7 @@ shinyApp(
         output$report <- renderUI({
             includeHTML(
                 rmarkdown::render(
-                    "../reports/transmissibility.Rmd",
+                    "./reports/transmissibility.Rmd",
                     params = parms()
                 )
             )
