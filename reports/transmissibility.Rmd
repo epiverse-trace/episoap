@@ -29,11 +29,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Preambule
+# Outline of the report
 
-## Outline of the report
-
-### Estimating transmissibility from stratified population
+## Estimating transmissibility from stratified population
 
 This report provides a template for estimating transmissibility (i.e., how fast
 a disease spreads) from a stratified population. It performs basic descriptive
@@ -45,27 +43,6 @@ steps of the report include:
 * producing global and stratified epidemic curves
 * estimating the growth rate and doubling time from epidemic curves
 * estimating the instantaneous reproduction number from epidemic curvse
-
-### The data
-
-To illustrate the different analyses, we use real data reporting daily numbers
-of COVID-19 hospitalisations in England as of the 24 October 2020, broken down
-to the hospital and National Health Service (NHS) region level. The data is
-available online from the NHS England's
-[website](https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/).
-The dataset analysed here is a simplified version, providing incidence of
-hospital admissions by NHS trust, stored in the file
-[covid_admissions_uk_2020_10_24.xlsx](https://github.com/epiverse-trace/data_pipelines/raw/main/data/covid_admissions_uk_2020_10_24.xlsx).
-
-
-### Target audience
-
-The analyses presented here are largely automated, and should be of use to any
-outbreak analyst. A basic R literacy will be required to adapt the report to
-other datasets, most importantly for identifying the variables to be used for
-dates of events and stratification. The data used in this report are daily case
-incidence. For raw linelists, alternative commands will be supplied in the
-section on building epicurves.
 
 # Data preparation
 
