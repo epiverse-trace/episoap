@@ -107,7 +107,6 @@ dat_i %>%
   plot(fill = group_var, col_pal = muted, color = "white",
        alpha = 1, angle = 45, legend = "bottom",
        show_cases = small_counts) +
-  theme_custom +
   guides(fill = guide_legend(title=NULL)) +
   labs(title = "Incidence of cases over time")
 } else {
@@ -117,8 +116,7 @@ dat_i %>%
        fill = green_grey,
        alpha = 1,
        show_cases = small_counts) +
-  labs(title = "Incidence of cases over time") +
-  theme_custom
+  labs(title = "Incidence of cases over time")
 }
 ```
 
@@ -131,8 +129,7 @@ dat_i %>%
              alpha = 1,
              n_breaks = 6,
              nrow = n_groups,
-             show_cases = small_counts) +
-  theme_custom
+             show_cases = small_counts)
 ```
 
 ## Numbers of cases
@@ -148,7 +145,6 @@ total_cases <- dat %>%
 
 ggplot(total_cases, aes(x = cases, y = location)) +
   geom_col(fill = green_grey) +
-  theme_custom + 
   labs(x = "Total number of cases", y = NULL)
 
 total_cases %>%
@@ -273,7 +269,6 @@ last_trends %>%
   ggplot(aes(y = .data[[group_var]]), fill = custom_grey) +
   geom_point(aes(x = r), color = dark_green) +
   geom_errorbar(aes(xmin = r_lower, xmax = r_upper), color = dark_green) +
-  theme_custom +
   scale_x_continuous(labels = scales::percent) +
   geom_vline(xintercept = 0, color = dark_pink) +
   labs(title = "Estimates of daily growth rates",
@@ -366,7 +361,6 @@ res_R_wl %>%
                   aes(x = median, xmin = q_0.025, xmax = q_0.975),
                   color = dark_green) +
   geom_vline(xintercept = 1, color = dark_pink) +
-  theme_custom +
   labs(title = "Reproduction numbers estimated from growth rates",
        subtitle = sprintf(
          "based on data from %s - %s",
@@ -479,7 +473,6 @@ ggplot(res_epiestim_global, aes(x = end)) +
   geom_hline(yintercept = 1, color = dark_pink) +
   scale_x_date(breaks = scales::pretty_breaks(n = 8), date_label = "%d %b %Y") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
-  theme_custom +
   labs(x = "",
        y = "Instantaneous reproduction number\\(Rt)",
        title = "Estimates of Rt (EpiEstim)")
@@ -526,7 +519,6 @@ ggplot(res_epiestim_group, aes(x = end)) +
   geom_hline(yintercept = 1, color = dark_pink) +
   scale_x_date(breaks = scales::pretty_breaks(n = 8), date_label = "%d %b %Y") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
-  theme_custom +
   facet_wrap( ~ .data[[group_var]], ncol = 1) +
   labs(x = "",
        y = "Instantaneous reproduction number\\(Rt)",
@@ -541,7 +533,6 @@ res_epiestim_group %>%
   geom_point(aes(x = median), color = dark_green) +
   geom_errorbar(aes(xmin = lower, xmax = upper), color = dark_green) +
   geom_vline(xintercept = 1, color = dark_pink) +
-  theme_custom +
   labs(title = "Estimates of Rt (EpiEstim)",
        subtitle = sprintf(
          "based on data from %s - %s",
@@ -617,8 +608,7 @@ last_trends_r0 %>%
          "based on data from %s - %s",
          format(last_date - (params$incomplete_days + params$r_estim_window), "%d %B %Y"),
          format(last_date - params$incomplete_days, "%d %B %Y")),
-       y = "Reff") +
-    theme_custom
+       y = "Reff")
 ```
 
 
