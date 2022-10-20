@@ -3,7 +3,8 @@ title: "Estimating transmissibility with population stratification"
 author: Thibaut Jombart, Hugo Gruson
 date: "`r Sys.Date()`"
 output:
-  rmarkdown::html_document
+  rmarkdown::html_document:
+    code_folding: "hide"
 link-citations: no
 params:
   epicurve_unit: "week"
@@ -11,9 +12,10 @@ params:
   r_estim_window: 21
   si_mean: 4.2
   si_sd: 4.9
+  local: true
+  data_file: "covid_admissions_uk_2020_10_24.xlsx"
 # bibliography: "../biblio/biblio.bib"
 ---
-
 
 ```{r settings, echo = FALSE}
 knitr::opts_chunk$set(
@@ -23,10 +25,58 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   message = FALSE,
   warning = FALSE,
-  out.width = "100%",
-  echo = FALSE
+  out.width = "100%"
 )
 ```
+
+# Preambule
+
+## Outline of the report
+
+### Estimating transmissibility from stratified population
+
+This report provides a template for estimating transmissibility (i.e., how fast
+a disease spreads) from a stratified population. It performs basic descriptive
+analyses, and uses different approaches for estimating transmissibility. The key
+steps of the report include:
+
+* importing the data from an external file
+* identifying key variables in the data
+* producing global and stratified epidemic curves
+* estimating the growth rate and doubling time from epidemic curves
+* estimating the instantaneous reproduction number from epidemic curvse
+
+### The data
+
+To illustrate the different analyses, we use real data reporting daily numbers
+of COVID-19 hospitalisations in England as of the 24 October 2020, broken down
+to the hospital and National Health Service (NHS) region level. The data is
+available online from the NHS England's
+[website](https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/).
+The dataset analysed here is a simplified version, providing incidence of
+hospital admissions by NHS trust, stored in the file
+[covid_admissions_uk_2020_10_24.xlsx](https://github.com/epiverse-trace/data_pipelines/raw/main/data/covid_admissions_uk_2020_10_24.xlsx).
+
+
+### Target audience
+
+The analyses presented here are largely automated, and should be of use to any
+outbreak analyst. A basic R literacy will be required to adapt the report to
+other datasets, most importantly for identifying the variables to be used for
+dates of events and stratification. The data used in this report are daily case
+incidence. For raw linelists, alternative commands will be supplied in the
+section on building epicurves.
+
+# Data preparation
+
+## Loading libraries
+
+The following code loads required packages; if you are using _Rstudio_ and are
+missing some of the packages, you will be prompted for installing them
+automatically. If you are using this report in a
+[_reportfactory_](https://www.reconverse.org/reportfactory/), you can run
+`reportfactory::install_deps()` to install all missing dependencies.
+
 
 ```{r}
 library("tidyverse")
@@ -64,12 +114,52 @@ theme_custom <- theme(
 theme_set(theme_custom)
 ```
 
+##  Importing the data
+
+The data file is named "*covid_admissions_uk_2020_10_24.xlsx*" and is located in
+the *data/* folder. To adapt this report to another dataset, change the name of
+the file in the script below. Note that incomplete file names can be used: the
+first matching file in `data/` will be used.
+
 ```{r}
-dat_raw <- "https://github.com/epiverse-trace/data_pipelines/raw/main/data/covid_admissions_uk_2020_10_24.xlsx" %>%
+if (params$local) {
+  
+  data_path <- here::here("data", params$data_file) 
+  
+} else {
+  
+  data_path <- file.path("https://github.com/epiverse-trace/data_pipelines/raw/main/data", params$data_file) 
+  
+}
+```
+
+```{r}
+dat_raw <- data_path %>%
   rio::import() %>%
   tibble() %>%
   mutate(date = as.Date(date)) # date-time -> date
 ```
+
+Once imported into __R__, the dataset called `dat` includes:
+
+* `date`: the date of admission
+* `region`: the NHS region
+* `org_name`: the full name of the NHS trust
+* `org_code`: a short code for the NHS trust
+* `n`: number of new, confirmed COVID-19 cases admitted, including inpatients
+  who tested positive on that day, and new admissions with a positive test
+
+## Identifying key data
+
+__Note__: this is not used for now, as there is no integration of linelist with
+other existing tools.
+
+Here we identify the key data needed in the analyses, including:
+
+* the dates to be used, here, dates of hospital admission
+* the strata of the population, here, coarse geographic locations (NHS regions)
+* the case counts; this would not be needed if the data was a raw linelist, and
+  not already aggregated counts
 
 ```{r}
 date_var <- "date"

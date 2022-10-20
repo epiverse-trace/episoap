@@ -30,7 +30,8 @@ shinyApp(
             list(
                 epicurve_unit = input$epicurve_unit,
                 incomplete_days = input$incomplete_days,
-                r_estim_window = input$r_estim_window
+                r_estim_window = input$r_estim_window,
+                local = FALSE
             )
         )
         output$report <- renderUI({
