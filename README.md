@@ -39,12 +39,3 @@ daily incidence, instead of weekly, one can use:
 rmarkdown::render("reports/transmissibility.Rmd",
                   params = list(epicurve_unit = "day"))
 ```
-
-
-
-```r
-rmarkdown::render('transmissibility.Rmd',
-                  params = list(epicurve_unit = 1,
-                                incomplete_days = 0))
-```
-
