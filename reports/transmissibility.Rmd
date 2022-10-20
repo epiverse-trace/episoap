@@ -249,7 +249,7 @@ total_cases %>%
            background = pale_green)
 ```
 
-*************************
+
 # Serial interval distribution
 
 ## Explanations
@@ -289,9 +289,11 @@ ggplot(data.frame(delay = si_x, prob = si$d(si_x)),
          si_mean, si_sd))
 ```
 
-# Growth rates and doubling/halving times
+# Growth rate ($r$) and reproduction number ($R$) {.tabset}
 
-## Explanations
+## _i2extras_
+
+### Explanations
 
 The package *i2extras* is used to estimate daily growth rates '_r_', using Poisson
 GLMs fitted to epidemic curves. These estimates can be biased by reporting
@@ -312,7 +314,7 @@ incidence to double (respectively, halve).
 
 For more information on growth rates, see this [blog post by Pr Julia Gog](https://plus.maths.org/content/epidemic-growth-rate).
 
-## Results
+### Results
 
 This section contains:
 
@@ -397,9 +399,7 @@ last_trends %>%
            background = pale_green)
 ```
 
-# Estimating $R$ from the growth rates
-
-## Explanations
+#### Estimating $R$ from the growth rates
 
 Wallinga and Lipsitch have introduced methods for converting daily growth rates
 ($r$) into reproduction numbers ($R$) [@Wallinga2007-hw], when information on
@@ -418,8 +418,6 @@ epidemic is growing. For a comparison of $r$ and $R$, we recommend reading this
 Here, we use the procedure implemented in `epitrix` to derive samples of $R$
 values compatible with the values of $r$ estimated in the previous section, and
 with the provided serial interval.
-
-## Results
 
 This section contains:
 
@@ -478,14 +476,14 @@ res_R_wl_smry %>%
            background = pale_green)
 ```
 
-# Estimating $R_t$ using _EpiEstim_ 
+## _EpiEstim_ 
 
-## Explanations
+### Explanations
 
 
-## Results
+### Results
 
-### Global transmissibility
+#### Global transmissibility
 
 These analyses present results for the global incidence, i.e. without
 stratification. Results include:
@@ -592,7 +590,7 @@ res_epiestim_global %>%
 
 
 
-### Transmissibility by group
+#### Transmissibility by group
 
 ```{r fig.height = 5 / 3 * n_groups}
 # Get results by group, keeping only the last 14 days of data
@@ -652,13 +650,11 @@ res_epiestim_group %>%
 ```
 
 
+## _R0_
 
-*************************
-# Estimating $R_t$ using _R0_
+### Explanations
 
-## Explanations
-
-## Results
+### Results
 
 ```{r}
 library(R0)
@@ -702,13 +698,11 @@ last_trends_r0 %>%
 ```
 
 
+## _EpiNow2_ 
 
-*************************
-# Estimating $R_t$ using _EpiNow2_ 
+### Explanations
 
-## Explanations
-
-## Results
+### Results
 
 
 
