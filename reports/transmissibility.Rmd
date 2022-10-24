@@ -266,11 +266,18 @@ si_params <- epitrix::gamma_mucv2shapescale(mu = si_mean, cv = si_cv)
 ```
 
 ```{r}
-si <- distcrete(si_dist,
-                interval = 1,
-                w = 0,
-                si_params[[1]],
-                si_params[[2]])
+# do.call() because we want to pass `si_params` names as the name of arguments.
+# This is important if params in si_params are not the first arguments of the 
+# q...() function. For example, if a gamma distribution is define by its shape
+# and scale, instead of shape and rate.
+si <- do.call(
+  distcrete,
+  c(list(si_dist,
+         interval = 1,
+         w = 0),
+    si_params
+  )
+)
 si_x <- seq(1L, to = si$q(.999), by = 1L)
 ```
 
