@@ -1,5 +1,9 @@
 ## _i2extras_
 
+```{r}
+library("i2extras")
+```
+
 ### Explanations
 
 The package *i2extras* is used to estimate daily growth rates '_r_', using Poisson

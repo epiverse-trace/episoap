@@ -69,11 +69,9 @@ library("janitor")
 library("rmdformats")
 library("kableExtra")
 library("incidence2")
-library("i2extras")
 library("distcrete")
 library("epitrix")
 library("epiparameter")
-library("EpiNow2")
 ```
 
 ```{r}

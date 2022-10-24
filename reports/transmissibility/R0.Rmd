@@ -1,12 +1,14 @@
 ## _R0_
 
+```{r}
+library(R0)
+```
+
 ### Explanations
 
 ### Results
 
 ```{r}
-library(R0)
-
 mGT <- generation.time("empirical", si_x)
 
 # Helper function to get R0 outputs in a tidy format, compatible with pipelines
