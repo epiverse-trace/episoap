@@ -51,7 +51,8 @@ shinyApp(
                 si_dist = input$si_dist,
                 si_mean = input$si_mean,
                 si_sd = input$si_sd,
-                epiparameter_pathogen = input$epiparameter_pathogen
+                epiparameter_pathogen = input$epiparameter_pathogen,
+                rt_estimator = input$transmissibilityPkg
             )
         )
 
