@@ -12,7 +12,7 @@ shinyApp(
             h4("Reproduction number estimation"),
             radioButtons("use_epiparameter", "Serial interval", c("from epiparameter", "from custom input")),
             uiOutput("ui_si"),
-            radioButtons("transmissibilityPkg", "R package" , c("EpiEstim", "EpiNow2", "i2extras", "R0")),
+            radioButtons("transmissibilityPkg", "Rt estimator" , c("EpiEstim", "EpiNow2", "i2extras", "R0")),
             sliderInput("r_estim_window", "Estimation window", min = 7L, max = 35L, value = 21L, ticks = FALSE, step = 1L, post = " days"),
             h4("Final size estimation"),
             radioButtons("contactdataPkg", "Contact data", c("conmat", "contactdata", "socialmixr")),
