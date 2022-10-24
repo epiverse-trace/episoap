@@ -1,5 +1,9 @@
 ## _EpiNow2_ 
 
+```{r}
+library("EpiNow2")
+```
+
 ### Explanations
 
 ### Results
