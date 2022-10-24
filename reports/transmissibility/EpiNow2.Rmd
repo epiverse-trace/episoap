@@ -1,0 +1,112 @@
+## _EpiNow2_ 
+
+### Explanations
+
+### Results
+
+```{r}
+# TODO: remove harcoded SARS-CoV-2 params
+generation_time <- get_generation_time(
+  disease = "SARS-CoV-2",
+  source = "ganyani"
+)
+incubation_period <- get_incubation_period(
+  disease = "SARS-CoV-2",
+  source = "lauer"
+)
+reporting_delay <- list(
+  mean = convert_to_logmean(3, 1),
+  mean_sd = 0.1,
+  sd = convert_to_logsd(3, 1),
+  sd_sd = 0.1,
+  max = 10
+)
+```
+
+#### Global transmissibility
+
+```{r}
+rt_epinow2 <- i_recent %>%
+  regroup() %>% 
+  dplyr::rename(
+    confirm = .data[[count_var]],
+    date    = date_index
+  ) %>% 
+  epinow(
+    generation_time = generation_time,
+    delays = delay_opts(incubation_period, reporting_delay),
+    stan = stan_opts(samples = 10, chains = 1),
+    horizon = 0,
+    CrIs = c(0.5, 0.95),
+    return_output = TRUE,
+    verbose = FALSE,
+    logs = NULL
+  )
+```
+
+```{r}
+plot(rt_epinow2, "R")
+```
+
+```{r}
+rt_epinow2$estimates$summarised %>% 
+  dplyr::filter(variable == "R") %>% 
+  tail(14) %>% 
+  dplyr::select(date, mean, median, lower_95, upper_95) %>% 
+  mutate(
+    "mean $R$" = round(mean, 2),
+    "median $R$" = round(median, 2),
+    "95% ci" = sprintf(
+       "[%1.2f ; %1.2f]",
+       lower_95,
+       upper_95
+    ),
+    .keep = "unused"
+  ) %>% 
+  kbl() %>% 
+  kable_paper("striped", font_size = 18, full_width = FALSE) %>%
+  row_spec((1:14)[c(FALSE, TRUE)],
+           background = pale_green)
+```
+
+#### Transmissibility by group
+
+```{r epinow2 with epiparameter, message = FALSE}
+rt_by_group <- i_recent %>%
+  dplyr::rename(
+    confirm = .data[[count_var]],
+    date    = date_index,
+    region  = .data[[group_var]]
+  ) %>% 
+  regional_epinow(
+    generation_time = generation_time,
+    delays = delay_opts(incubation_period, reporting_delay),
+    stan = stan_opts(samples = 10, chains = 1),
+    horizon = 0,
+    CrIs = c(0.5, 0.95),
+    return_output = TRUE,
+    verbose = FALSE,
+    logs = NULL
+  )
+```
+
+```{r}
+rt_by_group$summary$plots$R
+```
+
+```{r}
+rt_by_group$summary$summarised_results$data %>% 
+  dplyr::filter(metric == "Effective reproduction no.") %>% 
+  dplyr::select(region, mean, median, lower_95, upper_95) %>% 
+  dplyr::mutate(
+    "95% ci" = sprintf(
+       "[%1.2f ; %1.2f]",
+       lower_95,
+       upper_95
+    ),
+    .keep = "unused"
+  ) %>% 
+  kbl() %>% 
+  kable_paper("striped", font_size = 18, full_width = FALSE) %>%
+  row_spec((1:n_groups)[c(FALSE, TRUE)],
+           background = pale_green)
