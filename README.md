@@ -39,3 +39,11 @@ or by running:
 ``` r
 rmarkdown::draft(file = "myreport.Rmd", template = "transmissibility-report", package = "soap")
 ```
+
+To get a list of the template reports available in this package, you can
+run:
+
+``` r
+soap::list_templates()
+#> [1] "transmissibility-report"
+```
