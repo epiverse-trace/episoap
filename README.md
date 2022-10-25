@@ -4,6 +4,8 @@
 # soap: A Store of Outbreak Analytics Pipelines
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/epiverse-trace/data_pipelines/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/epiverse-trace/data_pipelines/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 This package provides a store of curated outbreak analytics pipelines as

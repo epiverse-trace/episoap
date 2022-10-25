@@ -39,3 +39,5 @@ Config/renv/profiles/shiny/dependencies:
     shinyWidgets,
     shinycssloaders,
     rsconnect
+Suggests: 
+    testthat (>= 3.0.0)
