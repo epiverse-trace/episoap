@@ -212,7 +212,8 @@ total_cases <- dat %>%
   select_tags(location, counts) %>%
   group_by(location) %>%
   summarise(cases = sum(counts)) %>%
-  arrange(location)
+  mutate(location = fct_reorder(.f = location,
+                                .x = cases))
 
 ggplot(total_cases, aes(x = cases, y = location)) +
   geom_col(fill = green_grey) +
