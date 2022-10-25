@@ -309,6 +309,7 @@ i_recent <- dat_raw %>%
   keep_first(params$r_estim_window) # remove incomplete data
 ```
 
-```{r, child=paste0("transmissibility/", params$rt_estimator, ".Rmd")}
+```{r, child=paste0("rmdchunks/", params$rt_estimator, ".Rmd")}
 ```
+
 
