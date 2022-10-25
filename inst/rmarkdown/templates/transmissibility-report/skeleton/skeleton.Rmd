@@ -16,7 +16,7 @@ params:
   use_epiparameter: true
   epiparameter_pathogen: "SARS_CoV_2_wildtype"
   local: true
-  data_file: "covid_admissions_uk_2020_10_24.xlsx"
+  data_file: "covid_hosp_uk_20201024.xlsx"
   rt_estimator: "EpiEstim"
 # bibliography: "../biblio/biblio.bib"
 ---
@@ -97,7 +97,7 @@ theme_set(theme_custom)
 
 ##  Importing the data
 
-The data file is named "*covid_admissions_uk_2020_10_24.xlsx*" and is located in
+The data file is named "*covid_hosp_uk_20201024.xlsx*" and is located in
 the *data/* folder. To adapt this report to another dataset, change the name of
 the file in the script below. Note that incomplete file names can be used: the
 first matching file in `data/` will be used.
@@ -105,11 +105,11 @@ first matching file in `data/` will be used.
 ```{r}
 if (params$local) {
   
-  data_path <- here::here("data", params$data_file) 
+  data_path <- file.path("data", params$data_file) 
   
 } else {
   
-  data_path <- file.path("https://github.com/epiverse-trace/data_pipelines/raw/main/data", params$data_file) 
+  data_path <- file.path("https://github.com/epiverse-trace/data_pipelines/raw/main/inst/rmarkdown/templates/transmissibility-report/skeleton/data", params$data_file) 
   
 }
 ```
