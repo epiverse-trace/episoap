@@ -114,3 +114,4 @@ rt_by_group$summary$summarised_results$data %>%
   kable_paper("striped", font_size = 18, full_width = FALSE) %>%
   row_spec((1:n_groups)[c(FALSE, TRUE)],
            background = pale_green)
+```
