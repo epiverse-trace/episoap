@@ -85,7 +85,7 @@ ggplot(res_epiestim_global, aes(x = end)) +
   scale_x_date(breaks = scales::pretty_breaks(n = 8), date_label = "%d %b %Y") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
   labs(x = "",
-       y = "Instantaneous reproduction number\\(Rt)",
+       y = "Instantaneous reproduction number (Rt)",
        title = "Estimates of Rt (EpiEstim)")
 
 # Table
