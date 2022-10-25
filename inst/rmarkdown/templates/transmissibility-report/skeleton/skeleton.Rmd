@@ -18,7 +18,7 @@ params:
   local: true
   data_file: "covid_hosp_uk_20201024.xlsx"
   rt_estimator: "EpiEstim"
-# bibliography: "../biblio/biblio.bib"
+bibliography: "biblio/biblio.bib"
 ---
 
 ```{r settings, echo = FALSE}
