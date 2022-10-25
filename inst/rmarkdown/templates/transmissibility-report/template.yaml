@@ -1,0 +1,6 @@
+name: Transmissibility Report
+description: >
+  a template for estimating transmissibility (i.e., how fast a disease spreads)
+  from a stratified population. It performs basic descriptive analyses, and uses
+  different approaches for estimating transmissibility.
+create_dir: TRUE
