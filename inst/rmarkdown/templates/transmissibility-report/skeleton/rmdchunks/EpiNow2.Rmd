@@ -1,7 +1,7 @@
 ## _EpiNow2_ 
 
 ```{r}
-library("EpiNow2")
+pacman::p_load("EpiNow2")
 ```
 
 ### Explanations

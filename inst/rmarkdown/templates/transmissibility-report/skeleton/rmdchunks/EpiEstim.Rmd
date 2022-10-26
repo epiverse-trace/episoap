@@ -1,7 +1,7 @@
 ## _EpiEstim_ 
 
 ```{r}
-library(EpiEstim)
+pacman::p_load(EpiEstim)
 ```
 
 ### Explanations
