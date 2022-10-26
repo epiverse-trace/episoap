@@ -12,32 +12,5 @@ Encoding: UTF-8
 Language: en-GB
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
-Imports: 
-    here,
-    linelist,
-    rio,
-    tidyverse,
-    scales,
-    janitor,
-    rmdformats,
-    kableExtra,
-    incidence2,
-    i2extras,
-    distcrete,
-    epitrix,
-    R0,
-    EpiNow2,
-    EpiEstim,
-    epiparameter,
-    rmarkdown
-Remotes:
-    epiforecasts/EpiNow2,
-    epiverse-trace/epiparameter
-Config/renv/profiles/shiny/dependencies:
-    shiny,
-    shinydashboard,
-    shinyWidgets,
-    shinycssloaders,
-    rsconnect
 Suggests: 
     testthat (>= 3.0.0)

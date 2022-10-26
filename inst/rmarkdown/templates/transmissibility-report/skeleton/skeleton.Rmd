@@ -52,26 +52,31 @@ steps of the report include:
 
 ## Loading libraries
 
-The following code loads required packages; if you are using _Rstudio_ and are
-missing some of the packages, you will be prompted for installing them
-automatically. If you are using this report in a
-[_reportfactory_](https://www.reconverse.org/reportfactory/), you can run
-`reportfactory::install_deps()` to install all missing dependencies.
-
+The following code loads required packages; missing packages will be installed
+automatically, but will require a working internet connection for the
+installation to be successful.
 
 ```{r}
-library("tidyverse")
-library("here")
-library("rio")
-library("linelist")
-library("scales")
-library("janitor")
-library("rmdformats")
-library("kableExtra")
-library("incidence2")
-library("distcrete")
-library("epitrix")
-library("epiparameter")
+if (!require("pacman")) {
+  
+  install.packages("pacman")
+  
+}
+```
+
+```{r}
+pacman::p_load("tidyverse")
+pacman::p_load("here")
+pacman::p_load("rio")
+pacman::p_load("linelist")
+pacman::p_load("scales")
+pacman::p_load("janitor")
+pacman::p_load("rmdformats")
+pacman::p_load("kableExtra")
+pacman::p_load("incidence2")
+pacman::p_load("distcrete")
+pacman::p_load("epitrix")
+pacman::p_install_gh("epiverse-trace/epiparameter")
 ```
 
 ```{r}
