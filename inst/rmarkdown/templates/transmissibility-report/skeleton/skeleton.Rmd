@@ -80,22 +80,11 @@ pacman::p_install_gh("epiverse-trace/epiparameter")
 ```{r}
 custom_grey <- "#505B5B"
 green_grey <- "#5E7E80"
-pale_green <- "#b2d1cc"
+pale_green <- "#B2D1CC"
 dark_green <- "#005C5D"
 dark_pink <- "#B45D75"
 
-theme_custom <- theme(
-  plot.background = element_rect(fill = "white"),
-  panel.grid.major = element_line(colour = "#96a3a3"),
-  panel.grid.minor = element_line(colour = "#9DC1C2", linetype = "dotted"),
-  panel.background = element_rect(colour = custom_grey, fill = "white"),
-  strip.background = element_rect(fill = green_grey, color = "white", size = 1),
-  strip.text = element_text(colour = "white"),
-  text = element_text(size = 16, colour = custom_grey),
-  axis.ticks = element_line(colour = custom_grey)
-  # aspect.ratio = 9 / 16
-)
-theme_set(theme_custom)
+theme_set(soap::theme_soap())
 ```
 
 ##  Importing the data

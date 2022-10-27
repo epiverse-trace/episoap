@@ -18,3 +18,5 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 URL: https://epiverse-trace.github.io/data_pipelines/
+Imports: 
+    ggplot2
