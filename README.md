@@ -8,6 +8,8 @@
 [![R-CMD-check](https://github.com/epiverse-trace/data_pipelines/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/epiverse-trace/data_pipelines/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/epiverse-trace/data_pipelines/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epiverse-trace/data_pipelines?branch=main)
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
 This package provides a store of curated outbreak analytics pipelines as
