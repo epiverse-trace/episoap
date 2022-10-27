@@ -14,9 +14,9 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Suggests: 
     knitr,
-    rmarkdown,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 URL: https://epiverse-trace.github.io/data_pipelines/
 Imports: 
-    ggplot2
+    ggplot2,
+    rmarkdown
