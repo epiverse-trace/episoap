@@ -43,58 +43,68 @@ last_trends <- i_recent %>%
 # version with negbin model needs more iterations to converge
 # fit_curve(model = "negbin", control = glm.control(maxit = 1e3))
 plot(last_trends,
-     angle = 45,
-     date_format = "%d %b %y",
-     color = "white",
-     fill = green_grey,
-     alpha = .8,
-     n_breaks = 12,
-     nrow = n_groups,
-     show_cases = small_counts)
+  angle = 45,
+  date_format = "%d %b %y",
+  color = "white",
+  fill = green_grey,
+  alpha = .8,
+  n_breaks = 12,
+  nrow = n_groups,
+  show_cases = small_counts
+)
 ```
 
 ```{r}
 last_trends %>%
-  growth_rate %>%
+  growth_rate() %>%
   ggplot(aes(y = .data[[group_var]]), fill = custom_grey) +
   geom_point(aes(x = r), color = dark_green) +
   geom_errorbar(aes(xmin = r_lower, xmax = r_upper), color = dark_green) +
   scale_x_continuous(labels = scales::percent) +
   geom_vline(xintercept = 0, color = dark_pink) +
-  labs(title = "Estimates of daily growth rates",
-       subtitle = sprintf(
-         "based on data from %s - %s",
-         format(min(get_dates(i_recent)), "%d %B %Y"),
-         format(max(get_dates(i_recent)), "%d %B %Y")),
-       y = "",
-       x = "Daily rate of change")
+  labs(
+    title = "Estimates of daily growth rates",
+    subtitle = sprintf(
+      "based on data from %s - %s",
+      format(min(get_dates(i_recent)), "%d %B %Y"),
+      format(max(get_dates(i_recent)), "%d %B %Y")
+    ),
+    y = "",
+    x = "Daily rate of change"
+  )
 
 last_trends %>%
   growth_rate() %>%
-  dplyr::select(-c(1,3)) %>%
-  rename(period = growth_or_decay) %>% 
-  mutate("period type" = paste(period, "time"),
-         r = paste(round(r * 100, 1), "%"),
-         r_ci = sprintf(
-           "[%1.1f %% ; %1.1f %% ]",
-           r_lower * 100,
-           r_upper * 100),
-         time = round(time, 1),
-         time_ci = sprintf(
-           "[%.1f ; %.1f]",
-           time_lower,
-           time_upper)
-         ) %>%
-  dplyr::select("Daily growth rate" = r,
-         "Growth rate (95% CI)" = r_ci,
-         "period type",
-         "Duration (days)" = time,
-         "Duration (95% CI)" = time_ci) %>%
-  set_names(toupper) %>%   
+  dplyr::select(-c(1, 3)) %>%
+  rename(period = growth_or_decay) %>%
+  mutate(
+    "period type" = paste(period, "time"),
+    r = paste(round(r * 100, 1), "%"),
+    r_ci = sprintf(
+      "[%1.1f %% ; %1.1f %% ]",
+      r_lower * 100,
+      r_upper * 100
+    ),
+    time = round(time, 1),
+    time_ci = sprintf(
+      "[%.1f ; %.1f]",
+      time_lower,
+      time_upper
+    )
+  ) %>%
+  dplyr::select(
+    "Daily growth rate" = r,
+    "Growth rate (95% CI)" = r_ci,
+    "period type",
+    "Duration (days)" = time,
+    "Duration (95% CI)" = time_ci
+  ) %>%
+  set_names(toupper) %>%
   kbl() %>%
   kable_paper("striped", font_size = 18, full_width = FALSE) %>%
   row_spec((1:nrow(total_cases))[c(FALSE, TRUE)],
-           background = pale_green)
+    background = pale_green
+  )
 ```
 
 #### Estimating $R$ from the growth rates
@@ -130,46 +140,57 @@ This section contains:
 ```{r }
 res_R_wl <- last_trends %>%
   mutate(R = map(model, epitrix::lm2R0_sample, w = si, 500)) %>%
-  dplyr::select({{group_var}}, R) %>%
+  dplyr::select({{ group_var }}, R) %>%
   unnest(R)
 
 res_R_wl_smry <- res_R_wl %>%
   group_by(.data[[group_var]]) %>%
-  summarise(mean = mean(R),
-            median = median(R),
-            q_0.025 = quantile(R, 0.025),
-            q_0.975 = quantile(R, 0.975))
+  summarise(
+    mean = mean(R),
+    median = median(R),
+    q_0.025 = quantile(R, 0.025),
+    q_0.975 = quantile(R, 0.975)
+  )
 
 res_R_wl %>%
   ggplot(aes(y = .data[[group_var]]), fill = custom_grey) +
   geom_violin(aes(x = R), fill = pale_green, color = green_grey) +
-  geom_pointrange(data = res_R_wl_smry,
-                  aes(x = median, xmin = q_0.025, xmax = q_0.975),
-                  color = dark_green) +
+  geom_pointrange(
+    data = res_R_wl_smry,
+    aes(x = median, xmin = q_0.025, xmax = q_0.975),
+    color = dark_green
+  ) +
   geom_vline(xintercept = 1, color = dark_pink) +
-  labs(title = "Reproduction numbers estimated from growth rates",
-       subtitle = sprintf(
-         "based on data from %s - %s",
-         format(min(get_dates(i_recent)), "%d %B %Y"),
-         format(max(get_dates(i_recent)), "%d %B %Y")),
-       y = "",
-       x = "Reproduction number")
+  labs(
+    title = "Reproduction numbers estimated from growth rates",
+    subtitle = sprintf(
+      "based on data from %s - %s",
+      format(min(get_dates(i_recent)), "%d %B %Y"),
+      format(max(get_dates(i_recent)), "%d %B %Y")
+    ),
+    y = "",
+    x = "Reproduction number"
+  )
 
 res_R_wl_smry %>%
   mutate(
     mean = round(mean, 2),
     median = round(median, 2),
     `95% ci` = sprintf(
-           "[%1.2f ; %1.2f]",
-           q_0.025,
-           q_0.975)) %>%
+      "[%1.2f ; %1.2f]",
+      q_0.025,
+      q_0.975
+    )
+  ) %>%
   dplyr::select(-c(q_0.025, q_0.975)) %>%
   rename(
     "mean $R$" = mean,
-    "median $R$" = median) %>% 
-  set_names(toupper) %>%   
+    "median $R$" = median
+  ) %>%
+  set_names(toupper) %>%
   kbl() %>%
   kable_paper("striped", font_size = 18, full_width = FALSE) %>%
   row_spec((1:nrow(res_R_wl_smry))[c(FALSE, TRUE)],
-           background = pale_green)
+    background = pale_green
+  )
 ```

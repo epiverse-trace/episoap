@@ -31,11 +31,11 @@ reporting_delay <- list(
 
 ```{r}
 rt_epinow2 <- i_recent %>%
-  regroup() %>% 
+  regroup() %>%
   dplyr::rename(
     confirm = .data[[count_var]],
     date    = date_index
-  ) %>% 
+  ) %>%
   epinow(
     generation_time = generation_time,
     delays = delay_opts(incubation_period, reporting_delay),
@@ -53,24 +53,25 @@ plot(rt_epinow2, "R")
 ```
 
 ```{r}
-rt_epinow2$estimates$summarised %>% 
-  dplyr::filter(variable == "R") %>% 
-  tail(14) %>% 
-  dplyr::select(date, mean, median, lower_95, upper_95) %>% 
+rt_epinow2$estimates$summarised %>%
+  dplyr::filter(variable == "R") %>%
+  tail(14) %>%
+  dplyr::select(date, mean, median, lower_95, upper_95) %>%
   mutate(
     "mean $R$" = round(mean, 2),
     "median $R$" = round(median, 2),
     "95% ci" = sprintf(
-       "[%1.2f ; %1.2f]",
-       lower_95,
-       upper_95
+      "[%1.2f ; %1.2f]",
+      lower_95,
+      upper_95
     ),
     .keep = "unused"
-  ) %>% 
-  kbl() %>% 
+  ) %>%
+  kbl() %>%
   kable_paper("striped", font_size = 18, full_width = FALSE) %>%
   row_spec((1:14)[c(FALSE, TRUE)],
-           background = pale_green)
+    background = pale_green
+  )
 ```
 
 #### Transmissibility by group
@@ -81,7 +82,7 @@ rt_by_group <- i_recent %>%
     confirm = .data[[count_var]],
     date    = date_index,
     region  = .data[[group_var]]
-  ) %>% 
+  ) %>%
   regional_epinow(
     generation_time = generation_time,
     delays = delay_opts(incubation_period, reporting_delay),
@@ -99,19 +100,20 @@ rt_by_group$summary$plots$R
 ```
 
 ```{r}
-rt_by_group$summary$summarised_results$data %>% 
-  dplyr::filter(metric == "Effective reproduction no.") %>% 
-  dplyr::select(region, mean, median, lower_95, upper_95) %>% 
+rt_by_group$summary$summarised_results$data %>%
+  dplyr::filter(metric == "Effective reproduction no.") %>%
+  dplyr::select(region, mean, median, lower_95, upper_95) %>%
   dplyr::mutate(
     "95% ci" = sprintf(
-       "[%1.2f ; %1.2f]",
-       lower_95,
-       upper_95
+      "[%1.2f ; %1.2f]",
+      lower_95,
+      upper_95
     ),
     .keep = "unused"
-  ) %>% 
-  kbl() %>% 
+  ) %>%
+  kbl() %>%
   kable_paper("striped", font_size = 18, full_width = FALSE) %>%
   row_spec((1:n_groups)[c(FALSE, TRUE)],
-           background = pale_green)
+    background = pale_green
+  )
 ```

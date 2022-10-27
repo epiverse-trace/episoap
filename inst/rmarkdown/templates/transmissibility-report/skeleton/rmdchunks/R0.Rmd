@@ -13,36 +13,37 @@ mGT <- generation.time("empirical", si_x)
 
 # Helper function to get R0 outputs in a tidy format, compatible with pipelines
 r0_quantiles <- function(Rt) {
-  
   data.frame(
     q50   = Rt$R,
     q2.5  = Rt$conf.int$lower,
     q97.5 = Rt$conf.int$upper
   )
-  
 }
 
-last_trends_r0 <- dat %>% 
-  filter(between(.data[[date_var]], last_date - (params$incomplete_days + params$r_estim_window), last_date - params$incomplete_days)) %>% 
-  arrange(.data[[date_var]]) %>% 
-  group_by(.data[[group_var]], .data[[date_var]]) %>% 
-  summarise({{count_var}} := sum(.data[[count_var]])) %>% 
-  group_by(.data[[group_var]]) %>% 
+last_trends_r0 <- dat %>%
+  filter(between(.data[[date_var]], last_date - (params$incomplete_days + params$r_estim_window), last_date - params$incomplete_days)) %>%
+  arrange(.data[[date_var]]) %>%
+  group_by(.data[[group_var]], .data[[date_var]]) %>%
+  summarise({{ count_var }} := sum(.data[[count_var]])) %>%
+  group_by(.data[[group_var]]) %>%
   summarise(
     r0_quantiles(estimate.R(.data[[count_var]], mGT, .data[[date_var]], begin = 1L, end = params$r_estim_window, nsim = 1e4, method = "TD")$estimates$TD),
-    {{date_var}} := head(.data[[date_var]], params$r_estim_window)
+    {{ date_var }} := head(.data[[date_var]], params$r_estim_window)
   )
 
-last_trends_r0 %>% 
+last_trends_r0 %>%
   ggplot(aes(x = date, y = q50, ymin = `q2.5`, ymax = `q97.5`)) +
-    geom_ribbon(fill = "grey70") +
-    geom_line() +
-    facet_wrap(vars(region)) +
-    geom_hline(yintercept = 1, color = "red", linetype = "dotted") +
-    labs(title = "Estimates of effective reproduction numbers (Reff)",
-       subtitle = sprintf(
-         "based on data from %s - %s",
-         format(last_date - (params$incomplete_days + params$r_estim_window), "%d %B %Y"),
-         format(last_date - params$incomplete_days, "%d %B %Y")),
-       y = "Reff")
+  geom_ribbon(fill = "grey70") +
+  geom_line() +
+  facet_wrap(vars(region)) +
+  geom_hline(yintercept = 1, color = "red", linetype = "dotted") +
+  labs(
+    title = "Estimates of effective reproduction numbers (Reff)",
+    subtitle = sprintf(
+      "based on data from %s - %s",
+      format(last_date - (params$incomplete_days + params$r_estim_window), "%d %B %Y"),
+      format(last_date - params$incomplete_days, "%d %B %Y")
+    ),
+    y = "Reff"
+  )
 ```
