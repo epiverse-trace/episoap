@@ -29,8 +29,8 @@ theme_custom <- function(...) {
 #'
 #' ggplot(mtcars, aes(wt, mpg)) +
 #'   geom_point() +
-#'  labs(title = "Fuel economy declines as weight increases") +
-#'  theme_soap()
+#'   labs(title = "Fuel economy declines as weight increases") +
+#'   theme_soap()
 #'
 #' @export
 theme_soap <- function() {
