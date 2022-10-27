@@ -58,9 +58,7 @@ installation to be successful.
 
 ```{r}
 if (!require("pacman")) {
-  
   install.packages("pacman")
-  
 }
 ```
 
@@ -95,7 +93,7 @@ theme_custom <- theme(
   strip.text = element_text(colour = "white"),
   text = element_text(size = 16, colour = custom_grey),
   axis.ticks = element_line(colour = custom_grey)
-  #aspect.ratio = 9 / 16
+  # aspect.ratio = 9 / 16
 )
 theme_set(theme_custom)
 ```
@@ -117,13 +115,9 @@ first matching file in `data/` will be used.
 
 ```{r}
 if (params$local) {
-  
-  data_path <- file.path("data", params$data_file) 
-  
+  data_path <- file.path("data", params$data_file)
 } else {
-  
-  data_path <- file.path("https://github.com/epiverse-trace/data_pipelines/raw/main/inst/rmarkdown/templates/transmissibility-report/skeleton/data", params$data_file) 
-  
+  data_path <- file.path("https://github.com/epiverse-trace/data_pipelines/raw/main/inst/rmarkdown/templates/transmissibility-report/skeleton/data", params$data_file)
 }
 ```
 
@@ -161,10 +155,12 @@ group_var <- "region"
 count_var <- "n"
 
 dat <- dat_raw %>%
-  make_linelist(date_admission = date_var,
-                location = group_var,
-                counts = count_var,
-                allow_extra = TRUE)
+  make_linelist(
+    date_admission = date_var,
+    location = group_var,
+    counts = count_var,
+    allow_extra = TRUE
+  )
 ```
 
 # Descriptive analyses
@@ -177,9 +173,10 @@ This section creates epidemic curves ("_epicurves_"), with or without stratifica
 # convert daily incidence into weekly incidence using incidence2
 dat_i <- dat_raw %>%
   incidence("date",
-            interval = params$epicurve_unit,
-            counts = {{count_var}},
-            groups = {{group_var}})
+    interval = params$epicurve_unit,
+    counts = {{ count_var }},
+    groups = {{ group_var }}
+  )
 
 # general variables for automatic customisation of plots
 n_groups <- length(unique(unlist(dat_i[group_var])))
@@ -187,33 +184,39 @@ small_counts <- max(dat_i[count_var]) < 20
 
 # plot with regions as colors if less than 9 categories
 if (n_groups <= 9L) {
-dat_i %>%
-  plot(fill = group_var, col_pal = muted, color = "white",
-       alpha = 1, angle = 45, legend = "bottom",
-       show_cases = small_counts) +
-  guides(fill = guide_legend(title=NULL)) +
-  labs(title = "Incidence of cases over time")
+  dat_i %>%
+    plot(
+      fill = group_var, col_pal = muted, color = "white",
+      alpha = 1, angle = 45, legend = "bottom",
+      show_cases = small_counts
+    ) +
+    guides(fill = guide_legend(title = NULL)) +
+    labs(title = "Incidence of cases over time")
 } else {
-dat_i %>%
-  regroup() %>% 
-  plot(angle = 45, color = "white",
-       fill = green_grey,
-       alpha = 1,
-       show_cases = small_counts) +
-  labs(title = "Incidence of cases over time")
+  dat_i %>%
+    regroup() %>%
+    plot(
+      angle = 45, color = "white",
+      fill = green_grey,
+      alpha = 1,
+      show_cases = small_counts
+    ) +
+    labs(title = "Incidence of cases over time")
 }
 ```
 
 ```{r fig.height = 5 / 3 * n_groups}
 dat_i %>%
-  facet_plot(angle = 45,
-             date_format = "%d %b %y",
-             color = "white",
-             fill = green_grey,
-             alpha = 1,
-             n_breaks = 6,
-             nrow = n_groups,
-             show_cases = small_counts)
+  facet_plot(
+    angle = 45,
+    date_format = "%d %b %y",
+    color = "white",
+    fill = green_grey,
+    alpha = 1,
+    n_breaks = 6,
+    nrow = n_groups,
+    show_cases = small_counts
+  )
 ```
 
 ## Numbers of cases
@@ -225,23 +228,28 @@ total_cases <- dat %>%
   select_tags(location, counts) %>%
   group_by(location) %>%
   summarise(cases = sum(counts)) %>%
-  mutate(location = fct_reorder(.f = location,
-                                .x = cases))
+  mutate(location = fct_reorder(
+    .f = location,
+    .x = cases
+  ))
 
 ggplot(total_cases, aes(x = cases, y = location)) +
   geom_col(fill = green_grey) +
   labs(x = "Total number of cases", y = NULL)
 
 total_cases %>%
-  mutate(percentage = cases / sum(cases),
-         percentage = paste(round(percentage * 100, 2), "%")) %>% 
+  mutate(
+    percentage = cases / sum(cases),
+    percentage = paste(round(percentage * 100, 2), "%")
+  ) %>%
   adorn_totals() %>%
-  mutate(cases = format(cases, scientific = FALSE, big.mark = " ")) %>% 
-  set_names(toupper) %>%   
+  mutate(cases = format(cases, scientific = FALSE, big.mark = " ")) %>%
+  set_names(toupper) %>%
   kbl() %>%
   kable_paper("striped", font_size = 18, full_width = FALSE) %>%
   row_spec((1:nrow(total_cases))[c(FALSE, TRUE)],
-           background = pale_green)
+    background = pale_green
+  )
 ```
 
 
@@ -266,7 +274,7 @@ si_epiparameter <- epiparameter::epidist(params$epiparameter_pathogen, "serial_i
 si_params <- si_epiparameter$param
 si_dist <- si_epiparameter$dist
 si_mean <- si_params[[1]]
-si_sd   <- si_params[[2]]
+si_sd <- si_params[[2]]
 ```
 
 ```{r, eval = !params$use_epiparameter}
@@ -279,14 +287,16 @@ si_params <- epitrix::gamma_mucv2shapescale(mu = si_mean, cv = si_cv)
 
 ```{r}
 # do.call() because we want to pass `si_params` names as the name of arguments.
-# This is important if params in si_params are not the first arguments of the 
+# This is important if params in si_params are not the first arguments of the
 # q...() function. For example, if a gamma distribution is define by its shape
 # and scale, instead of shape and rate.
 si <- do.call(
   distcrete,
-  c(list(si_dist,
-         interval = 1,
-         w = 0),
+  c(
+    list(si_dist,
+      interval = 1,
+      w = 0
+    ),
     si_params
   )
 )
@@ -294,15 +304,20 @@ si_x <- seq(1L, to = si$q(.999), by = 1L)
 ```
 
 ```{r}
-ggplot(data.frame(delay = si_x, prob = si$d(si_x)),
-       aes(x = delay, y = prob)) +
+ggplot(
+  data.frame(delay = si_x, prob = si$d(si_x)),
+  aes(x = delay, y = prob)
+) +
   geom_col(fill = green_grey) +
-  labs(title = "Serial interval distribution",
-       x = "Days from primary to secondary onset",
-       y = "Probability",
-       subtitle = sprintf(
-         "%s distribution | mean: %.1f days ; sd: %.1f days",
-         si_dist, si_mean, si_sd))
+  labs(
+    title = "Serial interval distribution",
+    x = "Days from primary to secondary onset",
+    y = "Probability",
+    subtitle = sprintf(
+      "%s distribution | mean: %.1f days ; sd: %.1f days",
+      si_dist, si_mean, si_sd
+    )
+  )
 ```
 
 # Growth rate ($r$) and reproduction number ($R$)
@@ -316,13 +331,15 @@ last_date <- dat %>%
 days_to_keep <- params$incomplete_days + params$r_estim_window
 i_recent <- dat_raw %>%
   incidence("date",
-            counts = {{count_var}},
-            groups = {{group_var}}) %>% 
-  keep_last(days_to_keep) %>%  # keep data for fitting 
+    counts = {{ count_var }},
+    groups = {{ group_var }}
+  ) %>%
+  keep_last(days_to_keep) %>% # keep data for fitting
   keep_first(params$r_estim_window) # remove incomplete data
 ```
 
 ```{r, child=paste0("rmdchunks/", params$rt_estimator, ".Rmd")}
+
 ```
 
 
