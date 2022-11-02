@@ -125,7 +125,9 @@ res_epiestim_global %>%
 # Get results by group, keeping only the last 14 days of data
 res_epiestim_group <- dat_i_day %>%
   nest(data = c(date_index, n)) %>%
-  mutate(res_epiestim = map(data, ~ wrap_res(estimate_R(.$n, config = ee_config), dat_i_day))) %>%
+  mutate(
+    res_epiestim = map(data, ~ wrap_res(estimate_R(.$n, ee_config), dat_i_day))
+  ) %>%
   unnest(res_epiestim) %>%
   dplyr::select(-data)
 
