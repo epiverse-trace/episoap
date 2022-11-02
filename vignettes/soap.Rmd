@@ -30,7 +30,11 @@ Reports are provided a [rmarkdown templates](https://rstudio.github.io/rstudio-e
 or by running:
 
 ```{r, eval = FALSE}
-rmarkdown::draft(file = "myreport.Rmd", template = "transmissibility-report", package = "soap")
+rmarkdown::draft(
+  file = "myreport.Rmd",
+  template = "transmissibility-report",
+  package = "soap"
+)
 ```
 
 To get a list of the template reports available in this package, you can run:
@@ -47,10 +51,11 @@ If you are familiar with `{rmarkdown}` and [literate programming](https://en.wik
 For users who want a more ready-to-use solution, reports are already set up to provide multiple options for your analysis out of the box. For example, in the `transmissibility-report`, you can choose to estimate the reproduction number in your data with different tools, such as `{EpiEstim}` or `{EpiNow2}`. This is achieved by changing the value of the `rt_estimator` parameter.
 
 ```{r}
-# Load template in temporary directory for this vignette. You will probably wish to save it somewhere else.
+# Load template in temporary directory for this vignette. You will probably
+# wish to save it somewhere else.
 rmarkdown::draft(
   file = file.path(tempdir(), "myreport"),
-  template = "transmissibility-report", 
+  template = "transmissibility-report",
   package = "soap",
   edit = FALSE
 )
@@ -76,7 +81,7 @@ rmarkdown::render(
 
 ```{r, echo = FALSE, eval = FALSE}
 webshot::rmdshot(
-  system.file("rmarkdown", "templates", "transmissibility-report", "skeleton", "skeleton.Rmd", package = "soap"),
+  file.path(tempdir(), "myreport", "myreport.Rmd"),
   file = "vignettes/transmissibility-EpiEstim.png",
   rmd_args = list(
     params = list(rt_estimator = "EpiEstim"),

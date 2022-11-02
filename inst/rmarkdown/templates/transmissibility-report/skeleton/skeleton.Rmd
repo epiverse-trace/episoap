@@ -15,7 +15,6 @@ params:
   si_dist: "gamma"
   use_epiparameter: true
   epiparameter_pathogen: "SARS_CoV_2_wildtype"
-  local: true
   data_file: "covid_hosp_uk_20201024.xlsx"
   rt_estimator: "EpiEstim"
 bibliography: "biblio/biblio.bib"
@@ -103,18 +102,14 @@ the file in the script below. Note that incomplete file names can be used: the
 first matching file in `data/` will be used.
 
 ```{r}
-if (params$local) {
-  data_path <- file.path("data", params$data_file)
-} else {
-  data_path <- file.path("https://github.com/epiverse-trace/data_pipelines/raw/main/inst/rmarkdown/templates/transmissibility-report/skeleton/data", params$data_file)
-}
+data_path <- file.path("data", params$data_file)
 ```
 
 ```{r}
 dat_raw <- data_path %>%
   rio::import() %>%
   tibble() %>%
-  mutate(date = as.Date(date)) # date-time -> date
+  mutate(date = as.Date(date)) # convert date-time to date
 ```
 
 Once imported into __R__, the dataset called `dat` includes:
@@ -236,7 +231,7 @@ total_cases %>%
   set_names(toupper) %>%
   kbl() %>%
   kable_paper("striped", font_size = 18, full_width = FALSE) %>%
-  row_spec((1:nrow(total_cases))[c(FALSE, TRUE)],
+  row_spec(seq_len(nrow(total_cases))[c(FALSE, TRUE)],
     background = pale_green
   )
 ```
@@ -259,7 +254,10 @@ discretized Gamma.
 ## Results
 
 ```{r, eval = params$use_epiparameter}
-si_epiparameter <- epiparameter::epidist(params$epiparameter_pathogen, "serial_interval")
+si_epiparameter <- epiparameter::epidist(
+  params$epiparameter_pathogen,
+  "serial_interval"
+)
 si_params <- si_epiparameter$param
 si_dist <- si_epiparameter$dist
 si_mean <- si_params[[1]]
@@ -328,7 +326,6 @@ i_recent <- dat_raw %>%
 ```
 
 ```{r, child=paste0("rmdchunks/", params$rt_estimator, ".Rmd")}
-
 ```
 
 

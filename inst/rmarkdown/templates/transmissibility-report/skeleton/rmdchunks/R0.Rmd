@@ -20,14 +20,23 @@ r0_quantiles <- function(Rt) {
   )
 }
 
+first_day_window <- last_date - (params$incomplete_days + params$r_estim_window)
+last_day_window  <- last_date - params$incomplete_days
+
 last_trends_r0 <- dat %>%
-  filter(between(.data[[date_var]], last_date - (params$incomplete_days + params$r_estim_window), last_date - params$incomplete_days)) %>%
+  filter(between(.data[[date_var]], first_day_window, last_day_window)) %>%
   arrange(.data[[date_var]]) %>%
   group_by(.data[[group_var]], .data[[date_var]]) %>%
   summarise({{ count_var }} := sum(.data[[count_var]])) %>%
   group_by(.data[[group_var]]) %>%
   summarise(
-    r0_quantiles(estimate.R(.data[[count_var]], mGT, .data[[date_var]], begin = 1L, end = params$r_estim_window, nsim = 1e4, method = "TD")$estimates$TD),
+    r0_quantiles(estimate.R(
+      .data[[count_var]],
+      mGT,
+      .data[[date_var]],
+      begin = 1L, end = params$r_estim_window,
+      nsim = 1e4, method = "TD"
+    )$estimates$TD),
     {{ date_var }} := head(.data[[date_var]], params$r_estim_window)
   )
 
@@ -41,8 +50,8 @@ last_trends_r0 %>%
     title = "Estimates of effective reproduction numbers (Reff)",
     subtitle = sprintf(
       "based on data from %s - %s",
-      format(last_date - (params$incomplete_days + params$r_estim_window), "%d %B %Y"),
-      format(last_date - params$incomplete_days, "%d %B %Y")
+      format(first_day_window, "%d %B %Y"),
+      format(last_day_window, "%d %B %Y")
     ),
     y = "Reff"
   )
