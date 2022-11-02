@@ -62,18 +62,19 @@ if (!require("pacman")) {
 ```
 
 ```{r}
-pacman::p_load("tidyverse")
-pacman::p_load("here")
-pacman::p_load("rio")
-pacman::p_load("linelist")
-pacman::p_load("scales")
-pacman::p_load("janitor")
-pacman::p_load("rmdformats")
-pacman::p_load("kableExtra")
-pacman::p_load("incidence2")
-pacman::p_load("distcrete")
-pacman::p_load("epitrix")
-pacman::p_install_gh("epiverse-trace/epiparameter")
+# pacman will automatically install missing packages
+p_load("tidyverse")
+p_load("here")
+p_load("rio")
+p_load("linelist")
+p_load("scales")
+p_load("janitor")
+p_load("rmdformats")
+p_load("kableExtra")
+p_load("incidence2")
+p_load("distcrete")
+p_load("epitrix")
+p_install_gh("epiverse-trace/epiparameter") # nolint
 ```
 
 ```{r}
@@ -223,8 +224,7 @@ ggplot(total_cases, aes(x = cases, y = location)) +
 
 total_cases %>%
   mutate(
-    percentage = cases / sum(cases),
-    percentage = paste(round(percentage * 100, 2), "%")
+    percentage = sprintf("%.2f%%", cases / sum(cases) * 100)
   ) %>%
   adorn_totals() %>%
   mutate(cases = format(cases, scientific = FALSE, big.mark = " ")) %>%
@@ -287,7 +287,7 @@ si <- do.call(
     si_params
   )
 )
-si_x <- seq(1L, to = si$q(.999), by = 1L)
+si_x <- seq(1L, to = si$q(0.999), by = 1L)
 ```
 
 ```{r}

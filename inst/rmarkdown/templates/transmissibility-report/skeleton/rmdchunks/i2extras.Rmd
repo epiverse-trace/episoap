@@ -47,7 +47,7 @@ plot(last_trends,
   date_format = "%d %b %y",
   color = "white",
   fill = green_grey,
-  alpha = .8,
+  alpha = 0.8,
   n_breaks = 12,
   nrow = n_groups,
   show_cases = small_counts

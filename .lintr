@@ -1,6 +1,11 @@
-linters: linters_with_defaults(
-    commented_code_linter = NULL,
-    object_usage_linter = NULL,
-    object_name_linter = NULL
+linters: linters_with_tags(
+    tags = NULL, # include all linters
+    object_name_linter = NULL,
+    undesirable_function_linter = NULL,
+    implicit_integer_linter = NULL,
+    extraction_operator_linter = NULL,
+    todo_comment_linter = NULL,
+    commented_code_linter = NULL, # Necessary because we want to keep commented code in the template
+    object_usage_linter = NULL    # Necessary because we use Rmd child documents
   )
 

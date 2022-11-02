@@ -25,7 +25,7 @@ stratification. Results include:
 
 wrap_si <- function(x) {
   stopifnot(inherits(x, "distcrete"))
-  max_x <- x$q(.999)
+  max_x <- x$q(0.999)
   x <- si$d(seq_len(max_x))
   x[1] <- 0
   x <- x / sum(x)
@@ -141,7 +141,7 @@ ggplot(res_epiestim_group, aes(x = end)) +
   facet_wrap(~ .data[[group_var]], ncol = 1) +
   labs(
     x = "",
-    y = "Instantaneous reproduction number\\(Rt)",
+    y = "Instantaneous reproduction number (Rt)",
     title = "Estimates of Rt (EpiEstim)"
   )
 ```

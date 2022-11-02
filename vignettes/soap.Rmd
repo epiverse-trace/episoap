@@ -14,10 +14,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(soap)
-```
-
 This package provides a store of curated outbreak analytics pipelines as 
 rmarkdown reports.
 
@@ -82,7 +78,7 @@ rmarkdown::render(
 ```{r, echo = FALSE, eval = FALSE}
 webshot::rmdshot(
   file.path(tempdir(), "myreport", "myreport.Rmd"),
-  file = "vignettes/transmissibility-EpiEstim.png",
+  file = file.path("vignettes", "transmissibility-EpiEstim.png"),
   rmd_args = list(
     params = list(rt_estimator = "EpiEstim"),
     quiet = TRUE
@@ -90,7 +86,7 @@ webshot::rmdshot(
 )
 webshot::rmdshot(
   file.path(tempdir(), "myreport", "myreport.Rmd"),
-  file = "vignettes/transmissibility-EpiNow2.png",
+  file = file.path("vignettes", "transmissibility-EpiNow2.png"),
   rmd_args = list(
     params = list(rt_estimator = "EpiNow2"),
     quiet = TRUE
