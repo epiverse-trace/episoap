@@ -45,7 +45,11 @@ steps of the report include:
 * identifying key variables in the data
 * producing global and stratified epidemic curves
 * estimating the growth rate and doubling time from epidemic curves
-* estimating the instantaneous reproduction number from epidemic curvse
+* estimating the instantaneous reproduction number from epidemic curves
+
+```{r}
+knitr::include_graphics("transmissibility_pipeline.svg")
+```
 
 # Data preparation
 
