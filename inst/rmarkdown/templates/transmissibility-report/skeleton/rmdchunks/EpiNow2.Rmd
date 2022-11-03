@@ -29,6 +29,14 @@ reporting_delay <- list(
 
 #### Global transmissibility
 
+These analyses present results for the global incidence, i.e. without
+stratification. Results include:
+ 
+* a graph of the estimates of $R_t$ over time, with associated 95% credibility
+  intervals
+  
+* a table summarising these results for the last two weeks
+
 ```{r}
 rt_epinow2 <- i_recent %>%
   regroup() %>%
@@ -49,7 +57,14 @@ rt_epinow2 <- i_recent %>%
 ```
 
 ```{r}
-plot(rt_epinow2, "R")
+plot(rt_epinow2, "R") +
+  scale_x_date(breaks = scales::pretty_breaks(n = 8), date_label = "%d %b %Y") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  labs(
+    x = "",
+    y = "Instantaneous reproduction number (Rt)",
+    title = "Estimates of Rt (EpiNow2)"
+  )
 ```
 
 ```{r}
