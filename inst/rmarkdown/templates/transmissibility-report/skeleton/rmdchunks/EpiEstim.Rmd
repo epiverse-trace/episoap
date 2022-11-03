@@ -105,8 +105,7 @@ res_epiestim_global %>%
       upper
     )
   ) %>%
-  dplyr::select(-c(start, end, sd, lower, upper)) %>%
-  dplyr::select(date, everything()) %>%
+  dplyr::select(date, mean, median, `95% ci`) %>%
   rename(
     "mean $R$" = mean,
     "median $R$" = median

@@ -9,50 +9,162 @@ pacman::p_load(R0)
 ### Results
 
 ```{r}
-mGT <- generation.time("empirical", si_x)
+mGT <- generation.time("empirical", si$d(si_x))
 
 # Helper function to get R0 outputs in a tidy format, compatible with pipelines
 r0_quantiles <- function(Rt) {
-  data.frame(
+  res <- data.frame(
     q50   = Rt$R,
     q2.5  = Rt$conf.int$lower,
     q97.5 = Rt$conf.int$upper
   )
+  # R0 set missing values as Rt = 0, which is probably not what we want
+  res[res == 0] <- NA
+  
+  return(res)
 }
 
-first_day_window <- last_date - (params$incomplete_days + params$r_estim_window)
-last_day_window  <- last_date - params$incomplete_days
+# Daily incidence
+dat_i_day <- dat_raw %>%
+  incidence("date",
+    interval = 1L,
+    counts = {{ count_var }},
+    groups = {{ group_var }}
+  )
+```
 
-last_trends_r0 <- dat %>%
-  filter(between(.data[[date_var]], first_day_window, last_day_window)) %>%
-  arrange(.data[[date_var]]) %>%
-  group_by(.data[[group_var]], .data[[date_var]]) %>%
-  summarise({{ count_var }} := sum(.data[[count_var]])) %>%
+
+#### Global transmissibility
+
+These analyses present results for the global incidence, i.e. without
+stratification. Results include:
+ 
+* a graph of the estimates of $R_t$ over time, with associated 95% credibility
+  intervals
+  
+* a table summarising these results for the last two weeks
+
+```{r}
+rt_r0_global <- dat_i_day %>%
+  regroup() %>%
+  mutate(r0_quantiles(estimate.R(
+      .data[[count_var]],
+      mGT,
+      date_index,
+      begin = 1L, end = length(date_index),
+      nsim = 1e4, method = "TD"
+    )$estimates$TD)
+  )
+
+rt_r0_global %>%
+  na.omit() %>%
+  ggplot(aes(x = date_index, y = q50, ymin = `q2.5`, ymax = `q97.5`)) +
+  geom_ribbon(fill = pale_green) +
+  geom_line(color = dark_green) +
+  geom_hline(yintercept = 1, color = dark_pink) +
+  scale_x_date(breaks = scales::pretty_breaks(n = 8), date_label = "%d %b %Y") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  labs(
+    x = "",
+    y = "Instantaneous reproduction number (Rt)",
+    title = "Estimates of Rt (R0)"
+  )
+
+rt_r0_global %>%
+  tail(14) %>%
+  mutate(
+    date = date_index,
+    median = round(q50, 2),
+    `95% ci` = sprintf(
+      "[%1.2f ; %1.2f]",
+      `q2.5`,
+      `q97.5`
+    )
+  ) %>%
+  dplyr::select(date, median, `95% ci`) %>%
+  rename(
+    "median $R$" = median
+  ) %>%
+  set_names(toupper) %>%
+  kbl() %>%
+  kable_paper("striped", font_size = 18, full_width = FALSE) %>%
+  row_spec((1:14)[c(FALSE, TRUE)],
+    background = pale_green
+  )
+```
+
+#### Transmissibility by group
+
+```{r}
+rt_r0_group <- dat_i_day %>%
+  regroup(groups = {{ group_var }}) %>%
+  arrange(date_index) %>%
   group_by(.data[[group_var]]) %>%
-  summarise(
+  mutate(
     r0_quantiles(estimate.R(
       .data[[count_var]],
       mGT,
-      .data[[date_var]],
-      begin = 1L, end = params$r_estim_window,
+      date_index,
+      begin = 1L, end = length(date_index),
       nsim = 1e4, method = "TD"
-    )$estimates$TD),
-    {{ date_var }} := head(.data[[date_var]], params$r_estim_window)
+    )$estimates$TD)
   )
 
-last_trends_r0 %>%
-  ggplot(aes(x = date, y = q50, ymin = `q2.5`, ymax = `q97.5`)) +
-  geom_ribbon(fill = "grey70") +
-  geom_line() +
-  facet_wrap(vars(region)) +
-  geom_hline(yintercept = 1, color = "red", linetype = "dotted") +
+rt_r0_group %>%
+  na.omit() %>%
+  ggplot(aes(x = date_index, y = q50, ymin = `q2.5`, ymax = `q97.5`)) +
+  geom_ribbon(fill = pale_green) +
+  geom_line(color = dark_green) +
+  geom_hline(yintercept = 1, color = dark_pink) +
+  scale_x_date(breaks = scales::pretty_breaks(n = 8), date_label = "%d %b %Y") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  facet_wrap(~ .data[[group_var]], ncol = 1) +
   labs(
-    title = "Estimates of effective reproduction numbers (Reff)",
+    x = "",
+    y = "Instantaneous reproduction number (Rt)",
+    title = "Estimates of Rt (R0)"
+  )
+```
+
+```{r}
+# Plot of latest estimates
+rt_r0_group %>%
+  na.omit() %>%
+  filter(date_index == max(date_index)) %>%
+  ggplot(aes(y = .data[[group_var]]), fill = custom_grey) +
+  geom_point(aes(x = q50), color = dark_green) +
+  geom_errorbar(aes(xmin = `q2.5`, xmax = `q97.5`), color = dark_green) +
+  geom_vline(xintercept = 1, color = dark_pink) +
+  labs(
+    title = "Estimates of Rt (R0)",
     subtitle = sprintf(
       "based on data from %s - %s",
-      format(first_day_window, "%d %B %Y"),
-      format(last_day_window, "%d %B %Y")
+      format(max(get_dates(dat_i_day) - 7), "%d %B %Y"),
+      format(max(get_dates(dat_i_day)), "%d %B %Y")
     ),
-    y = "Reff"
+    y = "",
+    x = "Instantaneous Reproduction Number (Rt)"
+  )
+
+rt_r0_group %>%
+  na.omit() %>%
+  filter(date_index == max(date_index)) %>%
+  mutate(
+    median = round(q50, 2),
+    `95% ci` = sprintf(
+      "[%1.2f ; %1.2f]",
+      `q2.5`,
+      `q97.5`
+    )
+  ) %>%
+  dplyr::select(all_of(c(group_var, "median", "95% ci"))) %>%
+  rename(
+    "median $R$" = median
+  ) %>%
+  set_names(toupper) %>%
+  kbl() %>%
+  kable_paper("striped", font_size = 18, full_width = FALSE) %>%
+  row_spec((1:n_groups)[c(FALSE, TRUE)],
+    background = pale_green
   )
 ```
