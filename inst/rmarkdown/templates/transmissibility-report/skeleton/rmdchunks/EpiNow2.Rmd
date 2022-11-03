@@ -38,7 +38,16 @@ stratification. Results include:
 * a table summarising these results for the last two weeks
 
 ```{r}
-rt_epinow2 <- i_recent %>%
+dat_i_day <- dat_raw %>%
+  incidence("date",
+    interval = 1L,
+    counts = {{ count_var }},
+    groups = {{ group_var }}
+  )
+
+# Warning, this step will take 2 cores of your computer and may be running
+# for a long time!
+rt_epinow2 <- dat_i_day %>%
   regroup() %>%
   dplyr::rename(
     confirm = .data[[count_var]],
@@ -47,7 +56,7 @@ rt_epinow2 <- i_recent %>%
   epinow(
     generation_time = generation_time,
     delays = delay_opts(incubation_period, reporting_delay),
-    stan = stan_opts(samples = 10, chains = 1),
+    stan = stan_opts(samples = 1e3, chains = 2),
     horizon = 0,
     CrIs = c(0.5, 0.95),
     return_output = TRUE,
@@ -92,7 +101,7 @@ rt_epinow2$estimates$summarised %>%
 #### Transmissibility by group
 
 ```{r epinow2 with epiparameter, message = FALSE}
-rt_by_group <- i_recent %>%
+rt_by_group <- dat_i_day %>%
   dplyr::rename(
     confirm = .data[[count_var]],
     date    = date_index,
@@ -101,7 +110,7 @@ rt_by_group <- i_recent %>%
   regional_epinow(
     generation_time = generation_time,
     delays = delay_opts(incubation_period, reporting_delay),
-    stan = stan_opts(samples = 10, chains = 1),
+    stan = stan_opts(samples = 1e3, chains = 2),
     horizon = 0,
     CrIs = c(0.5, 0.95),
     return_output = TRUE,
