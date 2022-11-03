@@ -126,7 +126,10 @@ res_epiestim_global %>%
 res_epiestim_group <- dat_i_day %>%
   nest(data = c(date_index, n)) %>%
   mutate(
-    res_epiestim = map(data, ~ wrap_res(estimate_R(.$n, ee_config), dat_i_day))
+    res_epiestim = map(data, ~ wrap_res(
+      estimate_R(.x$n, config = ee_config), 
+      dat_i_day)
+    )
   ) %>%
   unnest(res_epiestim) %>%
   dplyr::select(-data)
