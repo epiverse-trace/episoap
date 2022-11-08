@@ -17,7 +17,8 @@ params:
   epiparameter_pathogen: "SARS_CoV_2_wildtype"
   data_file: "covid_hosp_uk_20201024.xlsx"
   rt_estimator: "EpiEstim"
-bibliography: "biblio/biblio.bib"
+bibliography: 
+  - grateful-refs.bib
 ---
 
 ```{r settings, echo = FALSE}
@@ -78,6 +79,7 @@ p_load("kableExtra")
 p_load("incidence2")
 p_load("distcrete")
 p_load("epitrix")
+p_install_gh("Pakillo/grateful")            # nolint
 p_install_gh("epiverse-trace/epiparameter") # nolint
 ```
 
@@ -332,4 +334,7 @@ i_recent <- dat_raw %>%
 ```{r, child=paste0("rmdchunks/", params$rt_estimator, ".Rmd")}
 ```
 
+```{r results = 'asis'}
+grateful::cite_packages(output = "paragraph")
+```
 
