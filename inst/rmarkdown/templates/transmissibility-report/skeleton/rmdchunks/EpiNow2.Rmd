@@ -9,22 +9,15 @@ pacman::p_load("EpiNow2")
 ### Results
 
 ```{r}
-# TODO: remove harcoded SARS-CoV-2 params
-generation_time <- get_generation_time(
-  disease = "SARS-CoV-2",
-  source = "ganyani"
+# Approximate serial interval with gamma distribution since this is what EpiNow2
+# will use for generation_time
+si_gamma <- epiparameter::extract_param(
+  type = "range",
+  values = c(median(si$r(1e3)), min(si$r(1e3)), max(si$r(1e3))),
+  distribution = "gamma",
+  samples = 1e3
 )
-incubation_period <- get_incubation_period(
-  disease = "SARS-CoV-2",
-  source = "lauer"
-)
-reporting_delay <- list(
-  mean = convert_to_logmean(3, 1),
-  mean_sd = 0.1,
-  sd = convert_to_logsd(3, 1),
-  sd_sd = 0.1,
-  max = 10
-)
+si_gamma <- epiparameter::gamma_shapescale2meansd(si_gamma[[1]], si_gamma[[2]])
 ```
 
 #### Global transmissibility
@@ -54,9 +47,9 @@ rt_epinow2 <- dat_i_day %>%
     date    = date_index
   ) %>%
   epinow(
-    generation_time = generation_time,
-    delays = delay_opts(incubation_period, reporting_delay),
+    generation_time = list(mean = si_gamma$mean, mean_sd = 0, sd = si_gamma$sd, sd_sd = 0, max = max(si_x)),
     stan = stan_opts(samples = 1e3, chains = 2),
+    rt = rt_opts(gp_on = "R0"),
     horizon = 0,
     CrIs = c(0.5, 0.95),
     return_output = TRUE,
@@ -108,9 +101,9 @@ rt_by_group <- dat_i_day %>%
     region  = .data[[group_var]]
   ) %>%
   regional_epinow(
-    generation_time = generation_time,
-    delays = delay_opts(incubation_period, reporting_delay),
+    generation_time = list(mean = si_gamma$mean, mean_sd = 0, sd = si_gamma$sd, sd_sd = 0, max = max(si_x)),
     stan = stan_opts(samples = 1e3, chains = 2),
+    rt = rt_opts(gp_on = "R0"),
     horizon = 0,
     CrIs = c(0.5, 0.95),
     return_output = TRUE,
