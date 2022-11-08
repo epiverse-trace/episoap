@@ -39,8 +39,8 @@ dat_i_day <- dat_raw %>%
 These analyses present results for the global incidence, i.e. without
 stratification. Results include:
  
-* a graph of the estimates of $R_t$ over time, with associated 95% credibility
-  intervals
+* a graph of the estimates of $R_t$ of the observed data over time, with
+associated 95% credibility intervals
   
 * a table summarising these results for the last two weeks
 
