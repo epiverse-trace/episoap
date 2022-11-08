@@ -20,7 +20,7 @@ r0_quantiles <- function(Rt) {
   )
   # R0 set missing values as Rt = 0, which is probably not what we want
   res[res == 0] <- NA
-  
+
   return(res)
 }
 
