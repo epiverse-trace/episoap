@@ -49,7 +49,7 @@ steps of the report include:
 * estimating the instantaneous reproduction number from epidemic curves
 
 ```{r}
-knitr::include_graphics("transmissibility_pipeline.svg")
+knitr::include_graphics("transmissibility_pipeline.png")
 ```
 
 # Data preparation
