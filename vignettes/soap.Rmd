@@ -61,7 +61,7 @@ Again, this can be done with a graphical interface by using the 'Knit with param
 
 ```{r, echo = FALSE, fig.cap = "Graphical interface to open a soap rmarkdown template in RStudio"}
 knitr::include_graphics(
-  file.path("..", "man", "figures", "rmarkdown_params_ask.png"), 
+  file.path("..", "man", "figures", "rmarkdown_params_ask.png"),
   dpi = 180
 )
 ```
