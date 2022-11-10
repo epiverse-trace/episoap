@@ -359,7 +359,7 @@ dat_i_day <- dat_raw %>%
     interval = 1L,
     counts = {{ count_var }},
     groups = {{ group_var }}
-  ) %>% 
+  ) %>%
   keep_first(n_distinct(.$date_index) - params$incomplete_days)
 ```
 
