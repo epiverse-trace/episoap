@@ -23,14 +23,6 @@ r0_quantiles <- function(Rt) {
 
   return(res)
 }
-
-# Daily incidence
-dat_i_day <- dat_raw %>%
-  incidence("date",
-    interval = 1L,
-    counts = {{ count_var }},
-    groups = {{ group_var }}
-  )
 ```
 
 
@@ -42,7 +34,7 @@ stratification. Results include:
 * a graph of the estimates of $R_t$ of the observed data over time, with
 associated 95% credibility intervals
   
-* a table summarising these results for the last two weeks
+* a table summarising these results for the last `r params$r_estim_window` days
 
 ```{r}
 rt_r0_global <- dat_i_day %>%
@@ -71,7 +63,7 @@ rt_r0_global %>%
   )
 
 rt_r0_global %>%
-  tail(14) %>%
+  tail(params$r_estim_window) %>%
   mutate(
     date = date_index,
     median = round(q50, 2),

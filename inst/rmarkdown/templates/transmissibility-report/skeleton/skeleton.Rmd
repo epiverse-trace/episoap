@@ -331,6 +331,16 @@ i_recent <- dat_raw %>%
   keep_first(params$r_estim_window) # remove incomplete data
 ```
 
+```{r}
+dat_i_day <- dat_raw %>%
+  incidence("date",
+    interval = 1L,
+    counts = {{ count_var }},
+    groups = {{ group_var }}
+  ) %>% 
+  keep_first(n_distinct(.$date_index) - params$incomplete_days)
+```
+
 ```{r, child=paste0("rmdchunks/", params$rt_estimator, ".Rmd")}
 ```
 
