@@ -7,16 +7,39 @@ output:
     code_folding: "hide"
 link-citations: no
 params:
-  epicurve_unit: "week"
-  incomplete_days: 7
-  r_estim_window: 21
-  si_mean: 4.2
-  si_sd: 4.9
-  si_dist: "gamma"
-  use_epiparameter: true
-  epiparameter_pathogen: "SARS_CoV_2_wildtype"
-  data_file: "covid_hosp_uk_20201024.xlsx"
-  rt_estimator: "EpiEstim"
+  epicurve_unit: 
+    label: "An integer or character indicating the (fixed) size of the time interval used for computing the incidence. Passed as the `interval` argument in `incidence2::incidence()`."
+    value: "week"
+  incomplete_days: 
+    label: "Number of days to exclude from the estimation of Rt since data is likely to still be incomplete."
+    value: 7
+  r_estim_window:
+    label: "Number of days to include to get the latest observed value of Rt."
+    value: 21
+  use_epiparameter: 
+    label: "Should the serial interval distribution be extracted directly from the epiparameter package?"
+    value: TRUE
+  epiparameter_pathogen: 
+    label: "Name of the pathogen in the epiparameter database if `use_parameter = TRUE`."
+    value: "SARS_CoV_2_wildtype"
+  si_mean:
+    label: "Mean of the distribution for serial interval if not using value from epiparameter. Ignored if `use_epiparameter = TRUE`."
+    value: 4.2
+  si_sd: 
+    label: "Standard deviation of the distribution for serial interval if not using value from epiparameter. Ignored if `use_epiparameter = TRUE`."
+    value: 4.9
+  si_dist: 
+    label: "Choice of probability distribution for serial interval if not using value from epiparameter. Ignored if `use_epiparameter = TRUE`."
+    value: "gamma"
+    choices: ["beta", "binom", "cauchy", "chisq", "exp", "f", "gamma", "geom", "hyper", "lnorm", "logis", "nbinom", "norm", "pois", "smirnov", "t", "tukey", "unif", "weibull", "wilcox"]
+  data_file: 
+    label: "Name of file containing the count data over time"
+    value: "data/covid_hosp_uk_20201024.xlsx"
+    input: file
+  rt_estimator: 
+    label: "Which R package to use for Rt estimation"
+    value: "i2extras"
+    choices: ["EpiEstim", "EpiNow2", "i2extras", "R0"]
 bibliography: 
   - grateful-refs.bib
 ---
@@ -105,11 +128,10 @@ hospital admissions by NHS trust.
 
 The data file is named "*covid_hosp_uk_20201024.xlsx*" and is located in
 the *data/* folder. To adapt this report to another dataset, change the name of
-the file in the script below. Note that incomplete file names can be used: the
-first matching file in `data/` will be used.
+the file in the `data_file` parameter at the top of this document.
 
 ```{r}
-data_path <- file.path("data", params$data_file)
+data_path <- params$data_file
 ```
 
 ```{r}
