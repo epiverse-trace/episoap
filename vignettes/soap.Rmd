@@ -60,7 +60,10 @@ For users who want a more ready-to-use solution, reports are already set up to p
 Again, this can be done with a graphical interface by using the 'Knit with parameters' button in RStudio:
 
 ```{r, echo = FALSE, fig.cap = "Graphical interface to open a soap rmarkdown template in RStudio"}
-knitr::include_graphics("../man/figures/rmarkdown_params_ask.png", dpi = 180)
+knitr::include_graphics(
+  file.path("..", "man", "figures", "rmarkdown_params_ask.png"), 
+  dpi = 180
+)
 ```
 
 or by running:
