@@ -36,16 +36,9 @@ stratification. Results include:
 * a graph of the estimates of $R_t$ of the observed data over time, with
 associated 95% credibility intervals
   
-* a table summarising these results for the last two weeks
+* a table summarising these results for the last `r params$r_estim_window` days
 
 ```{r}
-dat_i_day <- dat_raw %>%
-  incidence("date",
-    interval = 1L,
-    counts = {{ count_var }},
-    groups = {{ group_var }}
-  )
-
 # Warning, this step will take 2 cores of your computer and may be running
 # for a long time!
 rt_epinow2 <- dat_i_day %>%
@@ -80,7 +73,7 @@ plot(rt_epinow2, "R") +
 ```{r}
 rt_epinow2$estimates$summarised %>%
   dplyr::filter(variable == "R") %>%
-  tail(14) %>%
+  tail(params$r_estim_window) %>%
   dplyr::select(date, mean, median, lower_95, upper_95) %>%
   mutate(
     "mean $R$" = round(mean, 2),

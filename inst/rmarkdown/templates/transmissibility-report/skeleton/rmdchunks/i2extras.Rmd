@@ -38,7 +38,7 @@ intervals (CI)
   halving time); all results show point estimates and their 95% CI
 
 ```{r fig.height = 5 / 3 * n_groups}
-last_trends <- i_recent %>%
+last_trends <- dat_i_day %>%
   fit_curve(model = "poisson")
 # version with negbin model needs more iterations to converge
 # fit_curve(model = "negbin", control = glm.control(maxit = 1e3))
@@ -66,8 +66,8 @@ last_trends %>%
     title = "Estimates of daily growth rates",
     subtitle = sprintf(
       "based on data from %s - %s",
-      format(min(get_dates(i_recent)), "%d %B %Y"),
-      format(max(get_dates(i_recent)), "%d %B %Y")
+      format(min(get_dates(dat_i_day)), "%d %B %Y"),
+      format(max(get_dates(dat_i_day)), "%d %B %Y")
     ),
     y = "",
     x = "Daily rate of change"
@@ -165,8 +165,8 @@ res_R_wl %>%
     title = "Reproduction numbers estimated from growth rates",
     subtitle = sprintf(
       "based on data from %s - %s",
-      format(min(get_dates(i_recent)), "%d %B %Y"),
-      format(max(get_dates(i_recent)), "%d %B %Y")
+      format(min(get_dates(dat_i_day)), "%d %B %Y"),
+      format(max(get_dates(dat_i_day)), "%d %B %Y")
     ),
     y = "",
     x = "Reproduction number"
