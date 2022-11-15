@@ -1,11 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# soap: A Store of Outbreak Analytics Pipelines
+# episoap: A Store of Outbreak Analytics Pipelines
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/epiverse-trace/data_pipelines/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/epiverse-trace/data_pipelines/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/epiverse-trace/episoap/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/epiverse-trace/data_pipelines/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/epiverse-trace/data_pipelines/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epiverse-trace/data_pipelines?branch=main)
 [![Lifecycle:
@@ -28,7 +28,7 @@ You can install the development version of soap from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("epiverse-trace/data_pipelines")
+devtools::install_github("epiverse-trace/episoap")
 ```
 
 ## Usage
@@ -43,13 +43,13 @@ RStudio](man/figures/template_rstudio.png)
 or by running:
 
 ``` r
-rmarkdown::draft(file = "myreport.Rmd", template = "transmissibility-report", package = "soap")
+rmarkdown::draft(file = "myreport.Rmd", template = "transmissibility-report", package = "episoap")
 ```
 
 To get a list of the template reports available in this package, you can
 run:
 
 ``` r
-soap::list_templates()
+episoap::list_templates()
 #> [1] "transmissibility-report"
 ```

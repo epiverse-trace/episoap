@@ -2,7 +2,7 @@
 % Please edit documentation in R/list_templates.R
 \name{list_templates}
 \alias{list_templates}
-\title{List  available rmarkdown templates}
+\title{List available rmarkdown templates}
 \usage{
 list_templates()
 }
@@ -11,7 +11,7 @@ A character vector containing the list of rmarkdown included in the
 package
 }
 \description{
-List  available rmarkdown templates
+List available rmarkdown templates
 }
 \examples{
 list_templates()

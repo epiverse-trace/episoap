@@ -1,4 +1,4 @@
-#' List  available rmarkdown templates
+#' List available rmarkdown templates
 #'
 #' @returns A character vector containing the list of rmarkdown included in the
 #' package
@@ -9,5 +9,5 @@
 #' @export
 #'
 list_templates <- function() {
-  list.files(system.file("rmarkdown", "templates", package = "soap"))
+  list.files(system.file("rmarkdown", "templates", package = "episoap"))
 }

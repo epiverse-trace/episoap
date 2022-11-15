@@ -1,8 +1,8 @@
 ---
-title: "Introduction to soap: A Store of Outbreak Analytics Pipelines"
+title: "Introduction to episoap: A Store of Outbreak Analytics Pipelines"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction to soap: A Store of Outbreak Analytics Pipelines}
+  %\VignetteIndexEntry{Introduction to episoap: A Store of Outbreak Analytics Pipelines}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -21,7 +21,7 @@ rmarkdown reports.
 
 Reports are provided a [rmarkdown templates](https://rstudio.github.io/rstudio-extensions/rmarkdown_templates.html). You can load them either via RStudio graphical interface
 
-![Graphical interface to open a soap rmarkdown template in RStudio](../man/figures/template_rstudio.png)
+![Graphical interface to open a episoap rmarkdown template in RStudio](../man/figures/template_rstudio.png)
 
 or by running:
 
@@ -29,14 +29,14 @@ or by running:
 rmarkdown::draft(
   file = "myreport.Rmd",
   template = "transmissibility-report",
-  package = "soap"
+  package = "episoap"
 )
 ```
 
 To get a list of the template reports available in this package, you can run:
 
 ```{r}
-soap::list_templates()
+episoap::list_templates()
 ```
 
 ## Customising reports
@@ -47,7 +47,7 @@ soap::list_templates()
 rmarkdown::draft(
   file = file.path(tempdir(), "myreport"),
   template = "transmissibility-report",
-  package = "soap",
+  package = "episoap",
   edit = FALSE
 )
 ```
