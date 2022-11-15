@@ -8,7 +8,7 @@
 
 # nolint start
 library(testthat)
-library(soap)
+library(episoap)
 # nolint end
 
-test_check("soap")
+test_check("episoap")

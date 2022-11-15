@@ -7,7 +7,7 @@ test_that("all templates render (at least with default params)", {
       suppressMessages(suppressWarnings(
         rmarkdown::render(
           system.file("rmarkdown", "templates", tp, "skeleton", "skeleton.Rmd",
-            package = "soap"
+            package = "episoap"
           ),
           output_file = tempfile(),
           quiet = TRUE

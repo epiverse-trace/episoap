@@ -25,7 +25,7 @@ theme_custom <- function(...) {
 
 }
 
-#' A custom \pkg{ggplot2} theme for \pkg{soap} reports
+#' A custom \pkg{ggplot2} theme for \pkg{episoap} reports
 #'
 #' @returns
 #' A \pkg{ggplot2} [theme] object
@@ -36,10 +36,10 @@ theme_custom <- function(...) {
 #' ggplot(mtcars, aes(wt, mpg)) +
 #'   geom_point() +
 #'   labs(title = "Fuel economy declines as weight increases") +
-#'   theme_soap()
+#'   theme_episoap()
 #'
 #' @export
-theme_soap <- function() {
+theme_episoap <- function() {
 
   theme_custom()
 

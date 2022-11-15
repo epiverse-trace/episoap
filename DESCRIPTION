@@ -1,4 +1,4 @@
-Package: soap
+Package: episoap
 Title: A Store of Outbreak Analytics Pipelines 
 Version: 0.0.0.9000
 Authors@R: 
@@ -11,12 +11,12 @@ Config/testthat/edition: 3
 Encoding: UTF-8
 Language: en-GB
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.2
 Suggests: 
     knitr,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
-URL: https://epiverse-trace.github.io/data_pipelines/
+URL: https://epiverse-trace.github.io/epi/
 Imports: 
     ggplot2,
     rmarkdown

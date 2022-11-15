@@ -1,6 +1,6 @@
-test_that("theme_soap() works", {
+test_that("theme_episoap() works", {
 
-  th <- theme_soap()
+  th <- theme_episoap()
 
   expect_s3_class(th, "theme")
   expect_true(attr(th, "complete"))
