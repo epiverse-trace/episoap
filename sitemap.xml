@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://epiverse-trace.github.io/data_pipelines/404.html</loc>
+    <loc>https://epiverse-trace.github.io/episoap/404.html</loc>
   </url>
   <url>
-    <loc>https://epiverse-trace.github.io/data_pipelines/CONTRIBUTING.html</loc>
+    <loc>https://epiverse-trace.github.io/episoap/CONTRIBUTING.html</loc>
   </url>
   <url>
-    <loc>https://epiverse-trace.github.io/data_pipelines/LICENSE-text.html</loc>
+    <loc>https://epiverse-trace.github.io/episoap/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>https://epiverse-trace.github.io/data_pipelines/LICENSE.html</loc>
+    <loc>https://epiverse-trace.github.io/episoap/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://epiverse-trace.github.io/data_pipelines/articles/index.html</loc>
+    <loc>https://epiverse-trace.github.io/episoap/articles/episoap.html</loc>
   </url>
   <url>
-    <loc>https://epiverse-trace.github.io/data_pipelines/articles/soap.html</loc>
+    <loc>https://epiverse-trace.github.io/episoap/articles/index.html</loc>
   </url>
   <url>
-    <loc>https://epiverse-trace.github.io/data_pipelines/authors.html</loc>
+    <loc>https://epiverse-trace.github.io/episoap/authors.html</loc>
   </url>
   <url>
-    <loc>https://epiverse-trace.github.io/data_pipelines/index.html</loc>
+    <loc>https://epiverse-trace.github.io/episoap/index.html</loc>
   </url>
   <url>
-    <loc>https://epiverse-trace.github.io/data_pipelines/reference/index.html</loc>
+    <loc>https://epiverse-trace.github.io/episoap/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://epiverse-trace.github.io/data_pipelines/reference/list_templates.html</loc>
+    <loc>https://epiverse-trace.github.io/episoap/reference/list_templates.html</loc>
   </url>
   <url>
-    <loc>https://epiverse-trace.github.io/data_pipelines/reference/theme_soap.html</loc>
+    <loc>https://epiverse-trace.github.io/episoap/reference/theme_episoap.html</loc>
   </url>
 </urlset>
