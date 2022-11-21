@@ -191,7 +191,7 @@ dat_i <- dat_raw %>%
   )
 
 # general variables for automatic customisation of plots
-n_groups <- length(unique(unlist(dat_i[group_var])))
+n_groups <- dplyr::n_distinct(dat_i[[group_var]])
 small_counts <- max(dat_i[count_var]) < 20
 
 # plot with regions as colors if less than 9 categories
