@@ -137,8 +137,7 @@ data_path <- params$data_file
 ```{r}
 dat_raw <- data_path %>%
   rio::import() %>%
-  tibble() %>%
-  mutate(date = as.Date(date)) # convert date-time to date
+  tibble()
 ```
 
 Once imported into __R__, the dataset called `dat` includes:
@@ -355,6 +354,8 @@ i_recent <- dat_raw %>%
 
 ```{r}
 dat_i_day <- dat_raw %>%
+  # Temporary workaround for https://github.com/reconverse/incidence2/issues/82
+  mutate({{ date_var }} := as.Date(.data[[date_var]])) %>%
   incidence("date",
     interval = 1L,
     counts = {{ count_var }},
