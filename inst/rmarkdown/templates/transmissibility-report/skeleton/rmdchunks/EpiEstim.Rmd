@@ -1,25 +1,14 @@
 ## _EpiEstim_ 
 
-```{r}
+```{r rt-load-pkg}
 pacman::p_load(EpiEstim)
 ```
 
 ### Explanations
 
-
 ### Results
 
-#### Global transmissibility
-
-These analyses present results for the global incidence, i.e. without
-stratification. Results include:
- 
-* a graph of the estimates of $R_t$ of the observed data over time, with
-associated 95% credibility intervals
-
-* a table summarising these results for the last `r params$r_estim_window` days
-
-```{r}
+```{r rt-wrappers-prep}
 # Function to process a distrcrete object and output `si_discr` argument for
 # EpiEstim::make_config
 
@@ -64,13 +53,27 @@ wrap_res <- function(x, incid = NULL) {
 
 # Run EpiEstim
 ee_config <- make_config(si_distr = wrap_si(si))
+```
 
+#### Global transmissibility
+
+These analyses present results for the global incidence, i.e. without
+stratification. Results include:
+ 
+* a graph of the estimates of $R_t$ of the observed data over time, with
+associated 95% credibility intervals
+
+* a table summarising these results for the last `r params$r_estim_window` days
+
+```{r rt-estim-global}
 res_epiestim_global <- dat_i_day %>%
   regroup() %>%
   pull(n) %>%
   estimate_R(config = ee_config) %>%
   wrap_res(dat_i_day)
+```
 
+```{r rt-plot-global}
 # Graph of all values over time
 ggplot(res_epiestim_global, aes(x = end)) +
   geom_ribbon(aes(ymin = lower, ymax = upper), fill = pale_green) +
@@ -83,7 +86,9 @@ ggplot(res_epiestim_global, aes(x = end)) +
     y = "Instantaneous reproduction number (Rt)",
     title = "Estimates of Rt (EpiEstim)"
   )
+```
 
+```{r rt-table-global}
 # Table
 res_epiestim_global %>%
   tail(params$r_estim_window) %>%
@@ -112,7 +117,7 @@ res_epiestim_global %>%
 
 #### Transmissibility by group
 
-```{r fig.height = 5 / 3 * n_groups}
+```{r rt-estim-group}
 # Get results by group, keeping only the last 14 days of data
 res_epiestim_group <- dat_i_day %>%
   nest(data = c(date_index, n)) %>%
@@ -124,7 +129,9 @@ res_epiestim_group <- dat_i_day %>%
   ) %>%
   unnest(res_epiestim) %>%
   dplyr::select(-data)
+```
 
+```{r rt-plot-group, fig.height = 5 / 3 * n_groups}
 # Graph of all values over time
 ggplot(res_epiestim_group, aes(x = end)) +
   geom_ribbon(aes(ymin = lower, ymax = upper), fill = pale_green) +
@@ -140,7 +147,7 @@ ggplot(res_epiestim_group, aes(x = end)) +
   )
 ```
 
-```{r }
+```{r rt-plot-estimates-group}
 # Plot of latest estimates
 res_epiestim_group %>%
   filter(end == max(end)) %>%
@@ -158,7 +165,9 @@ res_epiestim_group %>%
     y = "",
     x = "Instantaneous Reproduction Number (Rt)"
   )
+```
 
+```{r rt-table-group}
 res_epiestim_group %>%
   filter(end == max(end)) %>%
   mutate(

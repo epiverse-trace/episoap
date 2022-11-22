@@ -1,6 +1,6 @@
 ## _EpiNow2_ 
 
-```{r}
+```{r rt-load-pkg}
 pacman::p_load("EpiNow2")
 ```
 
@@ -8,7 +8,7 @@ pacman::p_load("EpiNow2")
 
 ### Results
 
-```{r}
+```{r rt-wrappers-prep}
 # Approximate serial interval with gamma distribution since this is what EpiNow2
 # will use for generation_time
 si_gamma <- epiparameter::extract_param(
@@ -38,10 +38,10 @@ associated 95% credibility intervals
   
 * a table summarising these results for the last `r params$r_estim_window` days
 
-```{r}
+```{r rt-estim-global}
 # Warning, this step will take 2 cores of your computer and may be running
 # for a long time!
-rt_epinow2 <- dat_i_day %>%
+res_epinow2_global <- dat_i_day %>%
   regroup() %>%
   dplyr::rename(
     confirm = .data[[count_var]],
@@ -59,8 +59,8 @@ rt_epinow2 <- dat_i_day %>%
   )
 ```
 
-```{r}
-plot(rt_epinow2, "R") +
+```{r rt-plot-global}
+plot(res_epinow2_global, "R") +
   scale_x_date(breaks = scales::pretty_breaks(n = 8), date_label = "%d %b %Y") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
   labs(
@@ -70,8 +70,8 @@ plot(rt_epinow2, "R") +
   )
 ```
 
-```{r}
-rt_epinow2$estimates$summarised %>%
+```{r rt-table-global}
+res_epinow2_global$estimates$summarised %>%
   dplyr::filter(variable == "R") %>%
   tail(params$r_estim_window) %>%
   dplyr::select(date, mean, median, lower_95, upper_95) %>%
@@ -94,8 +94,8 @@ rt_epinow2$estimates$summarised %>%
 
 #### Transmissibility by group
 
-```{r epinow2 with epiparameter, message = FALSE}
-rt_by_group <- dat_i_day %>%
+```{r rt-estim-group, message = FALSE}
+res_epinow2_group <- dat_i_day %>%
   dplyr::rename(
     confirm = .data[[count_var]],
     date    = date_index,
@@ -113,12 +113,16 @@ rt_by_group <- dat_i_day %>%
   )
 ```
 
-```{r}
-rt_by_group$summary$plots$R
+```{r rt-plot-group}
+res_epinow2_group$summary$plots$R
 ```
 
-```{r}
-rt_by_group$summary$summarised_results$data %>%
+```{r rt-plot-estimates-group}
+# Missing for now
+```
+
+```{r rt-table-group}
+res_epinow2_group$summary$summarised_results$data %>%
   dplyr::filter(metric == "Effective reproduction no.") %>%
   dplyr::select(region, mean, median, lower_95, upper_95) %>%
   dplyr::mutate(
