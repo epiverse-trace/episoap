@@ -14,9 +14,9 @@ mGT <- generation.time("empirical", si$d(si_x))
 # Helper function to get R0 outputs in a tidy format, compatible with pipelines
 r0_quantiles <- function(Rt) {
   res <- data.frame(
-    q50   = Rt$R,
-    q2.5  = Rt$conf.int$lower,
-    q97.5 = Rt$conf.int$upper
+    median = Rt$R,
+    lower  = Rt$conf.int$lower,
+    upper  = Rt$conf.int$upper
   )
   # R0 set missing values as Rt = 0, which is probably not what we want
   res[res == 0] <- NA
@@ -70,11 +70,11 @@ rt_r0_global %>%
   tail(params$r_estim_window) %>%
   mutate(
     date = date_index,
-    median = round(q50, 2),
+    median = round(median, 2),
     `95% ci` = sprintf(
       "[%1.2f ; %1.2f]",
-      `q2.5`,
-      `q97.5`
+      lower,
+      upper
     )
   ) %>%
   dplyr::select(date, median, `95% ci`) %>%
@@ -110,7 +110,7 @@ res_r0_group <- dat_i_day %>%
 ```{r rt-plot-group}
 res_r0_group %>%
   na.omit() %>%
-  ggplot(aes(x = date_index, y = q50, ymin = `q2.5`, ymax = `q97.5`)) +
+  ggplot(aes(x = date_index, y = median, ymin = lower, ymax = upper)) +
   geom_ribbon(fill = pale_green) +
   geom_line(color = dark_green) +
   geom_hline(yintercept = 1, color = dark_pink) +
@@ -130,8 +130,8 @@ res_r0_group %>%
   na.omit() %>%
   filter(date_index == max(date_index)) %>%
   ggplot(aes(y = .data[[group_var]]), fill = custom_grey) +
-  geom_point(aes(x = q50), color = dark_green) +
-  geom_errorbar(aes(xmin = `q2.5`, xmax = `q97.5`), color = dark_green) +
+  geom_point(aes(x = median), color = dark_green) +
+  geom_errorbar(aes(xmin = lower, xmax = upper), color = dark_green) +
   geom_vline(xintercept = 1, color = dark_pink) +
   labs(
     title = "Estimates of Rt (R0)",
@@ -150,11 +150,11 @@ res_r0_group %>%
   na.omit() %>%
   filter(date_index == max(date_index)) %>%
   mutate(
-    median = round(q50, 2),
+    median = round(median, 2),
     `95% ci` = sprintf(
       "[%1.2f ; %1.2f]",
-      `q2.5`,
-      `q97.5`
+      lower,
+      upper
     )
   ) %>%
   dplyr::select(all_of(c(group_var, "median", "95% ci"))) %>%
