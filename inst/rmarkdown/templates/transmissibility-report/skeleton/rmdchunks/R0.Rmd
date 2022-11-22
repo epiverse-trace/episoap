@@ -1,6 +1,6 @@
 ## _R0_
 
-```{r}
+```{r rt-load-pkg}
 pacman::p_load(R0)
 ```
 
@@ -8,7 +8,7 @@ pacman::p_load(R0)
 
 ### Results
 
-```{r}
+```{r rt-wrappers-prep}
 mGT <- generation.time("empirical", si$d(si_x))
 
 # Helper function to get R0 outputs in a tidy format, compatible with pipelines
@@ -36,8 +36,8 @@ associated 95% credibility intervals
   
 * a table summarising these results for the last `r params$r_estim_window` days
 
-```{r}
-rt_r0_global <- dat_i_day %>%
+```{r rt-estim-global}
+res_r0_global <- dat_i_day %>%
   regroup() %>%
   mutate(r0_quantiles(estimate.R(
       .data[[count_var]],
@@ -47,8 +47,10 @@ rt_r0_global <- dat_i_day %>%
       nsim = 1e4, method = "TD"
     )$estimates$TD)
   )
+```
 
-rt_r0_global %>%
+```{r rt-plot-global}
+res_r0_global %>%
   na.omit() %>%
   ggplot(aes(x = date_index, y = q50, ymin = `q2.5`, ymax = `q97.5`)) +
   geom_ribbon(fill = pale_green) +
@@ -61,7 +63,9 @@ rt_r0_global %>%
     y = "Instantaneous reproduction number (Rt)",
     title = "Estimates of Rt (R0)"
   )
+```
 
+```{r rt-table-global}
 rt_r0_global %>%
   tail(params$r_estim_window) %>%
   mutate(
@@ -87,8 +91,8 @@ rt_r0_global %>%
 
 #### Transmissibility by group
 
-```{r}
-rt_r0_group <- dat_i_day %>%
+```{r rt-estim-group}
+res_r0_group <- dat_i_day %>%
   regroup(groups = {{ group_var }}) %>%
   arrange(date_index) %>%
   group_by(.data[[group_var]]) %>%
@@ -101,8 +105,10 @@ rt_r0_group <- dat_i_day %>%
       nsim = 1e4, method = "TD"
     )$estimates$TD)
   )
+```
 
-rt_r0_group %>%
+```{r rt-plot-group}
+res_r0_group %>%
   na.omit() %>%
   ggplot(aes(x = date_index, y = q50, ymin = `q2.5`, ymax = `q97.5`)) +
   geom_ribbon(fill = pale_green) +
@@ -118,9 +124,9 @@ rt_r0_group %>%
   )
 ```
 
-```{r}
+```{r rt-plot-estimates-group}
 # Plot of latest estimates
-rt_r0_group %>%
+res_r0_group %>%
   na.omit() %>%
   filter(date_index == max(date_index)) %>%
   ggplot(aes(y = .data[[group_var]]), fill = custom_grey) +
@@ -137,8 +143,10 @@ rt_r0_group %>%
     y = "",
     x = "Instantaneous Reproduction Number (Rt)"
   )
+```
 
-rt_r0_group %>%
+```{r rt-table-group}
+res_r0_group %>%
   na.omit() %>%
   filter(date_index == max(date_index)) %>%
   mutate(
