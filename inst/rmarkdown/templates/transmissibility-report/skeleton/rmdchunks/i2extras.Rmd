@@ -146,10 +146,10 @@ res_R_wl <- last_trends %>%
 res_R_wl_smry <- res_R_wl %>%
   group_by(.data[[group_var]]) %>%
   summarise(
-    mean = mean(R),
+    mean   = mean(R),
     median = median(R),
-    q_0.025 = quantile(R, 0.025),
-    q_0.975 = quantile(R, 0.975)
+    lower  = quantile(R, 0.025),
+    upper  = quantile(R, 0.975)
   )
 
 res_R_wl %>%
@@ -157,7 +157,7 @@ res_R_wl %>%
   geom_violin(aes(x = R), fill = pale_green, color = green_grey) +
   geom_pointrange(
     data = res_R_wl_smry,
-    aes(x = median, xmin = q_0.025, xmax = q_0.975),
+    aes(x = median, xmin = lower, xmax = upper),
     color = dark_green
   ) +
   geom_vline(xintercept = 1, color = dark_pink) +
@@ -178,11 +178,11 @@ res_R_wl_smry %>%
     median = round(median, 2),
     `95% ci` = sprintf(
       "[%1.2f ; %1.2f]",
-      q_0.025,
-      q_0.975
+      lower,
+      upper
     )
   ) %>%
-  dplyr::select(-c(q_0.025, q_0.975)) %>%
+  dplyr::select(-c(lower, upper)) %>%
   rename(
     "mean $R$" = mean,
     "median $R$" = median
