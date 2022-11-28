@@ -101,10 +101,7 @@ last_trends %>%
   ) %>%
   set_names(toupper) %>%
   kbl() %>%
-  kable_paper("striped", font_size = 18, full_width = FALSE) %>%
-  row_spec(seq_len(nrow(total_cases))[c(FALSE, TRUE)],
-    background = pale_green
-  )
+  kable_paper("striped", font_size = 18, full_width = FALSE)
 ```
 
 #### Estimating $R$ from the growth rates
@@ -189,8 +186,5 @@ res_R_wl_smry %>%
   ) %>%
   set_names(toupper) %>%
   kbl() %>%
-  kable_paper("striped", font_size = 18, full_width = FALSE) %>%
-  row_spec(seq_len(nrow(total_cases))[c(FALSE, TRUE)],
-    background = pale_green
-  )
+  kable_paper("striped", font_size = 18, full_width = FALSE)
 ```
