@@ -53,3 +53,17 @@ run:
 episoap::list_templates()
 #> [1] "transmissibility-report"
 ```
+
+## Related projects
+
+This projects has some overlap with other R package:
+
+- `{sitrep}` from the R4Epis organisation. While the stated goals and
+  approaches can appear similar, `{episoap}` and `{sitrep}` are actually
+  two very different projects. The `{sitrep}` reports are more specific
+  (providing, e.g., reports for a specific disease), and thus more
+  detailed. They are also more opinionated in the sense that they
+  provide a single analysis path for each situation, based on the
+  extensive experience of MSF. `{episoap}` on the other hand offers a
+  more generic approach, with the emphasis on alternative paths you can
+  take within a single analysis.
