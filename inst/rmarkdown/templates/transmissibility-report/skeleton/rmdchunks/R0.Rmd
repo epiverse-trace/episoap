@@ -83,10 +83,7 @@ rt_r0_global %>%
   ) %>%
   set_names(toupper) %>%
   kbl() %>%
-  kable_paper("striped", font_size = 18, full_width = FALSE) %>%
-  row_spec((1:14)[c(FALSE, TRUE)],
-    background = pale_green
-  )
+  kable_paper("striped", font_size = 18, full_width = FALSE)
 ```
 
 #### Transmissibility by group
@@ -163,8 +160,5 @@ res_r0_group %>%
   ) %>%
   set_names(toupper) %>%
   kbl() %>%
-  kable_paper("striped", font_size = 18, full_width = FALSE) %>%
-  row_spec((1:n_groups)[c(FALSE, TRUE)],
-    background = pale_green
-  )
+  kable_paper("striped", font_size = 18, full_width = FALSE)
 ```
