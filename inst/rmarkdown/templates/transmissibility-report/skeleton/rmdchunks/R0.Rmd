@@ -66,7 +66,7 @@ res_r0_global %>%
 ```
 
 ```{r rt-table-global}
-rt_r0_global %>%
+res_r0_global %>%
   tail(params$r_estim_window) %>%
   mutate(
     date = date_index,
