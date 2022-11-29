@@ -34,7 +34,7 @@ intervals (CI)
 
 * graphs showing the estimates of the growth rates ($r$) with their 95% CI
 
-* a table summarizing estimtes of $r$ and the associated period (doubling or
+* a table summarizing estimates of $r$ and the associated period (doubling or
   halving time); all results show point estimates and their 95% CI
 
 ```{r fig.height = 5 / 3 * n_groups}
