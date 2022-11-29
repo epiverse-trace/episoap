@@ -52,7 +52,7 @@ res_r0_global <- dat_i_day %>%
 ```{r rt-plot-global}
 res_r0_global %>%
   na.omit() %>%
-  ggplot(aes(x = date_index, y = q50, ymin = `q2.5`, ymax = `q97.5`)) +
+  ggplot(aes(x = date_index, y = median, ymin = lower, ymax = upper)) +
   geom_ribbon(fill = pale_green) +
   geom_line(color = dark_green) +
   geom_hline(yintercept = 1, color = dark_pink) +
