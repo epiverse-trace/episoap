@@ -184,6 +184,8 @@ This section creates epidemic curves ("_epicurves_"), with or without stratifica
 ```{r}
 # convert daily incidence into weekly incidence using incidence2
 dat_i <- dat_raw %>%
+  # Temporary workaround for https://github.com/reconverse/incidence2/issues/82
+  mutate({{ date_var }} := as.Date(.data[[date_var]])) %>%
   incidence("date",
     interval = params$epicurve_unit,
     counts = {{ count_var }},
