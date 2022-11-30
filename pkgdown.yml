@@ -3,7 +3,7 @@ pkgdown: 2.0.6
 pkgdown_sha: ~
 articles:
   episoap: episoap.html
-last_built: 2022-11-30T08:31Z
+last_built: 2022-11-30T18:12Z
 urls:
   reference: https://epiverse-trace.github.io/episoap/reference
   article: https://epiverse-trace.github.io/episoap/articles
