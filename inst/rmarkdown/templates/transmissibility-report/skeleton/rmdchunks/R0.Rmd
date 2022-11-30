@@ -131,10 +131,9 @@ res_r0_group %>%
   geom_errorbar(aes(xmin = lower, xmax = upper), color = dark_green) +
   geom_vline(xintercept = 1, color = dark_pink) +
   labs(
-    title = "Estimates of Rt (R0)",
+    title = "Latest estimates of Rt",
     subtitle = sprintf(
-      "based on data from %s - %s",
-      format(max(get_dates(dat_i_day) - 7), "%d %B %Y"),
+      "As of %s",
       format(max(get_dates(dat_i_day)), "%d %B %Y")
     ),
     y = "",
