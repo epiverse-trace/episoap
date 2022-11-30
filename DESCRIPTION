@@ -16,7 +16,8 @@ Suggests:
     knitr,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
-URL: https://epiverse-trace.github.io/epi/
+URL: https://epiverse-trace.github.io/episoap, https://github.com/epiverse-trace/episoap
 Imports: 
     ggplot2,
     rmarkdown
+BugReports: https://github.com/epiverse-trace/episoap/issues
