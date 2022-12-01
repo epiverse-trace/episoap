@@ -1,0 +1,22 @@
+## `r tools::toTitleCase("{{p}}")` pipeline
+
+```{r}
+p_folder <- system.file("rmarkdown", "templates", "{{p}}", package = "episoap")
+```
+
+```{r}
+d <- yaml::read_yaml(file.path(p_folder, "template.yaml"))$description
+```
+
+`r d`
+
+```{r}
+knitr::include_graphics(
+  file.path(p_folder, "skeleton", "{{p}}_pipeline.png"),
+  dpi = 90
+)
+```
+
+```{r comment=''}
+cat(readLines(file.path(p_folder, "skeleton", "skeleton.Rmd")), sep = "\n")
+```

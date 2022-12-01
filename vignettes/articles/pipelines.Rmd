@@ -1,0 +1,29 @@
+---
+title: "List of included pipelines"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = FALSE
+)
+```
+
+# {.tabset}
+
+```{r setup}
+library(episoap)
+```
+
+```{r}
+pipelines <- list_templates()
+```
+
+```{r, echo = FALSE, results = "asis"}
+src <- lapply(pipelines, function(p) {
+  knitr::knit_expand("_pipeline_overview.Rmd")
+})
+res <- knitr::knit_child(text = unlist(src), quiet = TRUE)
+cat(res, sep = "\n")
+```
