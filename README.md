@@ -56,9 +56,9 @@ episoap::list_templates()
 
 ## Related projects
 
-This projects has some overlap with other R package:
+This projects has some overlap with other R packages:
 
-- `{sitrep}` from the R4Epis organisation. While the stated goals and
+- `{sitrep}` from the R4EPI organisation. While the stated goals and
   approaches can appear similar, `{episoap}` and `{sitrep}` are actually
   two very different projects. The `{sitrep}` reports are more specific
   (providing, e.g., reports for a specific disease), and thus more
