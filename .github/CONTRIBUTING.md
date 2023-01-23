@@ -1,12 +1,12 @@
-# Contributing to soap
+# Contributing to episoap
 
-This outlines how to propose a change to soap. 
+This outlines how to propose a change to episoap. 
 For more detailed info about contributing to this, and other epiverse-trace packages, please see the
 [**development contributing guide**](https://github.com/epiverse-trace/.github/blob/main/CONTRIBUTING.md). 
 
 ## Updating or creating Rmarkdown templates
 
-The main value of the soap package is the Rmarkdown templates it provides. This section details how to proceed if you wish to update one of the existing templates or to add a new one.
+The main value of the episoap package is the Rmarkdown templates it provides. This section details how to proceed if you wish to update one of the existing templates or to add a new one.
 
 When adding new code, whether in the form of a new template, or by updating an existing template, please try to hardcode as few settings and parameters as possible. We want the reports to be usable out-of-the-box in as many contexts as possible.
 
@@ -61,6 +61,6 @@ In the same way that we welcome new templates, you can fix, improve or refine an
 
 ## Code of Conduct
 
-Please note that the soap project is released with a
+Please note that the episoap project is released with a
 [Contributor Code of Conduct](https://github.com/epiverse-trace/.github/blob/main/CODE_OF_CONDUCT.md). By contributing to this
 project you agree to abide by its terms.
