@@ -1,7 +1,7 @@
 ## _i2extras_
 
 ```{r}
-pacman::p_load("i2extras")
+library(i2extras)
 ```
 
 ### Explanations

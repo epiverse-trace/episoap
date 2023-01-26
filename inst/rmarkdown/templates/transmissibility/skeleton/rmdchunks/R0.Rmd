@@ -1,7 +1,7 @@
 ## _R0_
 
 ```{r rt-load-pkg}
-pacman::p_load(R0)
+library(R0)
 ```
 
 ### Explanations
