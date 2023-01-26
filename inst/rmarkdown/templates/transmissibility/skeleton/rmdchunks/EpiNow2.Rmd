@@ -1,7 +1,7 @@
 ## _EpiNow2_ 
 
 ```{r rt-load-pkg}
-pacman::p_load("EpiNow2")
+library(EpiNow2)
 ```
 
 ### Explanations
