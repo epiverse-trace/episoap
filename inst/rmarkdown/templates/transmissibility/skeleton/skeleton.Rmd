@@ -46,7 +46,7 @@ bibliography:
 
 ```{r lockfile, include=FALSE}
 renv::use(
-  "Pakillo/grateful@HEAD",
+  "Pakillo/grateful@HEAD", # nolint
   "R6@2.5.1",
   "RColorBrewer@1.1-3",
   "Rcpp@1.0.10",
@@ -73,8 +73,8 @@ renv::use(
   "distcrete@1.0.3",
   "ellipsis@0.3.2",
   "epitrix@0.2.2",
-  "epiverse-trace/epiparameter@HEAD",
-  "epiverse-trace/episoap@HEAD",
+  "epiverse-trace/epiparameter@HEAD", # nolint
+  "epiverse-trace/episoap@HEAD", # nolint
   "evaluate@0.20",
   "fansi@1.0.4",
   "farver@2.1.1",
