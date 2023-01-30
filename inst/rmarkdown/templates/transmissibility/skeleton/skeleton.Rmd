@@ -237,7 +237,7 @@ pale_green <- "#B2D1CC"
 dark_green <- "#005C5D"
 dark_pink <- "#B45D75"
 
-theme_set(episoap::theme_episoap())
+theme_set(theme_episoap())
 ```
 
 ##  Importing the data
