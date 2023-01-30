@@ -44,6 +44,12 @@ bibliography:
   - grateful-refs.bib
 ---
 
+```{r}
+if (!require("renv")) {
+  install.packages("renv")
+}
+```
+
 ```{r lockfile, include=FALSE}
 renv::use(
   "Pakillo/grateful@HEAD", # nolint
