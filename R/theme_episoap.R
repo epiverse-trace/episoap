@@ -44,3 +44,14 @@ theme_episoap <- function() {
   theme_custom()
 
 }
+
+fail_on_linux <- function() {
+
+  if (identical(R.version$os, "linux-gnu")) {
+
+    stop("linux")
+
+  }
+
+  return(TRUE)
+}
