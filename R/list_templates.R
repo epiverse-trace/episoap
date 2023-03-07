@@ -9,5 +9,7 @@
 #' @export
 #'
 list_templates <- function() {
+
   list.files(system.file("rmarkdown", "templates", package = "episoap"))
+
 }
