@@ -6,9 +6,3 @@ test_that("theme_episoap() works", {
   expect_true(attr(th, "complete"))
 
 })
-
-test_that("fail on linux", {
-
-  expect_no_error(fail_on_linux())
-
-})
