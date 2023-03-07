@@ -1,9 +1,11 @@
 Package: episoap
 Title: A Store of Outbreak Analytics Pipelines 
 Version: 0.0.0.9000
-Authors@R: 
+Authors@R: c(
     person("Hugo", "Gruson", , "hugo.gruson+R@normalesup.org", role = c("aut", "cre", "cph"),
-           comment = c(ORCID = "0000-0002-4094-1476"))
+           comment = c(ORCID = "0000-0002-4094-1476")),
+    person("data.org", role = "fnd")
+    )
 Description: A store of outbreak analytics pipelines using different 
     infrastructures for automation.
 License: MIT + file LICENSE
