@@ -35,8 +35,8 @@ datasets.
 You can install the development version of soap from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("epiverse-trace/episoap")
+# install.packages("remotes")
+remotes::install_github("epiverse-trace/episoap")
 ```
 
 ## Usage
