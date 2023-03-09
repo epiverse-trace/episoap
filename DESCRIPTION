@@ -21,6 +21,8 @@ Suggests:
 VignetteBuilder: 
     knitr
 Config/testthat/edition: 3
+Config/Needs/website:
+    epiverse-trace/epiversetheme
 Encoding: UTF-8
 Language: en-GB
 Roxygen: list(markdown = TRUE)
