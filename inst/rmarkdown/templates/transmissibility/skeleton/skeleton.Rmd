@@ -44,13 +44,13 @@ bibliography:
   - grateful-refs.bib
 ---
 
-```{r}
+```{r, message = FALSE}
 if (!require("renv")) {
   install.packages("renv")
 }
 ```
 
-```{r lockfile, include=FALSE}
+```{r lockfile, include = FALSE, message = FALSE}
 renv::use(
   "Pakillo/grateful@HEAD", # nolint
   "R6@2.5.1",
@@ -79,7 +79,7 @@ renv::use(
   "distcrete@1.0.3",
   "ellipsis@0.3.2",
   "epitrix@0.2.2",
-  "epiverse-trace/epiparameter@HEAD", # nolint
+  "epiverse-trace/epiparameter@fd250ce", # nolint
   "epiverse-trace/episoap@HEAD", # nolint
   "evaluate@0.20",
   "fansi@1.0.4",
@@ -114,6 +114,7 @@ renv::use(
   "lubridate@1.9.1",
   "magrittr@2.0.3",
   "memoise@2.0.1",
+  "mgcv@1.8-42", # https://github.com/rstudio/renv/issues/1166
   "mime@0.12",
   "munsell@0.5.0",
   "openssl@2.0.5",
