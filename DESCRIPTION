@@ -4,6 +4,7 @@ Version: 0.0.0.9000
 Authors@R: c(
     person("Hugo", "Gruson", , "hugo.gruson+R@normalesup.org", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0002-4094-1476")),
+    person("Thibaut", "Jombart", role = "aut"),
     person("data.org", role = "fnd")
   )
 Description: A store of outbreak analytics pipelines using different
