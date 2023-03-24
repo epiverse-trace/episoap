@@ -80,7 +80,6 @@ renv::use(
   "ellipsis@0.3.2",
   "epitrix@0.2.2",
   "epiverse-trace/epiparameter@fd250ce", # nolint
-  "epiverse-trace/episoap@HEAD", # nolint
   "evaluate@0.20",
   "fansi@1.0.4",
   "farver@2.1.1",
