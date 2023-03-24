@@ -1,0 +1,29 @@
+---
+title: "Design principles"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Design principles}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+As always during software development, we were faced with tough design choices while developing this package. We want to clearly document which choices were made, and what are the reasons behind them.
+
+## Package and version management
+
+Breaking changes during R package updates in one of the major sources of non-[reproducibility](https://cran.r-project.org/web/views/ReproducibleResearch.html) and of headaches for R users of all levels. To guard users against this, but also to ensure that the provided templates work out of the box, throughout the time a given `{episoap}` version is on CRAN, we [pin specific versions for our dependencies](https://cloud.google.com/blog/topics/developers-practitioners/best-practices-dependency-management), via `{renv}`.
+
+We recognize this approach is [not practical for all situations](https://stackoverflow.com/a/44938662/4439357), and in particular, differs from the dependency management framework in R or python packages. However, we do believe it is the best trade-off between usability, maintainability and flexibility in the context of pipeline templates.
+
+You can read the [dedicated issue](https://github.com/epiverse-trace/episoap/issues/69) for more context behind this choice and the possible downsides.
+
+### Pinned version updates
+
+To avoid forcing the users to deal with obsolete package versions, we update the template code to work with the latest CRAN version of each package, just before updating `{episoap}` itself on CRAN by running `renv::embed()` in each of the Rmarkdown files.
