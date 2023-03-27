@@ -1,5 +1,9 @@
 ## _EpiEstim_ 
 
+```{r lockfile-rt, include = FALSE, message = FALSE}
+renv::use("EpiEstim@2.2-4")
+```
+
 ```{r rt-load-pkg}
 library(EpiEstim)
 ```
