@@ -4,7 +4,8 @@ release_bullets <- function() {
 
   c(
     "Run `goodpractice::gp()`",
-    "Update lockfiles embedded in templates"
+    "Update lockfiles embedded in templates",
+    "Test templates with renv::use(isolate = TRUE)"
   )
 
 }
