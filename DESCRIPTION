@@ -15,6 +15,7 @@ URL: https://epiverse-trace.github.io/episoap,
 BugReports: https://github.com/epiverse-trace/episoap/issues
 Imports: 
     ggplot2,
+    renv (>= 0.13.0),
     rmarkdown
 Suggests: 
     knitr,

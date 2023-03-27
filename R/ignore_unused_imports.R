@@ -3,4 +3,5 @@
 # nolint end
 ignore_unused_imports <- function() {
   rmarkdown::render
+  renv::use
 }
