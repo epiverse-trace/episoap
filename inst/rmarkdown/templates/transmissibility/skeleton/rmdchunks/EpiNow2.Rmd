@@ -1,5 +1,9 @@
 ## _EpiNow2_ 
 
+```{r lockfile-rt, include = FALSE, message = FALSE}
+renv::use("EpiNow2@1.3.4")
+```
+
 ```{r rt-load-pkg}
 library(EpiNow2)
 ```
