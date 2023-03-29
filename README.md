@@ -56,7 +56,7 @@ episoap::list_templates()
 
 ## Related projects
 
-This projects has some overlap with other R packages:
+This project has some overlap with other R packages:
 
 - `{sitrep}` from the Applied Epi organisation. While the stated goals
   and approaches can appear similar, `{episoap}` and `{sitrep}` are
