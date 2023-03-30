@@ -12,3 +12,4 @@
 ^vignettes/articles$
 ^inst/rmarkdown/templates/.*\.html$
 ^\.lintr
+^data-raw$
