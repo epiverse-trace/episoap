@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# episoap: A Store of Outbreak Analytics Pipelines
+# episoap: A Store of Outbreak Analytics Pipelines <img src="man/figures/logo.svg" align="right" width="120" />
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/epiverse-trace/episoap/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/epiverse-trace/data_pipelines/actions/workflows/R-CMD-check.yaml)
