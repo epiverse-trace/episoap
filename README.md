@@ -68,3 +68,10 @@ This project has some overlap with other R packages:
   situation, based on the extensive experience of MSF. `{episoap}` on
   the other hand offers a more generic approach, with the emphasis on
   alternative paths you can take within a single analysis.
+
+## Acknowledgements
+
+- The package logo is a derivative from a [pipeline
+  logo](https://www.flaticon.com/free-icon/pipeline_2082696), provided
+  by [flaticon user “Eucalyp”](https://www.flaticon.com/authors/eucalyp)
+  for free for personal and commercial use with attribution.
