@@ -1,13 +1,13 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# episoap: A Store of Outbreak Analytics Pipelines
+# episoap: A Store of Outbreak Analytics Pipelines <img src="man/figures/logo.svg" align="right" width="120" />
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/epiverse-trace/episoap/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/epiverse-trace/data_pipelines/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/epiverse-trace/episoap/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/epiverse-trace/episoap/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
-coverage](https://codecov.io/gh/epiverse-trace/data_pipelines/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epiverse-trace/data_pipelines?branch=main)
+coverage](https://codecov.io/gh/epiverse-trace/episoap/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epiverse-trace/episoap?branch=main)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
@@ -58,12 +58,13 @@ episoap::list_templates()
 
 This project has some overlap with other R packages:
 
-- `{sitrep}` from the Applied Epi organisation. While the stated goals
-  and approaches can appear similar, `{episoap}` and `{sitrep}` are
-  actually two very different projects. The `{sitrep}` reports are more
-  specific (providing, e.g., reports for a specific disease although a
-  generic template is in development), and thus more detailed. They are
-  also more opinionated in the sense that they provide a single analysis
-  path for each situation, based on the extensive experience of MSF.
-  `{episoap}` on the other hand offers a more generic approach, with the
-  emphasis on alternative paths you can take within a single analysis.
+- [`{sitrep}`](https://github.com/R4EPI/sitrep) from the Applied Epi
+  organisation. While the stated goals and approaches can appear
+  similar, `{episoap}` and `{sitrep}` are actually two very different
+  projects. The `{sitrep}` reports are more specific (providing, e.g.,
+  reports for a specific disease although a generic template is in
+  development), and thus more detailed. They are also more opinionated
+  in the sense that they provide a single analysis path for each
+  situation, based on the extensive experience of MSF. `{episoap}` on
+  the other hand offers a more generic approach, with the emphasis on
+  alternative paths you can take within a single analysis.
