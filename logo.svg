@@ -25,7 +25,7 @@
    inkscape:pagecheckerboard="0"
    showgrid="false"
    inkscape:zoom="1.5624203"
-   inkscape:cx="147.84754"
+   inkscape:cx="137.60702"
    inkscape:cy="181.44926"
    inkscape:window-width="1869"
    inkscape:window-height="1057"
@@ -37,7 +37,20 @@
    fit-margin-left="0"
    fit-margin-right="0"
    fit-margin-bottom="0" /><defs
-   id="defs1564" />
+   id="defs1564"><linearGradient
+     id="linearGradient2765"
+     gradientUnits="userSpaceOnUse"
+     x1="133.05859"
+     y1="392.0741"
+     x2="470.04819"
+     y2="392.0741"
+     gradientTransform="translate(-133.1,-197.5)"><stop
+       offset="0"
+       style="stop-color:#0B1E2C"
+       id="stop1488-3" /><stop
+       offset="1"
+       style="stop-color:#0D6C9F"
+       id="stop1490-6" /></linearGradient></defs>
 <style
    type="text/css"
    id="style2">
@@ -55,7 +68,17 @@
 	.st11{fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;fill-opacity:0.5502;}
 	.st12{fill-rule:evenodd;clip-rule:evenodd;}
 </style>
-<g
+<path
+   class="st4"
+   d="M 168.5,0 0,97.3 v 194.6 l 168.5,97.3 168.4,-97.3 V 97.3 Z"
+   id="path1493-7"
+   style="fill:#ffffff;fill-opacity:1"
+   sodipodi:nodetypes="ccccccc" /><path
+   class="st4"
+   d="M 168.5,0 0,97.3 v 194.6 l 168.5,97.3 168.4,-97.3 V 97.3 Z"
+   id="path1493-7-3"
+   style="fill:#ffffff;fill-opacity:1"
+   sodipodi:nodetypes="ccccccc" /><g
    id="g1482"
    transform="translate(-133.1,-197.5)">
 	<path
