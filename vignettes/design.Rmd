@@ -20,7 +20,11 @@ As always during software development, we were faced with tough design choices w
 
 Breaking changes during R package updates in one of the major sources of non-[reproducibility](https://cran.r-project.org/web/views/ReproducibleResearch.html) and of headaches for R users of all levels. To guard users against this, but also to ensure that the provided templates work out of the box, throughout the time a given `{episoap}` version is on CRAN, we [pin specific versions for our dependencies](https://cloud.google.com/blog/topics/developers-practitioners/best-practices-dependency-management), via `{renv}`.
 
-We recognize this approach is [not practical for all situations](https://stackoverflow.com/a/44938662/4439357), and in particular, differs from the dependency management framework in R or python packages. However, we do believe it is the best trade-off between usability, maintainability and flexibility in the context of pipeline templates.
+We recognize this approach is [not practical for all situations](https://stackoverflow.com/a/44938662/4439357), and in particular, differs from the dependency management framework in R or python packages. However, we do believe it is the best trade-off between usability, maintainability and flexibility in the context of pipeline templates:
+
+- it ensures pipelines work in the long-term, independently of release timings and machine-specific characteristics (in particular pre-existing package library)
+- it doesn't blur the lines between the package installation and the package loading steps
+- it doesn't interfere with the user existing package library. In other words, it doesn't permanently modify the system settings.
 
 You can read the [dedicated issue](https://github.com/epiverse-trace/episoap/issues/69) for more context behind this choice and the possible downsides.
 
