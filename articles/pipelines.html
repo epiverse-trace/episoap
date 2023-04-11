@@ -102,7 +102,7 @@
 spreads) from a stratified population. It performs basic descriptive
 analyses, and uses different approaches for estimating
 transmissibility.</p>
-<p><img src="../../../../_temp/Library/episoap/rmarkdown/templates/transmissibility/skeleton/transmissibility_pipeline.png"><!-- --></p>
+<p><img src="transmissibility_pipeline.svg"><!-- --></p>
 <pre><code>---
 title: "Estimating transmissibility with population stratification"
 author: Thibaut Jombart, Hugo Gruson
@@ -161,7 +161,6 @@ renv::use(
   "base64enc@0.1-3",
   "bit64@4.0.5",
   "bit@4.0.5",
-  "bookdown@0.31",
   "bslib@0.4.2",
   "cachem@1.0.6",
   "callr@3.7.3",
@@ -296,7 +295,7 @@ steps of the report include:
 * estimating the instantaneous reproduction number from epidemic curves
 
 ```{r}
-knitr::include_graphics("transmissibility_pipeline.png")
+knitr::include_graphics("transmissibility_pipeline.svg")
 ```
 
 # Data preparation
@@ -316,7 +315,6 @@ library(tidyr)
 library(rio)
 library(linelist)
 library(janitor)
-library(rmdformats)
 library(kableExtra)
 library(incidence2)
 library(distcrete)
