@@ -307,8 +307,6 @@ This section creates epidemic curves ("_epicurves_"), with or without stratifica
 ```{r}
 # convert daily incidence into weekly incidence using incidence2
 dat_i <- dat_raw %>%
-  # Temporary workaround for https://github.com/reconverse/incidence2/issues/82
-  mutate({{ date_var }} := as.Date(.data[[date_var]])) %>%
   incidence("date",
     interval = params$epicurve_unit,
     counts = count_var,
@@ -436,8 +434,6 @@ last_date <- dat %>%
 # version using keep_first and keep_last from i2extras
 days_to_keep <- params$incomplete_days + params$r_estim_window
 i_recent <- dat_raw %>%
-  # Temporary workaround for https://github.com/reconverse/incidence2/issues/82
-  mutate({{ date_var }} := as.Date(.data[[date_var]])) %>%
   incidence("date",
     counts = count_var,
     groups = group_var
@@ -448,8 +444,6 @@ i_recent <- dat_raw %>%
 
 ```{r}
 dat_i_day <- dat_raw %>%
-  # Temporary workaround for https://github.com/reconverse/incidence2/issues/82
-  mutate({{ date_var }} := as.Date(.data[[date_var]])) %>%
   incidence("date",
     interval = 1L,
     counts = count_var,
