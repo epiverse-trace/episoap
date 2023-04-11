@@ -16,7 +16,7 @@ theme_custom <- function(...) {
       strip.background = element_rect(
         fill = green_grey,
         color = "white",
-        size = 1
+        linewidth = 1
       ),
       strip.text = element_text(colour = "white"),
       text = element_text(size = 16, colour = custom_grey),
