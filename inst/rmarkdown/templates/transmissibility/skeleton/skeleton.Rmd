@@ -310,42 +310,12 @@ dat_i <- dat_raw %>%
 # general variables for automatic customisation of plots
 n_groups <- dplyr::n_distinct(get_groups(dat_i)[[1]])
 small_counts <- max(get_count_value(dat_i)) < 20
-
-# plot with regions as colors if less than 9 categories
-if (n_groups <= 9L) {
-  dat_i %>%
-    plot(
-      fill = group_var, col_pal = muted, color = "white",
-      alpha = 1, angle = 45, legend = "bottom",
-      show_cases = small_counts
-    ) +
-    guides(fill = guide_legend(title = NULL)) +
-    labs(title = "Incidence of cases over time")
-} else {
-  dat_i %>%
-    regroup() %>%
-    plot(
-      angle = 45, color = "white",
-      fill = green_grey,
-      alpha = 1,
-      show_cases = small_counts
-    ) +
-    labs(title = "Incidence of cases over time")
-}
 ```
 
 ```{r fig.height = 5 / 3 * n_groups}
 dat_i %>%
-  facet_plot(
-    angle = 45,
-    date_format = "%d %b %y",
-    color = "white",
-    fill = green_grey,
-    alpha = 1,
-    n_breaks = 6,
-    nrow = n_groups,
-    show_cases = small_counts
-  )
+  plot(alpha = 1, nrow = n_groups) +
+  labs(title = "Incidence of cases over time")
 ```
 
 ## Numbers of cases

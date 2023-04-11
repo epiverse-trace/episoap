@@ -83,7 +83,6 @@ ggplot(res_epiestim_global, aes(x = end)) +
   geom_ribbon(aes(ymin = lower, ymax = upper), fill = pale_green) +
   geom_line(aes(y = median), color = dark_green) +
   geom_hline(yintercept = 1, color = dark_pink) +
-  scale_x_date(breaks = scales::pretty_breaks(n = 8), date_label = "%d %b %Y") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
   labs(
     x = "",
@@ -138,7 +137,6 @@ ggplot(res_epiestim_group, aes(x = end)) +
   geom_ribbon(aes(ymin = lower, ymax = upper), fill = pale_green) +
   geom_line(aes(y = median), color = dark_green) +
   geom_hline(yintercept = 1, color = dark_pink) +
-  scale_x_date(breaks = scales::pretty_breaks(n = 8), date_label = "%d %b %Y") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
   facet_wrap(~ .data[[group_var]], ncol = 1) +
   labs(
