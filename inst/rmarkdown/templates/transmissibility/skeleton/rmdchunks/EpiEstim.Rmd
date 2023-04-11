@@ -72,7 +72,7 @@ associated 95% credibility intervals
 ```{r rt-estim-global}
 res_epiestim_global <- dat_i_day %>%
   regroup() %>%
-  pull(n) %>%
+  get_count_value() %>%
   estimate_R(config = ee_config) %>%
   wrap_res(dat_i_day)
 ```
@@ -121,10 +121,10 @@ res_epiestim_global %>%
 ```{r rt-estim-group}
 # Get results by group, keeping only the last 14 days of data
 res_epiestim_group <- dat_i_day %>%
-  nest(data = c(date_index, n)) %>%
+  nest(data = c(get_date_index_name(.), get_count_value_name(.))) %>%
   mutate(
     res_epiestim = map(data, ~ wrap_res(
-      estimate_R(.x$n, config = ee_config),
+      estimate_R(.x$count, config = ee_config),
       dat_i_day)
     )
   ) %>%
