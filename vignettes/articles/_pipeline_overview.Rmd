@@ -12,7 +12,7 @@ d <- yaml::read_yaml(file.path(p_folder, "template.yaml"))$description
 
 ```{r}
 knitr::include_graphics(
-  file.path(p_folder, "skeleton", "{{p}}_pipeline.png"),
+  file.path(p_folder, "skeleton", "{{p}}_pipeline.svg"),
   dpi = 90
 )
 ```
