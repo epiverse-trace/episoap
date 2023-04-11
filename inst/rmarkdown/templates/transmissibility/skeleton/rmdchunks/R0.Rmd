@@ -44,7 +44,7 @@ associated 95% credibility intervals
 res_r0_global <- dat_i_day %>%
   regroup() %>%
   mutate(r0_quantiles(estimate.R(
-      .data[[count_var]],
+      get_count_value(.),
       mGT,
       date_index,
       begin = 1L, end = length(date_index),
@@ -94,12 +94,12 @@ res_r0_global %>%
 
 ```{r rt-estim-group}
 res_r0_group <- dat_i_day %>%
-  regroup(groups = {{ group_var }}) %>%
+  regroup(groups = get_group_names(.)) %>%
   arrange(date_index) %>%
-  group_by(.data[[group_var]]) %>%
+  group_by(.data[[get_group_names(.)]]) %>%
   mutate(
     r0_quantiles(estimate.R(
-      .data[[count_var]],
+      .data$count,
       mGT,
       date_index,
       begin = 1L, end = length(date_index),
