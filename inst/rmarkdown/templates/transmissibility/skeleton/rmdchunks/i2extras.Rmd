@@ -1,7 +1,11 @@
 ## _i2extras_
 
 ```{r lockfile-rt, include = FALSE, message = FALSE}
-renv::use("i2extras@0.1.2")
+renv::use("i2extras@0.2.1")
+```
+
+```{r rt-load-pkg}
+library(i2extras)
 ```
 
 ```{r rt-load-pkg}
