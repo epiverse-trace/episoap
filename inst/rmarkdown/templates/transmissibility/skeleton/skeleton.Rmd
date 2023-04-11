@@ -303,8 +303,8 @@ dat_i <- dat_raw %>%
   mutate({{ date_var }} := as.Date(.data[[date_var]])) %>%
   incidence("date",
     interval = params$epicurve_unit,
-    counts = {{ count_var }},
-    groups = {{ group_var }}
+    counts = count_var,
+    groups = group_var
   )
 
 # general variables for automatic customisation of plots
@@ -431,8 +431,8 @@ i_recent <- dat_raw %>%
   # Temporary workaround for https://github.com/reconverse/incidence2/issues/82
   mutate({{ date_var }} := as.Date(.data[[date_var]])) %>%
   incidence("date",
-    counts = {{ count_var }},
-    groups = {{ group_var }}
+    counts = count_var,
+    groups = group_var
   ) %>%
   keep_last(days_to_keep) %>% # keep data for fitting
   keep_first(params$r_estim_window) # remove incomplete data
@@ -444,8 +444,8 @@ dat_i_day <- dat_raw %>%
   mutate({{ date_var }} := as.Date(.data[[date_var]])) %>%
   incidence("date",
     interval = 1L,
-    counts = {{ count_var }},
-    groups = {{ group_var }}
+    counts = count_var,
+    groups = group_var
   ) %>%
   keep_first(n_distinct(.$date_index) - params$incomplete_days)
 ```
