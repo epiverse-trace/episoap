@@ -4,3 +4,6 @@
 .Ruserdata
 inst/doc
 docs
+inst/rmarkdown/templates/*/skeleton/*.html
+inst/rmarkdown/templates/*/skeleton/skeleton_files/
+inst/rmarkdown/templates/*/skeleton/grateful-refs.bib
