@@ -71,6 +71,8 @@ This project has some overlap with other R packages:
 
 ## Acknowledgements
 
+- Thanks to Sam Abbott for pointing out issues with the way EpiNow2 was
+  used in the transmissibility pipeline (#35)
 - The package logo is a derivative from a [pipeline
   logo](https://www.flaticon.com/free-icon/pipeline_2082696), provided
   by [flaticon user “Eucalyp”](https://www.flaticon.com/authors/eucalyp)
