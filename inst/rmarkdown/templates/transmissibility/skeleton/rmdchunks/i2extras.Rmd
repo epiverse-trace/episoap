@@ -8,10 +8,6 @@ renv::use("i2extras@0.2.1")
 library(i2extras)
 ```
 
-```{r rt-load-pkg}
-library(i2extras)
-```
-
 ### Explanations
 
 The package *i2extras* is used to estimate daily growth rates '_r_', using Poisson
