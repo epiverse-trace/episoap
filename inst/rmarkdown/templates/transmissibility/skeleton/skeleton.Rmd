@@ -48,7 +48,6 @@ bibliography:
 renv::use(
   "MASS@7.3-58.2",
   "Matrix@1.5-1",
-  "Pakillo/grateful@HEAD", # nolint
   "R6@2.5.1",
   "RColorBrewer@1.1-3",
   "Rcpp@1.0.10",
@@ -88,6 +87,7 @@ renv::use(
   "generics@0.1.3",
   "ggplot2@3.4.2",
   "glue@1.6.2",
+  "grateful@0.2.0",
   "grates@1.0.0",
   "gtable@0.3.3",
   "haven@2.5.2",
@@ -455,7 +455,7 @@ dat_i_day <- dat_raw %>%
 ```{r, child=paste0("rmdchunks/", params$rt_estimator, ".Rmd")}
 ```
 
-```{r results = 'asis'}
-grateful::cite_packages(output = "paragraph")
+```{r}
+grateful::cite_packages(output = "paragraph", out.dir = ".")
 ```
 
