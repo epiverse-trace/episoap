@@ -260,7 +260,12 @@ data_path <- params$data_file
 ```{r}
 dat_raw <- data_path %>%
   rio::import() %>%
-  tibble()
+  tibble() %>%
+  # rio (via readxl) tends to use POSIXct for what is encoded as Date in the
+  # original data file.
+  # But POSIXct is not a good format to work with dates, as discussed in
+  # https://github.com/reconverse/incidence2/issues/105
+  mutate(across(where(\(x) inherits(x, "POSIXct")), as.Date))
 ```
 
 Once imported into __R__, the dataset called `dat` includes:
