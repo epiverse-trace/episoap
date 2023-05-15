@@ -43,7 +43,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
-        lfs: true
+        lfs: ${{ github.event_name != 'pull_request' }}
 
       - uses: r-lib/actions/setup-pandoc@v2
 
