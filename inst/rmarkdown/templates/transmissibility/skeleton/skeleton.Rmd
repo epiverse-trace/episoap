@@ -76,7 +76,7 @@ renv::use(
   "ellipsis@0.3.2",
   "EpiEstim@2.2-4",
   "EpiNow2@1.3.4",
-  "epiverse-trace/episoap",
+  "epiverse-trace/episoap", # nolint
   "epitrix@0.4.0",
   "epiverse-trace/epiparameter@fd250ce", # nolint 
   "evaluate@0.20",
