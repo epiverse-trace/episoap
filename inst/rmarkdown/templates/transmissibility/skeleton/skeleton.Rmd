@@ -74,6 +74,7 @@ renv::use(
   "distributional@0.3.2",
   "dplyr@1.1.1",
   "ellipsis@0.3.2",
+  "epiverse-trace/episoap", # nolint
   "epitrix@0.4.0",
   "epiverse-trace/epiparameter@fd250ce", # nolint 
   "evaluate@0.20",
@@ -461,6 +462,6 @@ dat_i_day <- dat_raw %>%
 ```
 
 ```{r}
-grateful::cite_packages(output = "paragraph", out.dir = ".")
+grateful::cite_packages(output = "paragraph", out.dir = ".", pkgs = "Session")
 ```
 
