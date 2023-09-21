@@ -20,6 +20,9 @@ Imports:
 Suggests: 
     knitr,
     testthat (>= 3.0.0)
+Remotes:
+    epiverse-trace/cfr
+    epiverse-trace/epiparameter
 VignetteBuilder: 
     knitr
 Config/testthat/edition: 3
@@ -29,4 +32,4 @@ Config/Needs/website:
 Encoding: UTF-8
 Language: en-GB
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3
