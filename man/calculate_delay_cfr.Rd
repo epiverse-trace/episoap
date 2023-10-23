@@ -2,7 +2,8 @@
 % Please edit documentation in R/severity.R
 \name{calculate_delay_cfr}
 \alias{calculate_delay_cfr}
-\title{Title}
+\title{Calculate CFR with uncertainty by accounting for the epidemiological delay
+distribution of symptom onset to outcome.}
 \usage{
 calculate_delay_cfr(
   data,
@@ -10,24 +11,44 @@ calculate_delay_cfr(
   onset_date_variable = "date_onset",
   deaths_date_variable = "date_death",
   date_scale = "day",
-  death_status = "Status",
+  cases_status = "Status",
   outcome = "dead"
 )
 }
 \arguments{
-\item{outcome}{}
+\item{data}{the input data frame or linelist object}
+
+\item{onset_death}{an object of type \code{epidist} with the epidemiological
+parameters of the disease of interest.}
+
+\item{onset_date_variable}{the name of the column with the onset date values}
+
+\item{deaths_date_variable}{the name of the column with the death date values}
+
+\item{date_scale}{the time scale of the onset date values}
+
+\item{cases_status}{the name of the column with the information about whether
+a case was dead or recovered}
+
+\item{outcome}{the value in the \code{cases_status} column that is used to
+specify if the cases were dead. default is "dead".}
+}
+\value{
+a vector of 3 elements: the estimated CFR and the confidence interval
+around it.
 }
 \description{
-Title
+Calculate CFR with uncertainty by accounting for the epidemiological delay
+distribution of symptom onset to outcome.
 }
 \examples{
 delay_cfr <- calculate_delay_cfr(
   data                   = data,
   onset_death            = onset_death,
-  onset_date_variable    = "date_onset",
+  onset_date_variable    = "Onset_week",
   deaths_date_variable   = "date_death",
   date_scale             = "day",
-  death_status           = "Status",
+  cases_status           = "Status",
   outcome                = "dead"
 )
 }

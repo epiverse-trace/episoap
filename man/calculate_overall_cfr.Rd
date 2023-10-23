@@ -7,23 +7,48 @@
 calculate_overall_cfr(
   data,
   infection_type = "direct_contact",
-  death_status = "Status",
-  case_status = NULL
+  cases_status = "Status",
+  outcomes = c("dead", "recovered"),
+  diagnosis_status = "Type",
+  diagnosis_outcome = "confirmed"
 )
 }
 \arguments{
-\item{data}{a data frame or a linelist object}
+\item{data}{a \verb{data frame} or \code{linelist} object}
 
 \item{infection_type}{the type of the infection}
 
-\item{death_status}{the name of the column with the case's death status}
+\item{cases_status}{the name of the column with the information about whether
+a case was dead or recovered}
 
-\item{case_status}{}
+\item{outcomes}{a \code{character} vector with the 2 outcomes about the cases
+status. default is c("dead", "recovered")}
 
-\item{onset_date}{the name of the column with the onset date values}
+\item{diagnosis_status}{the name of the column with the cases diagnosis
+outcome.}
 
-\item{date_scale}{the time scale of the onset date values}
+\item{diagnosis_outcome}{the value, in the column with the cases diagnosis
+outcome, used to represent the confirmed cases.}
+}
+\value{
+a \code{list} with elements of type \code{vector}. Each vector contains the
+estimated CFR value and its confident interval.
+\enumerate{
+\item cfr_total: the CFR among the total cases
+\item cfr_confirmed_only: the CFR among the confirmed cases only
+}
 }
 \description{
 Calculate CFR with uncertainty
+}
+\examples{
+overall_cfr <- calculate_overall_cfr(
+  data              = system.file("extdata", "Marburg_EqGuinea_linelist.csv",
+                                  package = "readepi"),
+  infection_type    = "direct_contact",
+  cases_status      = "Status",
+  outcomes          = c("dead", "recovered"),
+  diagnosis_status  = "Type",
+  diagnosis_outcome = "confirmed"
+)
 }

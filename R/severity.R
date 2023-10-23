@@ -1,40 +1,59 @@
-
 #' Calculate CFR with uncertainty
 #'
+#' @param data a `data frame` or `linelist` object
 #' @param infection_type the type of the infection
-#' @param onset_date the name of the column with the onset date values
-#' @param date_scale the time scale of the onset date values
-#' @param data a data frame or a linelist object
-#' @param death_status the name of the column with the case's death status
-#' @param case_status
+#' @param cases_status the name of the column with the information about whether
+#'    a case was dead or recovered
+#' @param outcomes a `character` vector with the 2 outcomes about the cases
+#'    status. default is c("dead", "recovered")
+#' @param diagnosis_status the name of the column with the cases diagnosis
+#'    outcome.
+#' @param diagnosis_outcome the value, in the column with the cases diagnosis
+#'    outcome, used to represent the confirmed cases.
 #'
-#' @return
+#' @return a `list` with elements of type `vector`. Each vector contains the
+#'    estimated CFR value and its confident interval.
+#' \enumerate{
+#'   \item cfr_total: the CFR among the total cases
+#'   \item cfr_confirmed_only: the CFR among the confirmed cases only
+#'   }
+#'
 #' @export
 #'
 #' @examples
+#' overall_cfr <- calculate_overall_cfr(
+#'   data              = system.file("extdata", "Marburg_EqGuinea_linelist.csv",
+#'                                   package = "readepi"),
+#'   infection_type    = "direct_contact",
+#'   cases_status      = "Status",
+#'   outcomes          = c("dead", "recovered"),
+#'   diagnosis_status  = "Type",
+#'   diagnosis_outcome = "confirmed"
+#' )
 calculate_overall_cfr <- function(data,
-                                  infection_type = "direct_contact",
-                                  death_status   = "Status",
-                                  case_status    = NULL) {
+                                  infection_type    = "direct_contact",
+                                  cases_status      = "Status",
+                                  outcomes          = c("dead", "recovered"),
+                                  diagnosis_status  = "Type",
+                                  diagnosis_outcome = "confirmed") {
   checkmate::assert_data_frame(data, min.rows = 1L, min.cols = 1L,
                                null.ok = FALSE)
   checkmate::assert_choice(infection_type, choices = c("direct_contact",
                                                        "vector_borne",
                                                        "food_water_born"),
                            null.ok = FALSE)
-  checkmate::assert_character(death_status, null.ok = FALSE, len = 1L)
-  checkmate::assert_character(case_status, null.ok = TRUE, len = 1L)
+  checkmate::assert_character(cases_status, null.ok = FALSE, len = 1L)
+  checkmate::assert_vector(outcomes, null.ok  = FALSE, min.len = 1L,
+                           unique = TRUE)
+  checkmate::assert_character(diagnosis_status, null.ok = FALSE, len = 1L)
+  checkmate::assert_character(diagnosis_outcome, null.ok = FALSE, len = 1L)
 
   ## check whether the input is incidence or linelist (data.frame)
   total_cases      <- nrow(data)
-  deaths           <- nrow(data[data[[death_status]] == "dead", ])
-  confirmed <- confirmed_deaths <- NULL
-  if (!is.null(case_status)) {
-    confirmed        <- nrow(data[data[[case_status]] == "confirmed", ])
-    confirmed_deaths <- nrow(data[which(data[[case_status]] == "confirmed" &
-                                          data[[death_status]] == "dead"), ])
-  }
-
+  deaths           <- nrow(data[data[[cases_status]] == outcomes[[1L]], ])
+  confirmed        <- nrow(data[data[[cases_status]] == outcomes[[2L]], ])
+  confirmed_deaths <- nrow(data[which(data[[diagnosis_status]] == diagnosis_outcome & # nolint: line_length_linter
+                                        data[[cases_status]] == outcomes[[1L]]), ]) # nolint: line_length_linter
 
   # CFR among total cases
   cfr_total          <- ci_text(deaths, total_cases)
@@ -48,21 +67,48 @@ calculate_overall_cfr <- function(data,
   )
 }
 
-# Define binomial confidence interval function:
+#' Get binomial confidence interval
+#'
+#' @param x the total number of deaths or confirmed deaths(for the CFR among the
+#'    confirmed cases only)
+#' @param n the total number of cases or confirmed cases(for the CFR among the
+#'    confirmed cases only)
+#'
+#' @returns a `vector` of 3 elements of type numeric that correspond to the
+#'    estimated CFR and its confidence interval.
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' @examples
+#' ci <- ci_text(120, 20)
 ci_text <- function(x, n) {
   bin_out <- binom.test(as.numeric(x), as.numeric(n))
   est     <- round(100.0 * c(bin_out[["estimate"]], bin_out[["conf.int"]]))
   c(est[[1L]], est[[2L]], est[[3L]])
 }
 
-#' Title
+#' Create the `epidist` object
 #'
-#' @param data
-#' @param death_status
-#' @param disease
-#' @param ...
+#' @param data the input data frame or linelist object
+#' @param disease the name of the disease of interest
+#' @param ... the other extra arguments. Possible values are:
+#' \enumerate{
+#'   \item type: a `character` specifying whether summary statistics are based
+#'      around percentiles (default) or range. Type `?epiparemeter::extract_param` # nolint: line_length_linter
+#'      for more details.
+#'   \item values: a numeric `vector`. Type `?epiparemeter::extract_param` for
+#'      more details
+#'   \item distribution: a `character` string that specifies the distribution to
+#'      use. Type `?epiparemeter::extract_param` for more details.
+#'   \item shape: the shape of the specified distribution (when distribution = gamma or weibull) # nolint: line_length_linter
+#'   \item scale: the scale of the specified distribution (when distribution = gamma or weibull) # nolint: line_length_linter
+#'   \item meanlog: the meanlog of the specified distribution (when distribution = lnorm) # nolint: line_length_linter
+#'   \item sdlog: the sdlog of the specified distribution (when distribution = lnorm) # nolint: line_length_linter
+#'   }
 #'
-#' @return
+#' @return an object of type `epidist` with the epidemiological parameters of
+#'    the disease of interest.
 #' @export
 #'
 #' @examples
@@ -75,12 +121,10 @@ ci_text <- function(x, n) {
 #'   distribution = "gamma"
 #' )
 get_onset_to_death_distro <- function(data,
-                                      death_status = "Status",
                                       disease      = "Marburg Virus Disease",
                                       ...) {
   checkmate::assert_data_frame(data, min.rows = 1L, min.cols = 1L,
                                null.ok = FALSE)
-  checkmate::assert_character(death_status, null.ok = FALSE, len = 1L)
   checkmate::assert_character(disease, null.ok = FALSE, len = 1L)
 
   args_list <- list(...) #distribution should be mandatory in this list
@@ -93,7 +137,7 @@ get_onset_to_death_distro <- function(data,
       param <- extract_params(data, args_list)
     } else if (any(c("shape", "scale", "meanlog", "sdlog") %in% names(args_list))) { # nolint: line_length_linter
       param <- get_params(args_list)
-    } else{
+    } else {
       stop("Please provide the distribution parameters or summary statistics.")
     }
 
@@ -119,17 +163,22 @@ get_onset_to_death_distro <- function(data,
   onset_death
 }
 
-#' Title
+#' Calculate CFR with uncertainty by accounting for the epidemiological delay
+#' distribution of symptom onset to outcome.
 #'
-#' @param data
-#' @param onset_death
-#' @param onset_date_variable
-#' @param deaths_date_variable
-#' @param date_scale
-#' @param death_status
-#' @param outcome
+#' @param data the input data frame or linelist object
+#' @param onset_death an object of type `epidist` with the epidemiological
+#'    parameters of the disease of interest.
+#' @param onset_date_variable the name of the column with the onset date values
+#' @param deaths_date_variable the name of the column with the death date values
+#' @param date_scale the time scale of the onset date values
+#' @param cases_status the name of the column with the information about whether
+#'    a case was dead or recovered
+#' @param outcome the value in the `cases_status` column that is used to
+#'    specify if the cases were dead. default is "dead".
 #'
-#' @return
+#' @return a vector of 3 elements: the estimated CFR and the confidence interval
+#'    around it.
 #' @export
 #'
 #' @examples
@@ -139,14 +188,14 @@ get_onset_to_death_distro <- function(data,
 #'   onset_date_variable    = "Onset_week",
 #'   deaths_date_variable   = "date_death",
 #'   date_scale             = "day",
-#'   death_status           = "Status",
+#'   cases_status           = "Status",
 #'   outcome                = "dead"
 #' )
 calculate_delay_cfr <- function(data, onset_death,
                                 onset_date_variable    = "date_onset",
                                 deaths_date_variable   = "date_death",
                                 date_scale             = "day",
-                                death_status           = "Status",
+                                cases_status           = "Status",
                                 outcome                = "dead") {
   checkmate::assert_character(onset_date_variable, null.ok = TRUE, len = 1L)
   checkmate::assert_character(date_scale, null.ok = TRUE, len = 1L)
@@ -166,7 +215,7 @@ calculate_delay_cfr <- function(data, onset_death,
     # to be looked into
 
     ## ----- the following is only for test purpose. it should be removed
-    data[[deaths_date_variable]] = data[[onset_date_variable]] + 100
+    data[[deaths_date_variable]] <- data[[onset_date_variable]] + 100L
     ## ----- end of it
     ## date_index = c(onset_date_variable,
     ## deaths_date_variable)
@@ -189,28 +238,41 @@ calculate_delay_cfr <- function(data, onset_death,
   total_known_to_date <- sum(known_outcomes_cfr[["known_outcomes"]])
 
   # estimate CFR with delay
-  num_death <- nrow(data[which(data[[death_status]] == outcome), ])
+  num_death <- nrow(data[which(data[[cases_status]] == outcome), ])
   delay_cfr <- ci_text(num_death, round(total_known_to_date))
   delay_cfr
 }
 
+#' Extract the distribution parameters from percentiles, median and range
+#'
+#' @param data the input data frame or linelist
+#' @param arg_list a list with the parameters
+#'
+#' @keywords internal
+#' @noRd
+#'
 extract_params <- function(data, arg_list) {
-  type         = arg_list[["type"]]
-  values       = arg_list[["values"]]
-  distribution = arg_list[["distribution"]]
-  param <- epiparameter::extract_param(type         = type,
-                                       values       = values,
-                                       distribution = distribution,
+  checkmate::assert_list(arg_list, null.ok = FALSE, min.len = 1L)
+  param <- epiparameter::extract_param(type         = arg_list[["type"]],
+                                       values       = arg_list[["values"]],
+                                       distribution = arg_list[["distribution"]], # nolint: line_length_linter
                                        samples      = nrow(data))
   param
 }
 
+#' Get the distribution parameters of interest
+#'
+#' @param arg_list a list with the parameters
+#'
+#' @keywords internal
+#' @noRd
+#'
 get_params <- function(arg_list) {
   if (c("shape", "scale") %in% arg_list) {
-    param <- c(arg_list[["shape"]], arg_list[["scale"]])
+    param        <- c(arg_list[["shape"]], arg_list[["scale"]])
     names(param) <- c("shape", "scale")
   } else if (c("meanlog", "sdlog") %in% arg_list) {
-    param <- c(arg_list[["meanlog"]], arg_list[["sdlog"]])
+    param        <- c(arg_list[["meanlog"]], arg_list[["sdlog"]])
     names(param) <- c("meanlog", "sdlog")
   } else {
     stop("Incorrect parameters provided")
@@ -218,4 +280,35 @@ get_params <- function(arg_list) {
   param
 }
 
-
+#' Print the CFR result
+#'
+#' @param cfr the CFR values obtained using either `calculate_delay_cfr` or
+#'    `calculate_overall_cfr`
+#'
+#' @return displays the CFR result as a table
+#' @export
+#'
+#' @examples
+#' cfr <- calculate_overall_cfr(
+#'   data              = system.file("extdata", "Marburg_EqGuinea_linelist.csv",
+#'                                   package = "readepi"),
+#'   infection_type    = "direct_contact",
+#'   cases_status      = "Status",
+#'   outcomes          = c("dead", "recovered"),
+#'   diagnosis_status  = "Type",
+#'   diagnosis_outcome = "confirmed"
+#' )
+#' print(cfr)
+#'
+print_cfr <- function(cfr) {
+  checkmate::assert_vector(cfr, len = 3L, any.missing = FALSE, null.ok = FALSE)
+  cfr <- as.table(cfr)
+  names(cfr) <- c("estimated_cfr", "lower_ci", "upper_ci")
+  as.data.frame(unclass(t(cfr))) %>%
+    dplyr::mutate(
+      `estimated_cfr` = formattable::color_tile("white", "#81A4CE")(`estimated_cfr`)) %>% # nolint: line_length_linter
+    knitr::kable("html", escape = FALSE, align = rep("c", length(cfr))) %>%
+    kableExtra::kable_styling("hover", full_width = FALSE) %>%
+    kableExtra::footnote(general = "Estimated CFR (c.f. {cfr} package)",
+                         footnote_as_chunk = TRUE)
+}

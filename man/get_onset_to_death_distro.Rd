@@ -2,20 +2,36 @@
 % Please edit documentation in R/severity.R
 \name{get_onset_to_death_distro}
 \alias{get_onset_to_death_distro}
-\title{Title}
+\title{Create the \code{epidist} object}
 \usage{
-get_onset_to_death_distro(
-  data,
-  death_status = "Status",
-  disease = "Marburg Virus Disease",
-  ...
-)
+get_onset_to_death_distro(data, disease = "Marburg Virus Disease", ...)
 }
 \arguments{
-\item{...}{}
+\item{data}{the input data frame or linelist object}
+
+\item{disease}{the name of the disease of interest}
+
+\item{...}{the other extra arguments. Possible values are:
+\enumerate{
+\item type: a \code{character} specifying whether summary statistics are based
+around percentiles (default) or range. Type \code{?epiparemeter::extract_param} # nolint: line_length_linter
+for more details.
+\item values: a numeric \code{vector}. Type \code{?epiparemeter::extract_param} for
+more details
+\item distribution: a \code{character} string that specifies the distribution to
+use. Type \code{?epiparemeter::extract_param} for more details.
+\item shape: the shape of the specified distribution (when distribution = gamma or weibull) # nolint: line_length_linter
+\item scale: the scale of the specified distribution (when distribution = gamma or weibull) # nolint: line_length_linter
+\item meanlog: the meanlog of the specified distribution (when distribution = lnorm) # nolint: line_length_linter
+\item sdlog: the sdlog of the specified distribution (when distribution = lnorm) # nolint: line_length_linter
+}}
+}
+\value{
+an object of type \code{epidist} with the epidemiological parameters of
+the disease of interest.
 }
 \description{
-Title
+Create the \code{epidist} object
 }
 \examples{
 onset_death <- get_onset_to_death_distro(
