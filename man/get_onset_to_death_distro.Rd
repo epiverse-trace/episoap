@@ -36,7 +36,6 @@ Create the \code{epidist} object
 \examples{
 onset_death <- get_onset_to_death_distro(
   data         = data,
-  death_status = "Status",
   disease      = "Marburg Virus Disease",
   type         = "range",
   values       = c(8, 2, 16),

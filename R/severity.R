@@ -1,3 +1,104 @@
+
+## data preparation function - this will output the data in the form that
+## cfr_static requires (done)
+##
+## have a function that uses this data and calls cfr_static (in progress)
+##
+## have another function to take variables from the user (in progress - will be
+## combine with the above function)
+##
+
+#' Get the input data for {cfr} functions
+#'
+#' @param data
+#' @param date_variable_name the name of the column with the dates when cases
+#'    were registered
+#' @param cases_status the name of the column with the information about whether
+#'    a case was dead or recovered
+#' @param death_outcome a character with the value, in the cases_status column,
+#'    that is used to specify whether the case was dead
+#' @param diagnosis_status the name of the column with the cases diagnosis
+#'    outcome.
+#' @param diagnosis_outcome the value, in the column with the cases diagnosis
+#'    outcome, used to represent the confirmed cases.
+#'
+#' @return a `list` of 2 elements of type data frame. These are the aggregated
+#'    data to calculate CFR across all cases and the one for CFR among the
+#'    confirmed cases only. Note that the later will be `NULL` if the
+#'    `diagnosis_status` and `diagnosis_outcome` are not provided.
+#' @export
+#'
+#' @examples
+#' data = read.csv(system.file("extdata", "Marburg_EqGuinea_linelist.csv",
+#'                    package = "episoap"))
+#' cfr_data <- prepare_cfr_data(
+#'   data               = data,
+#'   date_variable_name = "Onset_week",
+#'   cases_status       = "Status",
+#'   death_outcome      = "dead",
+#'   diagnosis_status   = "Type",
+#'   diagnosis_outcome  = "confirmed"
+#' )
+prepare_cfr_data <- function(data,
+                             date_variable_name = "Onset_week",
+                             cases_status       = "Status",
+                             death_outcome      = "dead",
+                             diagnosis_status   = "Type",
+                             diagnosis_outcome  = "confirmed") {
+  data[[date_variable_name]] <- as.factor(data[[date_variable_name]])
+  cfr_data_all_cases         <- data %>%
+    dplyr::group_by_at(date_variable_name) %>%
+    dplyr::summarise(cases = dplyr::n(),
+                     deaths = sum(.data[[cases_status]] == death_outcome,
+                                 na.rm = TRUE))
+    names(cfr_data_all_cases)[[1L]] <- "date"
+
+  if (!is.null(diagnosis_status) && !is.null(diagnosis_outcome)) {
+    cfr_data_confirmed_cases <- data %>%
+      dplyr::group_by_at(date_variable_name) %>%
+      dplyr::summarise(cases  = dplyr::n(),
+                       deaths = sum(.data[[diagnosis_status]] == diagnosis_outcome & # nolint: line_length_linter
+                                      .data[[cases_status]] == death_outcome,
+                                    na.rm = TRUE))
+    names(cfr_data_confirmed_cases)[[1L]] <- "date"
+  } else {
+    cfr_data_confirmed_cases <- NULL
+  }
+
+  list(
+    cfr_data_all_cases       = cfr_data_all_cases,
+    cfr_data_confirmed_cases = cfr_data_confirmed_cases
+  )
+}
+
+#' Title
+#'
+#' @param data
+#' @param account_for_delay
+#' @param epidist
+#' @param total_cases
+#' @param total_death
+#' @param death_in_confirmed
+#'
+#' @return
+#' @export
+#'
+#' @examples
+calculate_cfr <- function(data,
+                          account_for_delay  = FALSE,
+                          epidist            = NULL,
+                          total_cases        = NULL,
+                          total_death        = NULL,
+                          death_in_confirmed = NULL) {
+
+  # if account_for_delay==TRUE and epidist = NULL, get the delay distribution as
+  # we did previously
+  #
+  # if the data does not contain the cases, and deaths, use the user-provided
+  # total_cases, total_death, death_in_confirmed
+
+}
+
 #' Calculate CFR with uncertainty
 #'
 #' @param data a `data frame` or `linelist` object
@@ -35,7 +136,14 @@ calculate_overall_cfr <- function(data,
                                   cases_status      = "Status",
                                   outcomes          = c("dead", "recovered"),
                                   diagnosis_status  = "Type",
-                                  diagnosis_outcome = "confirmed") {
+                                  diagnosis_outcome = "confirmed",
+                                  ...) {
+
+  ## the values of the ... argument could be:
+  ## 1. the total number of death
+  ## 2. the total number of confirmed cases
+  ## 3. the number of death in the confirmed cases
+  ##
   checkmate::assert_data_frame(data, min.rows = 1L, min.cols = 1L,
                                null.ok = FALSE)
   checkmate::assert_choice(infection_type, choices = c("direct_contact",
@@ -51,7 +159,7 @@ calculate_overall_cfr <- function(data,
   ## check whether the input is incidence or linelist (data.frame)
   total_cases      <- nrow(data)
   deaths           <- nrow(data[data[[cases_status]] == outcomes[[1L]], ])
-  confirmed        <- nrow(data[data[[cases_status]] == outcomes[[2L]], ])
+  confirmed        <- nrow(data[data[[diagnosis_status]] == diagnosis_outcome, ])
   confirmed_deaths <- nrow(data[which(data[[diagnosis_status]] == diagnosis_outcome & # nolint: line_length_linter
                                         data[[cases_status]] == outcomes[[1L]]), ]) # nolint: line_length_linter
 
@@ -83,7 +191,7 @@ calculate_overall_cfr <- function(data,
 #' @examples
 #' ci <- ci_text(120, 20)
 ci_text <- function(x, n) {
-  bin_out <- binom.test(as.numeric(x), as.numeric(n))
+  bin_out <- stats::binom.test(as.numeric(x), as.numeric(n))
   est     <- round(100.0 * c(bin_out[["estimate"]], bin_out[["conf.int"]]))
   c(est[[1L]], est[[2L]], est[[3L]])
 }
@@ -114,7 +222,6 @@ ci_text <- function(x, n) {
 #' @examples
 #' onset_death <- get_onset_to_death_distro(
 #'   data         = data,
-#'   death_status = "Status",
 #'   disease      = "Marburg Virus Disease",
 #'   type         = "range",
 #'   values       = c(8, 2, 16),

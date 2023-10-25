@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>A test script for pipeline building</title>
+<style type="text/css">
+/**
+ * Prism.s theme ported from highlight.js's xcode style
+ */
+pre code {
+  padding: 1em;
+}
+.token.comment {
+  color: #007400;
+}
+.token.punctuation {
+  color: #999;
+}
+.token.tag,
+.token.selector {
+  color: #aa0d91;
+}
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol {
+  color: #1c00cf;
+}
+.token.property,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin {
+  color: #c41a16;
+}
+.token.inserted {
+  background-color: #ccffd8;
+}
+.token.deleted {
+  background-color: #ffebe9;
+}
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #9a6e3a;
+}
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #836c28;
+}
+.token.function,
+.token.class-name {
+  color: #DD4A68;
+}
+.token.regex,
+.token.important,
+.token.variable {
+  color: #5c2699;
+}
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+.token.italic {
+  font-style: italic;
+}
+</style>
+<style type="text/css">
+body {
+  font-family: sans-serif;
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+body, .footnotes, code { font-size: .9em; }
+li li { font-size: .95em; }
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+pre, img { max-width: 100%; }
+pre, pre:hover {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+pre code {
+  display: block;
+  overflow-x: auto;
+}
+code { font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace; }
+:not(pre) > code, code[class] { background-color: #F8F8F8; }
+code.language-undefined, pre > code:not([class]) {
+  background-color: inherit;
+  border: 1px solid #eee;
+}
+table {
+  margin: auto;
+  border-top: 1px solid #666;
+}
+table thead th { border-bottom: 1px solid #ddd; }
+th, td { padding: 5px; }
+thead, tfoot, tr:nth-child(even) { background: #eee; }
+blockquote {
+  color: #666;
+  margin: 0;
+  padding-left: 1em;
+  border-left: 0.5em solid #eee;
+}
+hr, .footnotes::before { border: 1px dashed #ddd; }
+.frontmatter { text-align: center; }
+#TOC .numbered li { list-style: none; }
+#TOC .numbered { padding-left: 0; }
+#TOC .numbered ul { padding-left: 1em; }
+table, .body h2 { border-bottom: 1px solid #666; }
+.body .appendix, .appendix ~ h2 { border-bottom-style: dashed; }
+.footnote-ref a::before { content: "["; }
+.footnote-ref a::after { content: "]"; }
+.footnotes::before {
+  content: "";
+  display: block;
+  max-width: 20em;
+}
+
+@media print {
+  body {
+    font-size: 12pt;
+    max-width: 100%;
+  }
+  tr, img { page-break-inside: avoid; }
+}
+@media only screen and (min-width: 992px) {
+  pre { white-space: pre; }
+}
+</style>
+</head>
+<body>
+<div class="include-before">
+</div>
+<div class="frontmatter">
+<div class="title"><h1>A test script for pipeline building</h1></div>
+<div class="author"><h2></h2></div>
+<div class="date"><h3></h3></div>
+</div>
+<div class="body">
+<h1 id="a-test-script-for-pipeline-building">A test script for pipeline building</h1>
+<p>Karim</p>
+<p>This report was automatically generated with the R package <strong>knitr</strong>
+(version 1.44).</p>
+<pre><code class="language-r">'# estimate overall CFR'
+</code></pre>
+<pre><code>## [1] &quot;# estimate overall CFR&quot;
+</code></pre>
+<pre><code class="language-r">overall_cfr &lt;- episoap::calculate_overall_cfr(
+  data              = data,
+  infection_type    = &quot;direct_contact&quot;,
+  cases_status      = &quot;Status&quot;,
+  outcomes          = c(&quot;dead&quot;, &quot;recovered&quot;),
+  diagnosis_status  = &quot;Type&quot;,
+  diagnosis_outcome = &quot;confirmed&quot;
+)
+
+### CFR among all cases
+print_cfr(overall_cfr$cfr_total)
+</code></pre>
+<table class="table table-hover" style="width: auto !important; margin-left: auto; margin-right: auto;border-bottom: 0;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> estimated_cfr </th>
+   <th style="text-align:center;"> lower_ci </th>
+   <th style="text-align:center;"> upper_ci </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> <span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #81a4ce">88</span> </td>
+   <td style="text-align:center;"> 73 </td>
+   <td style="text-align:center;"> 96 </td>
+  </tr>
+</tbody>
+<tfoot><tr><td style="padding: 0; " colspan="100%">
+<span style="font-style: italic;">Note: </span> <sup></sup> Estimated CFR (c.f. {cfr} package)</td></tr></tfoot>
+</table>
+<pre><code class="language-r">### CFR among confirmed cases only
+print_cfr(overall_cfr$cfr_confirmed_only)
+</code></pre>
+<table class="table table-hover" style="width: auto !important; margin-left: auto; margin-right: auto;border-bottom: 0;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> estimated_cfr </th>
+   <th style="text-align:center;"> lower_ci </th>
+   <th style="text-align:center;"> upper_ci </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> <span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #81a4ce">71</span> </td>
+   <td style="text-align:center;"> 44 </td>
+   <td style="text-align:center;"> 90 </td>
+  </tr>
+</tbody>
+<tfoot><tr><td style="padding: 0; " colspan="100%">
+<span style="font-style: italic;">Note: </span> <sup></sup> Estimated CFR (c.f. {cfr} package)</td></tr></tfoot>
+</table>
+<pre><code class="language-r">## estimate CFR by accounting for the delay distribution
+onset_death &lt;- episoap::get_onset_to_death_distro(
+  data         = data,
+  disease      = &quot;Marburg Virus Disease&quot;,
+  type         = &quot;range&quot;,
+  values       = c(8, 2, 16),
+  distribution = &quot;gamma&quot;
+)
+</code></pre>
+<pre><code>## Using list(author = list(list(given = NULL, family = &quot;Pavlin&quot;, role = NULL, email = NULL, comment = NULL)), year = &quot;2014&quot;, title = &quot;Calculation of incubation period and serial interval from multiple outbreaks of Marburg virus disease&quot;, journal = &quot;BMC Research Notes&quot;, doi = &quot;10.1186/1756-0500-7-906&quot;, pmid = &quot;25495697&quot;). 
+## To retrieve the short citation use the 'get_citation' function
+</code></pre>
+<pre><code>## Stochastic numerical optimisation used. 
+## Rerun function multiple times to check global optimum is found
+</code></pre>
+<pre><code>## Citation cannot be created as author, year, journal or title is missing
+</code></pre>
+<pre><code class="language-r">delay_cfr &lt;- episoap::calculate_delay_cfr(
+  data                   = data,
+  onset_death            = onset_death,
+  onset_date_variable    = &quot;Onset_week&quot;,
+  deaths_date_variable   = &quot;date_death&quot;,
+  date_scale             = &quot;day&quot;,
+  cases_status           = &quot;Status&quot;,
+  outcome                = &quot;dead&quot;
+)
+episoap::print_cfr(delay_cfr)
+</code></pre>
+<table class="table table-hover" style="width: auto !important; margin-left: auto; margin-right: auto;border-bottom: 0;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> estimated_cfr </th>
+   <th style="text-align:center;"> lower_ci </th>
+   <th style="text-align:center;"> upper_ci </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> <span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #81a4ce">88</span> </td>
+   <td style="text-align:center;"> 73 </td>
+   <td style="text-align:center;"> 96 </td>
+  </tr>
+</tbody>
+<tfoot><tr><td style="padding: 0; " colspan="100%">
+<span style="font-style: italic;">Note: </span> <sup></sup> Estimated CFR (c.f. {cfr} package)</td></tr></tfoot>
+</table>
+<pre><code class="language-r"># rmarkdown::render(input = &quot;/Users/karimmane/Documents/Karim/LSHTM/TRACE_dev/Packages/On_trace_github/episoap/run_pipeline.md&quot;,
+#                   output_dir = &quot;/Users/karimmane/Documents/Karim/LSHTM/TRACE_dev/Packages/On_trace_github/episoap/&quot;,
+#                   output_file = &quot;test.html&quot;)
+</code></pre>
+<p>The R session information (including the OS info, R version and all
+packages used):</p>
+<pre><code class="language-r">sessionInfo()
+</code></pre>
+<pre><code>## R version 4.2.2 (2022-10-31)
+## Platform: aarch64-apple-darwin20 (64-bit)
+## Running under: macOS Ventura 13.5
+## 
+## Matrix products: default
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/lib/libRlapack.dylib
+## 
+## locale:
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods  
+## [7] base     
+## 
+## other attached packages:
+## [1] episoap_0.0.0.9000 formattable_0.2.1  lintr_3.1.0       
+## [4] testthat_3.1.8    
+## 
+## loaded via a namespace (and not attached):
+##  [1] colorspace_2.1-0        ellipsis_0.3.2         
+##  [3] rprojroot_2.0.3         markdown_1.7           
+##  [5] fs_1.6.3                rstudioapi_0.15.0      
+##  [7] roxygen2_7.2.3          farver_2.1.1           
+##  [9] remotes_2.4.2.1         fansi_1.0.5            
+## [11] xml2_1.3.5              cachem_1.0.8           
+## [13] knitr_1.44              pkgload_1.3.2          
+## [15] jsonlite_1.8.7          shiny_1.7.5.1          
+## [17] compiler_4.2.2          httr_1.4.7             
+## [19] backports_1.4.1         grates_1.0.1           
+## [21] fastmap_1.1.1           lazyeval_0.2.2         
+## [23] cli_3.6.1               later_1.3.1            
+## [25] htmltools_0.5.6.1       prettyunits_1.2.0      
+## [27] tools_4.2.2             gtable_0.3.3           
+## [29] glue_1.6.2              dplyr_1.1.2            
+## [31] Rcpp_1.0.11             jquerylib_0.1.4        
+## [33] vctrs_0.6.4             svglite_2.1.1          
+## [35] xfun_0.40               stringr_1.5.0          
+## [37] epiparameter_0.0.0.9000 ps_1.7.5               
+## [39] brio_1.1.3              rvest_1.0.3            
+## [41] mime_0.12               miniUI_0.1.1.1         
+## [43] lifecycle_1.0.3         renv_1.0.3             
+## [45] devtools_2.4.5          scales_1.2.1           
+## [47] cfr_0.1.0               promises_1.2.1         
+## [49] rex_1.2.1               yaml_2.3.7             
+## [51] memoise_2.0.1           ggplot2_3.4.2          
+## [53] sass_0.4.7              stringi_1.7.12         
+## [55] desc_1.4.2              checkmate_2.2.0        
+## [57] cyclocomp_1.1.0         pkgbuild_1.4.2         
+## [59] incidence2_2.1.0        rlang_1.1.1            
+## [61] pkgconfig_2.0.3         systemfonts_1.0.4      
+## [63] commonmark_1.9.0        distributional_0.3.2   
+## [65] evaluate_0.22           purrr_1.0.2            
+## [67] htmlwidgets_1.6.2       processx_3.8.2         
+## [69] tidyselect_1.2.0        magrittr_2.0.3         
+## [71] R6_2.5.1                generics_0.1.3         
+## [73] profvis_0.3.8           pillar_1.9.0           
+## [75] withr_2.5.1             tibble_3.2.1           
+## [77] crayon_1.5.2            utf8_1.2.3             
+## [79] rmarkdown_2.22          urlchecker_1.0.1       
+## [81] usethis_2.1.6           grid_4.2.2             
+## [83] data.table_1.14.8       callr_3.7.3            
+## [85] digest_0.6.33           webshot_0.5.4          
+## [87] xtable_1.8-4            httpuv_1.6.11          
+## [89] munsell_0.5.0           viridisLite_0.4.2      
+## [91] kableExtra_1.3.4        bslib_0.5.1            
+## [93] sessioninfo_1.2.2
+</code></pre>
+<pre><code class="language-r">Sys.time()
+</code></pre>
+<pre><code>## [1] &quot;2023-10-25 12:42:22 GMT&quot;
+</code></pre>
+</div>
+<div class="include-after">
+</div>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
+</body>
+</html>
