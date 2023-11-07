@@ -7,8 +7,7 @@
 print_cfr(cfr)
 }
 \arguments{
-\item{cfr}{the CFR values obtained using either \code{calculate_delay_cfr} or
-\code{calculate_overall_cfr}}
+\item{cfr}{the CFR values obtained from the \code{get_severity()} function}
 }
 \value{
 displays the CFR result as a table
@@ -17,9 +16,10 @@ displays the CFR result as a table
 Print the CFR result
 }
 \examples{
-cfr <- calculate_overall_cfr(
-  data              = system.file("extdata", "Marburg_EqGuinea_linelist.csv",
-                                  package = "readepi"),
+cfr <- get_severity(
+  data              = read.csv(system.file("extdata",
+                                           "Marburg_EqGuinea_linelist.csv",
+                                            package = "episoap")),
   infection_type    = "direct_contact",
   cases_status      = "Status",
   outcomes          = c("dead", "recovered"),

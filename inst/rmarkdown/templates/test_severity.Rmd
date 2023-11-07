@@ -1,0 +1,96 @@
+---
+title: "test"
+author: "Karim Mané, Carmen Tamayo"
+date: "2023-11-01"
+output: html_document
+params:
+    DISEASE_NAME: "ebola"
+    DATA: "/Users/karimmane/Documents/Karim/LSHTM/TRACE_dev/Packages/On_trace_github/episoap/inst/extdata/Marburg_EqGuinea_linelist.csv"
+    ACCOUNT_FOR_DELAY: FALSE
+    EPIDIST: NULL
+    OUTDIR: "/Users/karimmane/Documents/Karim/LSHTM/TRACE_dev/Packages/On_trace_github/episoap"
+    DATE_VARIABLE_NAME: NULL
+    CASES_STATUS: NULL
+    DEATH_OUTCOME: NULL
+    DIAGNOSIS_STATUS: NULL
+    DIAGNOSIS_OUTCOME: NULL
+    TYPE: NULL
+    VALUES: NULL
+    DISTRIBUTION: NULL
+    TOTAL_CASES: NULL
+    TOTAL_DEATHS: NULL
+    DEATH_IN_CONFIRMED: NULL
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("episoap")
+library("formattable")
+library("kableExtra")
+```
+
+---
+    date: `r format(Sys.Date(), "%d/%m/%Y")`
+---
+
+# severity
+
+```{r echo=FALSE, eval=TRUE, include=FALSE}
+# get the user parameters
+disease            <- params[["DISEASE_NAME"]]
+data               <- params[["DATA"]]
+account_for_delay  <- params[["ACCOUNT_FOR_DELAY"]]
+epidist            <- params[["EPIDIST"]]
+date_variable_name <- params[["DATE_VARIABLE_NAME"]]
+cases_status       <- params[["CASES_STATUS"]]
+death_outcome      <- params[["DEATH_OUTCOME"]]
+diagnosis_status   <- params[["DIAGNOSIS_STATUS"]]
+diagnosis_outcome  <- params[["DIAGNOSIS_OUTCOME"]]
+distribution       <- params[["DISTRIBUTION"]]
+type               <- params[["TYPE"]]
+values             <- params[["VALUES"]]
+total_cases        <- params[["TOTAL_CASES"]]
+total_deaths       <- params[["TOTAL_DEATHS"]]
+death_in_confirmed <- params[["DEATH_IN_CONFIRMED"]]
+```
+
+```{r echo=FALSE, eval=FALSE}
+cfr <- episoap::get_severity(
+  disease_name      = "Marburg Virus Disease",
+  data              = data,
+  account_for_delay = FALSE,
+  epidist           = NULL
+)
+```
+
+```{r echo=FALSE, eval=TRUE}
+cfr <- episoap::get_severity(
+  disease_name       = disease,
+  data               = data,
+  account_for_delay  = account_for_delay,
+  epidist            = epidist,
+  values             = values,
+  type               = type,
+  distribution       = distribution,
+  date_variable_name = date_variable_name,
+  cases_status       = cases_status,
+  death_outcome      = death_outcome,
+  diagnosis_status   = diagnosis_status,
+  diagnosis_outcome  = diagnosis_outcome,
+  total_cases        = total_cases,
+  total_deaths       = total_deaths,
+  death_in_confirmed = death_in_confirmed
+)
+```
+
+```{r echo=FALSE, eval=TRUE, results='asis'}
+test <- print_cfr(cfr = cfr)
+knitr::kable(test, format = "html", escape = FALSE, booktabs = TRUE,
+           align = rep("c", length(cfr))) %>%
+kableExtra::kable_styling("responsive", full_width = FALSE) %>%
+kableExtra::footnote(general = "Estimated CFR (c.f. {cfr} package)",
+                     footnote_as_chunk = TRUE)
+
+```
+
+

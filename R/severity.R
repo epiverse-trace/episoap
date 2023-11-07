@@ -26,7 +26,8 @@
 #'    data to calculate CFR across all cases and the one for CFR among the
 #'    confirmed cases only. Note that the later will be `NULL` if the
 #'    `diagnosis_status` and `diagnosis_outcome` are not provided.
-#' @export
+#' @keywords internal
+#' @noRd
 #'
 #' @examples
 #' data = read.csv(system.file("extdata", "Marburg_EqGuinea_linelist.csv",
@@ -52,6 +53,9 @@ prepare_cfr_data <- function(data,
                      deaths = sum(.data[[cases_status]] == death_outcome,
                                  na.rm = TRUE))
     names(cfr_data_all_cases)[[1L]] <- "date"
+    cfr_data_all_cases[["date"]]    <- as.Date(
+      as.character(cfr_data_all_cases[["date"]])
+    )
 
   if (!is.null(diagnosis_status) && !is.null(diagnosis_outcome)) {
     cfr_data_confirmed_cases <- data %>%
@@ -61,6 +65,9 @@ prepare_cfr_data <- function(data,
                                       .data[[cases_status]] == death_outcome,
                                     na.rm = TRUE))
     names(cfr_data_confirmed_cases)[[1L]] <- "date"
+    cfr_data_confirmed_cases[["date"]]    <- as.Date(
+      as.character(cfr_data_confirmed_cases[["date"]])
+    )
   } else {
     cfr_data_confirmed_cases <- NULL
   }
@@ -71,129 +78,157 @@ prepare_cfr_data <- function(data,
   )
 }
 
-#' Title
+
+#' Calculate CFR from count data
 #'
-#' @param data
-#' @param account_for_delay
-#' @param epidist
-#' @param total_cases
-#' @param total_death
-#' @param death_in_confirmed
+#' @param total_cases a `numeric` that represent the total number of cases in
+#'    the data
+#' @param total_deaths a `numeric` that represents the total number of deaths in
+#'    the data
+#' @param death_in_confirmed a `numeric` that represents the number of death in
+#'    among the confirmed cases.
 #'
 #' @return
-#' @export
-#'
-#' @examples
-calculate_cfr <- function(data,
-                          account_for_delay  = FALSE,
-                          epidist            = NULL,
-                          total_cases        = NULL,
-                          total_death        = NULL,
-                          death_in_confirmed = NULL) {
-
-  # if account_for_delay==TRUE and epidist = NULL, get the delay distribution as
-  # we did previously
-  #
-  # if the data does not contain the cases, and deaths, use the user-provided
-  # total_cases, total_death, death_in_confirmed
-
-}
-
-#' Calculate CFR with uncertainty
-#'
-#' @param data a `data frame` or `linelist` object
-#' @param infection_type the type of the infection
-#' @param cases_status the name of the column with the information about whether
-#'    a case was dead or recovered
-#' @param outcomes a `character` vector with the 2 outcomes about the cases
-#'    status. default is c("dead", "recovered")
-#' @param diagnosis_status the name of the column with the cases diagnosis
-#'    outcome.
-#' @param diagnosis_outcome the value, in the column with the cases diagnosis
-#'    outcome, used to represent the confirmed cases.
-#'
-#' @return a `list` with elements of type `vector`. Each vector contains the
-#'    estimated CFR value and its confident interval.
-#' \enumerate{
-#'   \item cfr_total: the CFR among the total cases
-#'   \item cfr_confirmed_only: the CFR among the confirmed cases only
-#'   }
-#'
-#' @export
-#'
-#' @examples
-#' overall_cfr <- calculate_overall_cfr(
-#'   data              = system.file("extdata", "Marburg_EqGuinea_linelist.csv",
-#'                                   package = "readepi"),
-#'   infection_type    = "direct_contact",
-#'   cases_status      = "Status",
-#'   outcomes          = c("dead", "recovered"),
-#'   diagnosis_status  = "Type",
-#'   diagnosis_outcome = "confirmed"
-#' )
-calculate_overall_cfr <- function(data,
-                                  infection_type    = "direct_contact",
-                                  cases_status      = "Status",
-                                  outcomes          = c("dead", "recovered"),
-                                  diagnosis_status  = "Type",
-                                  diagnosis_outcome = "confirmed",
-                                  ...) {
-
-  ## the values of the ... argument could be:
-  ## 1. the total number of death
-  ## 2. the total number of confirmed cases
-  ## 3. the number of death in the confirmed cases
-  ##
-  checkmate::assert_data_frame(data, min.rows = 1L, min.cols = 1L,
-                               null.ok = FALSE)
-  checkmate::assert_choice(infection_type, choices = c("direct_contact",
-                                                       "vector_borne",
-                                                       "food_water_born"),
-                           null.ok = FALSE)
-  checkmate::assert_character(cases_status, null.ok = FALSE, len = 1L)
-  checkmate::assert_vector(outcomes, null.ok  = FALSE, min.len = 1L,
-                           unique = TRUE)
-  checkmate::assert_character(diagnosis_status, null.ok = FALSE, len = 1L)
-  checkmate::assert_character(diagnosis_outcome, null.ok = FALSE, len = 1L)
-
-  ## check whether the input is incidence or linelist (data.frame)
-  total_cases      <- nrow(data)
-  deaths           <- nrow(data[data[[cases_status]] == outcomes[[1L]], ])
-  confirmed        <- nrow(data[data[[diagnosis_status]] == diagnosis_outcome, ])
-  confirmed_deaths <- nrow(data[which(data[[diagnosis_status]] == diagnosis_outcome & # nolint: line_length_linter
-                                        data[[cases_status]] == outcomes[[1L]]), ]) # nolint: line_length_linter
-
-  # CFR among total cases
-  cfr_total          <- ci_text(deaths, total_cases)
-
-  # CFR among confirmed cases
-  cfr_confirmed_only <- ci_text(confirmed_deaths, confirmed)
-
-  list(
-    cfr_total          = cfr_total,
-    cfr_confirmed_only = cfr_confirmed_only
-  )
-}
-
-#' Get binomial confidence interval
-#'
-#' @param x the total number of deaths or confirmed deaths(for the CFR among the
-#'    confirmed cases only)
-#' @param n the total number of cases or confirmed cases(for the CFR among the
-#'    confirmed cases only)
-#'
-#' @returns a `vector` of 3 elements of type numeric that correspond to the
-#'    estimated CFR and its confidence interval.
-#'
 #' @keywords internal
 #' @noRd
 #'
 #' @examples
-#' ci <- ci_text(120, 20)
-ci_text <- function(x, n) {
-  bin_out <- stats::binom.test(as.numeric(x), as.numeric(n))
-  est     <- round(100.0 * c(bin_out[["estimate"]], bin_out[["conf.int"]]))
-  c(est[[1L]], est[[2L]], est[[3L]])
+calculate_cfr_from_counts <- function(total_cases,
+                                      total_deaths,
+                                      death_in_confirmed) {
+
+  # if the data does not contain the date, cases, and deaths columns, use the
+  # user-provided total_cases, total_death, death_in_confirmed
+
+  res_cfr          <- list()
+  total_cases      <- as.numeric(total_cases)
+  total_deaths     <- as.numeric(total_deaths)
+  severity_mean    <- total_deaths / total_cases
+  severity_conf    <- stats::binom.test(round(total_deaths), total_cases,
+                                        p = 1L)
+  severity_lims    <- severity_conf[["conf.int"]]
+  res_cfr[["cfr"]] <- data.frame(severity_mean = severity_mean,
+                                 severity_low  = severity_lims[[1L]],
+                                 severity_high = severity_lims[[2L]])
+  if (!is.null(death_in_confirmed)) {
+    severity_mean  <- death_in_confirmed / total_cases
+    severity_conf  <- stats::binom.test(round(death_in_confirmed),
+                                        total_cases, p = 1L)
+    severity_lims  <- severity_conf[["conf.int"]]
+    res_cfr[["cfr_in_confirmed_cases"]] <- data.frame(
+      severity_mean = severity_mean,
+      severity_low  = severity_lims[[1L]],
+      severity_high = severity_lims[[2L]]
+    )
+  }
+
+  res_cfr
+}
+
+#' Calculate CFR from incidence data
+#'
+#' @param data the input data
+#' @param epidist an `epidist` object that contains the distribution parameters
+#'
+#' @return a `list` of the following 2 elements:
+#' \enumerate{
+#'   \item cfr: the CFR among the total cases
+#'   \item cfr_in_confirmed_cases: the CFR among the confirmed cases only
+#' }
+#' @keywords internal
+#' @noRd
+#'
+#' @examples
+#' cfr_data <- prepare_cfr_data(
+#'   data               = data,
+#'   date_variable_name = "Onset_week",
+#'   cases_status       = "Status",
+#'   death_outcome      = "dead",
+#'   diagnosis_status   = "Type",
+#'   diagnosis_outcome  = "confirmed"
+#' )
+#' cfr <- calculate_cfr_from_incidence(
+#'   data              = cfr_data,
+#'   epidist           = NULL
+#' )
+calculate_cfr_from_incidence <- function(data, epidist = NULL) {
+  # initialise the output object
+  res_cfr      <- list()
+  output_names <- c("cfr", "cfr_in_confirmed_cases")
+
+  if (is.list(data) && all(names(data) %in% c("cfr_data_all_cases",
+                                           "cfr_data_confirmed_cases"))) {
+    j <- 1L
+    for (i in c("cfr_data_all_cases", "cfr_data_confirmed_cases")) {
+      tmp_data <- data[[i]]
+
+      # convert dates to sequential if necessary
+      if (!identical(unique(diff(tmp_data[["date"]])), 1L)) {
+        tmp_data <- get_sequential_dates(tmp_data)
+      }
+
+      # calculate CFR
+      res_cfr[[output_names[j]]] <- cfr::cfr_static(
+        data              = tmp_data,
+        epidist           = epidist,
+        poisson_threshold = 100L
+      )
+      j <- j + 1L
+    }
+  } else if (is.data.frame(data) && all(c("date", "cases", "deaths") %in%
+                                        names(data))) {
+
+    # convert dates to sequential if necessary
+    if (!(unique(diff(data[["date"]])) == 1L)) {
+      # this function is based on `incidence2` but it is not actually doing
+      # what we want. Need to build a function for this.
+      data <- get_sequential_dates(data)
+    }
+    res_cfr[["cfr"]] <- cfr::cfr_static(data              = data,
+                                        epidist           = epidist,
+                                        poisson_threshold = 100L)
+    res_cfr[["cfr_in_confirmed_cases"]] <- NULL
+  } else {
+    stop("Incorrect input data format...\n",
+         "'data' should be a data frame with 3 columns named as 'date',",
+         "'cases' and 'deaths'.\n Alternatively, use the 'prepare_cfr_data'",
+         "function to create the input object.")
+  }
+
+  res_cfr
+}
+
+
+#' Convert date in input data for CFR calculation into sequential dates
+#'
+#' @param data a data frame with at least 2 columns: the `cases` and the `date`
+#'    they were recorded.
+#'
+#' @return a data frame with 3 columns named as 'date', 'cases', 'deaths'. This
+#'    is the format required by the `cfr::cfr_static()` function
+#' @keywords internal
+#' @noRd
+#'
+#' @examples
+get_sequential_dates <- function(data) {
+  idx <- match("date", names(data))
+  date <- seq.Date(as.Date(data[["date"]][[1L]]),
+                   as.Date(data[["date"]][nrow(data)]),
+                   1)
+  seq_date <- as.data.frame(date)
+  for (nms in names(data)[-idx]) {
+    seq_date[[nms]] <- NA
+  }
+  row_idx <- match(data[["date"]], seq_date[["date"]])
+  nms <- names(data)[-idx]
+  col_idx <- match(nms, names(data))
+  tmp <- data %>% dplyr::select(-c(date))
+  seq_date[row_idx, col_idx] <- tmp
+  seq_date <- seq_date %>%
+    dplyr::select(c(date, cases, deaths))
+  seq_date[which(is.na(seq_date[["cases"]])),][["cases"]] = 0L
+  seq_date[which(is.na(seq_date[["deaths"]])),][["deaths"]] = 0L
+  seq_date
 }
 
 #' Create the `epidist` object
@@ -217,7 +252,8 @@ ci_text <- function(x, n) {
 #'
 #' @return an object of type `epidist` with the epidemiological parameters of
 #'    the disease of interest.
-#' @export
+#' @keywords internal
+#' @noRd
 #'
 #' @examples
 #' onset_death <- get_onset_to_death_distro(
@@ -270,86 +306,6 @@ get_onset_to_death_distro <- function(data,
   onset_death
 }
 
-#' Calculate CFR with uncertainty by accounting for the epidemiological delay
-#' distribution of symptom onset to outcome.
-#'
-#' @param data the input data frame or linelist object
-#' @param onset_death an object of type `epidist` with the epidemiological
-#'    parameters of the disease of interest.
-#' @param onset_date_variable the name of the column with the onset date values
-#' @param deaths_date_variable the name of the column with the death date values
-#' @param date_scale the time scale of the onset date values
-#' @param cases_status the name of the column with the information about whether
-#'    a case was dead or recovered
-#' @param outcome the value in the `cases_status` column that is used to
-#'    specify if the cases were dead. default is "dead".
-#'
-#' @return a vector of 3 elements: the estimated CFR and the confidence interval
-#'    around it.
-#' @export
-#'
-#' @examples
-#' delay_cfr <- calculate_delay_cfr(
-#'   data                   = data,
-#'   onset_death            = onset_death,
-#'   onset_date_variable    = "Onset_week",
-#'   deaths_date_variable   = "date_death",
-#'   date_scale             = "day",
-#'   cases_status           = "Status",
-#'   outcome                = "dead"
-#' )
-calculate_delay_cfr <- function(data, onset_death,
-                                onset_date_variable    = "date_onset",
-                                deaths_date_variable   = "date_death",
-                                date_scale             = "day",
-                                cases_status           = "Status",
-                                outcome                = "dead") {
-  checkmate::assert_character(onset_date_variable, null.ok = TRUE, len = 1L)
-  checkmate::assert_character(date_scale, null.ok = TRUE, len = 1L)
-
-  # depending on data_type, if linelist, create incidence object
-  # if incidence, no transformation
-  # but need to make sure the incidence object to be a data frame of 2 columns
-  # named as 'date' and 'cases'.
-  #
-  if (inherits(data, "linelist")) {
-    # we need to convert the linelist into incidence.
-    # for now we will use days as time scale until {cfr} can account for other
-    # time intervals like it is in {incidence2}
-    #
-    # {cfr} needs daily data. for this reason, we are converting our incidence
-    # data into a daily incidence using incidence2::complete_dates. this needs
-    # to be looked into
-
-    ## ----- the following is only for test purpose. it should be removed
-    data[[deaths_date_variable]] <- data[[onset_date_variable]] + 100L
-    ## ----- end of it
-    ## date_index = c(onset_date_variable,
-    ## deaths_date_variable)
-    incidence_data <- incidence2::incidence(data,
-                                            date_index = c(onset_date_variable,
-                                                           deaths_date_variable), # nolint: line_length_linter
-                                            interval = date_scale) |>
-      incidence2::complete_dates()
-  }
-
-  # use the cfr::prepare_data() to get the input for cfr::known_outcomes()
-  data_for_cfr <- cfr::prepare_data(incidence_data,
-                                    cases_variable  = onset_date_variable,
-                                    deaths_variable = deaths_date_variable)
-
-  # calculate CFR for known outcome cases
-  known_outcomes_cfr  <- cfr::known_outcomes(data_for_cfr, onset_death)
-
-  # Estimate cases with known outcomes
-  total_known_to_date <- sum(known_outcomes_cfr[["known_outcomes"]])
-
-  # estimate CFR with delay
-  num_death <- nrow(data[which(data[[cases_status]] == outcome), ])
-  delay_cfr <- ci_text(num_death, round(total_known_to_date))
-  delay_cfr
-}
-
 #' Extract the distribution parameters from percentiles, median and range
 #'
 #' @param data the input data frame or linelist
@@ -389,16 +345,16 @@ get_params <- function(arg_list) {
 
 #' Print the CFR result
 #'
-#' @param cfr the CFR values obtained using either `calculate_delay_cfr` or
-#'    `calculate_overall_cfr`
+#' @param cfr the CFR values obtained from the `get_severity()` function
 #'
 #' @return displays the CFR result as a table
 #' @export
 #'
 #' @examples
-#' cfr <- calculate_overall_cfr(
-#'   data              = system.file("extdata", "Marburg_EqGuinea_linelist.csv",
-#'                                   package = "readepi"),
+#' cfr <- get_severity(
+#'   data              = read.csv(system.file("extdata",
+#'                                            "Marburg_EqGuinea_linelist.csv",
+#'                                             package = "episoap")),
 #'   infection_type    = "direct_contact",
 #'   cases_status      = "Status",
 #'   outcomes          = c("dead", "recovered"),
@@ -408,14 +364,225 @@ get_params <- function(arg_list) {
 #' print(cfr)
 #'
 print_cfr <- function(cfr) {
-  checkmate::assert_vector(cfr, len = 3L, any.missing = FALSE, null.ok = FALSE)
-  cfr <- as.table(cfr)
-  names(cfr) <- c("estimated_cfr", "lower_ci", "upper_ci")
-  as.data.frame(unclass(t(cfr))) %>%
-    dplyr::mutate(
-      `estimated_cfr` = formattable::color_tile("white", "#81A4CE")(`estimated_cfr`)) %>% # nolint: line_length_linter
-    knitr::kable("html", escape = FALSE, align = rep("c", length(cfr))) %>%
-    kableExtra::kable_styling("hover", full_width = FALSE) %>%
-    kableExtra::footnote(general = "Estimated CFR (c.f. {cfr} package)",
-                         footnote_as_chunk = TRUE)
+
+  if (inherits(cfr, "vector")) {
+    cfr <- as.table(cfr)
+    names(cfr) <- c("estimated_cfr", "lower_ci", "upper_ci")
+    out <- as.data.frame(unclass(t(cfr))) %>%
+      dplyr::mutate(`estimated_cfr` =
+                      formattable::color_tile("white",
+                                              "#81A4CE")(`estimated_cfr`))
+  }
+
+  if (inherits(cfr, "data.frame") && ncol(cfr) == 3L) {
+    out <- cfr %>%
+      dplyr::mutate(`severity_mean` =
+                      formattable::color_tile("white",
+                                              "#81A4CE")(`severity_mean`))
+  }
+
+  if (inherits(cfr, "list")) {
+    for (res in names(cfr)) {
+      out <- cfr[[res]] %>%
+        dplyr::mutate(`severity_mean` =
+                        formattable::color_tile("white",
+                                                "#81A4CE")(`severity_mean`))
+    }
+  }
+  out
 }
+
+#' Estimate severity based on the user-provided arguments
+#'
+#' @param disease_name a `character` with the name of the disease
+#' @param data the input data
+#' @param account_for_delay a `logical` used to specify whether to account for
+#'    the delay distribution or not.
+#' @param epidist an object of class `epidist` with the delay distribution
+#'    parameters
+#' @param ... the extra parameters needed for some specific cases
+#'
+#' @export
+#' @returns a list of data frames that contains the severity estimates.
+#'
+#' @examples
+#' # example code
+#'
+#'
+get_severity <- function(disease_name      = NULL,
+                         data              = NULL,
+                         account_for_delay = FALSE,
+                         epidist           = NULL,
+                         ...) {
+
+  # get the additional arguments
+  args_list <- list(...)
+
+  # get the delay distribution if not provided
+  if (account_for_delay && is.null(epidist)) {
+    if (all(c("type", "values", "distribution") %in% names(args_list))) {
+      epidist <- get_onset_to_death_distro(
+        data         = data,
+        disease      = disease_name,
+        type         = args_list[["type"]],
+        values       = args_list[["values"]],
+        distribution = args_list[["distribution"]])
+    } else {
+      epidist <- get_onset_to_death_distro(data    = data,
+                                           disease = disease_name)
+    }
+  }
+
+  # estimate CFR from count data , "death_in_confirmed"
+  if (all(c("total_cases", "total_deaths") %in% names(args_list))) {
+    message("Estimating severity from count data...")
+    death_in_confirmed <- NULL
+    if ("death_in_confirmed" %in% names(args_list)) {
+      death_in_confirmed <- args_list[["death_in_confirmed"]]
+    }
+    cfr_res <- calculate_cfr_from_counts(
+      total_cases        = args_list[["total_cases"]],
+      total_deaths       = args_list[["total_deaths"]],
+      death_in_confirmed = death_in_confirmed
+    )
+    return(cfr_res)
+  }
+
+  # aggregate the data if it does not contain the 'date', 'cases', and 'deaths'
+  # columns
+  if (all(c("date_variable_name", "cases_status", "death_outcome",
+            "diagnosis_status", "diagnosis_outcome") %in% names(args_list))) {
+    cfr_data <- prepare_cfr_data(
+      data               = data,
+      date_variable_name = args_list[["date_variable_name"]],
+      cases_status       = args_list[["cases_status"]],
+      death_outcome      = args_list[["death_outcome"]],
+      diagnosis_status   = args_list[["diagnosis_status"]],
+      diagnosis_outcome  = args_list[["diagnosis_outcome"]]
+    )
+    cfr_res <- calculate_cfr_from_incidence(
+      data              = cfr_data,
+      epidist           = epidist
+    )
+    return(cfr_res)
+  }
+
+  if (all(c("date", "cases", "deaths") %in% names(data))) {
+    data <- data %>%
+      dplyr::select(c(date, cases, deaths))
+    cfr_res <- calculate_cfr_from_incidence(
+      data              = data,
+      epidist           = epidist
+    )
+    return(cfr_res)
+  }
+}
+
+# epidemic_phase = NULL,
+# infection_type = "close_contact",
+# scope          = NULL,
+# study_question = "severity",
+
+#' @examples
+#' estimate cfr using incidence data
+#' run_pipeline(
+#'   disease_name      = "Marburg Virus Disease",
+#'   data              = readRDS(data,
+#'                               system.file("extdata",
+#'                                           "Marburg_EqGuinea_incidence.RDS",
+#'                                           package = "episoap")),
+#'   account_for_delay = FALSE,
+#'   epidist           = NULL
+#' )
+#'
+#' estimate cfr using linelist data
+#' run_pipeline(
+#'   disease_name      = "Marburg Virus Disease",
+#'   data              = read.csv(system.file("extdata",
+#'                                            "Marburg_EqGuinea_linelist.csv",
+#'                                             package = "episoap")),
+#'   account_for_delay = TRUE,
+#'   epidist           = NULL,
+#'   date_variable_name = "Onset_week",
+#'   cases_status       = "Status",
+#'   death_outcome      = "dead",
+#'   diagnosis_status   = "Type",
+#'   diagnosis_outcome  = "confirmed",
+#'   distribution       = "gamma",
+#'   type               = "range",
+#'   values             = c(8, 2, 16)
+#' )
+#'
+#' estimate cfr using linelist data
+#' run_pipeline(
+#'   disease_name       = "Marburg Virus Disease",
+#'   data               = NULL,
+#'   account_for_delay  = FALSE,
+#'   epidist            = NULL
+#'   total_cases        = 70,
+#'   total_deaths       = 25
+#'   death_in_confirmed = 12
+#' )
+#'
+run_pipeline <- function(disease_name,
+                         data,
+                         account_for_delay = TRUE,
+                         epidist = NULL,
+                         ...) {
+  args_list <- list(...)
+  parameters    <- list(
+    DISEASE_NAME       = disease_name,
+    DATA               = data,
+    ACCOUNT_FOR_DELAY  = account_for_delay,
+    EPIDIST            = epidist
+  )
+
+  # get parameters needed to estimate CFR from a data frame
+  if (all(c("date_variable_name", "cases_status", "death_outcome",
+            "diagnosis_status", "diagnosis_outcome") %in% names(args_list))) {
+    parameters[["DATE_VARIABLE_NAME"]] <- args_list[["date_variable_name"]]
+    parameters[["CASES_STATUS"]]       <- args_list[["cases_status"]]
+    parameters[["DEATH_OUTCOME"]]      <- args_list[["death_outcome"]]
+    parameters[["DIAGNOSIS_STATUS"]]   <- args_list[["diagnosis_status"]]
+    parameters[["DIAGNOSIS_OUTCOME"]]  <- args_list[["diagnosis_outcome"]]
+  }
+
+  # get parameters needed to estimate CFR from count
+  if (all(c("total_cases", "total_deaths") %in% names(args_list))) {
+    death_in_confirmed <- NULL
+    if ("death_in_confirmed" %in% names(args_list)) {
+      death_in_confirmed <- args_list[["death_in_confirmed"]]
+    }
+    parameters[["TOTAL_CASES"]]  <- args_list[["total_cases"]]
+    parameters[["TOTAL_DEATHS"]] <- args_list[["total_deaths"]]
+  }
+
+  # get parameters needed to calculate the delay distribution
+  if (all(c("type", "values", "distribution") %in% names(args_list))) {
+    parameters[["TYPE"]]         <- args_list[["type"]]
+    parameters[["VALUES"]]       <- args_list[["values"]]
+    parameters[["DISTRIBUTION"]] <- args_list[["distribution"]]
+  }
+
+  # estimate CFR
+  # system.file("rmarkdown", "test_severity.Rmd",package = "episoap")
+  # rmarkdown::render("/Users/karimmane/Documents/Karim/LSHTM/TRACE_dev/Packages/On_trace_github/episoap/inst/rmarkdown/templates/test_severity.Rmd",
+  #                   params = list(
+  #                     DISEASE_NAME       = disease_name,
+  #                     DATA               = data,
+  #                     ACCOUNT_FOR_DELAY  = account_for_delay,
+  #                     EPIDIST            = epidist
+  #                   ),
+  #                   output_dir = getwd(),
+  #                   output_file = "test.html",
+  #                   output_format = NULL)
+  rmarkdown::render("/Users/karimmane/Documents/Karim/LSHTM/TRACE_dev/Packages/On_trace_github/episoap/inst/rmarkdown/templates/test_severity.Rmd",
+                    params        = parameters,
+                    output_dir    = getwd(),
+                    output_file   = "test.html",
+                    output_format = NULL)
+}
+
+# cavits:
+# printing function only show 1 result if it is a list
+# need the defaults arguments when estimating cfr from count data
