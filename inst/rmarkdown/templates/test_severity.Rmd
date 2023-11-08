@@ -33,8 +33,6 @@ library("kableExtra")
     date: `r format(Sys.Date(), "%d/%m/%Y")`
 ---
 
-# severity
-
 ```{r echo=FALSE, eval=TRUE, include=FALSE}
 # get the user parameters
 disease            <- params[["DISEASE_NAME"]]
@@ -54,14 +52,7 @@ total_deaths       <- params[["TOTAL_DEATHS"]]
 death_in_confirmed <- params[["DEATH_IN_CONFIRMED"]]
 ```
 
-```{r echo=FALSE, eval=FALSE}
-cfr <- episoap::get_severity(
-  disease_name      = "Marburg Virus Disease",
-  data              = data,
-  account_for_delay = FALSE,
-  epidist           = NULL
-)
-```
+# severity
 
 ```{r echo=FALSE, eval=TRUE}
 cfr <- episoap::get_severity(

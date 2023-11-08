@@ -99,6 +99,7 @@ calculate_cfr_from_counts <- function(total_cases,
 
   # if the data does not contain the date, cases, and deaths columns, use the
   # user-provided total_cases, total_death, death_in_confirmed
+  # could try a data frame
 
   res_cfr          <- list()
   total_cases      <- as.numeric(total_cases)
@@ -211,7 +212,7 @@ calculate_cfr_from_incidence <- function(data, epidist = NULL) {
 #'
 #' @examples
 get_sequential_dates <- function(data) {
-  idx <- match("date", names(data))
+  idx  <- match("date", names(data))
   date <- seq.Date(as.Date(data[["date"]][[1L]]),
                    as.Date(data[["date"]][nrow(data)]),
                    1)
@@ -219,9 +220,9 @@ get_sequential_dates <- function(data) {
   for (nms in names(data)[-idx]) {
     seq_date[[nms]] <- NA
   }
-  row_idx <- match(data[["date"]], seq_date[["date"]])
-  nms <- names(data)[-idx]
-  col_idx <- match(nms, names(data))
+  row_idx  <- match(data[["date"]], seq_date[["date"]])
+  nms      <- names(data)[-idx]
+  col_idx  <- match(nms, names(data))
   tmp <- data %>% dplyr::select(-c(date))
   seq_date[row_idx, col_idx] <- tmp
   seq_date <- seq_date %>%
@@ -420,13 +421,16 @@ get_severity <- function(disease_name      = NULL,
 
   # get the delay distribution if not provided
   if (account_for_delay && is.null(epidist)) {
-    if (all(c("type", "values", "distribution") %in% names(args_list))) {
+    type         <- args_list[["type"]]
+    values       <- args_list[["values"]]
+    distribution <- args_list[["distribution"]]
+    if (all(!(is.null(type) && !is.null(values) && !is.null(distribution)))) {
       epidist <- get_onset_to_death_distro(
         data         = data,
         disease      = disease_name,
-        type         = args_list[["type"]],
-        values       = args_list[["values"]],
-        distribution = args_list[["distribution"]])
+        type         = type,
+        values       = values,
+        distribution = distribution)
     } else {
       epidist <- get_onset_to_death_distro(data    = data,
                                            disease = disease_name)
@@ -434,15 +438,14 @@ get_severity <- function(disease_name      = NULL,
   }
 
   # estimate CFR from count data , "death_in_confirmed"
-  if (all(c("total_cases", "total_deaths") %in% names(args_list))) {
+  total_cases        <- args_list[["total_cases"]]
+  total_deaths       <- args_list[["total_deaths"]]
+  death_in_confirmed <- args_list[["death_in_confirmed"]]
+  if (all(!is.null(total_cases) && !is.null(total_deaths))) {
     message("Estimating severity from count data...")
-    death_in_confirmed <- NULL
-    if ("death_in_confirmed" %in% names(args_list)) {
-      death_in_confirmed <- args_list[["death_in_confirmed"]]
-    }
     cfr_res <- calculate_cfr_from_counts(
-      total_cases        = args_list[["total_cases"]],
-      total_deaths       = args_list[["total_deaths"]],
+      total_cases        = total_cases,
+      total_deaths       = total_deaths,
       death_in_confirmed = death_in_confirmed
     )
     return(cfr_res)
@@ -450,19 +453,25 @@ get_severity <- function(disease_name      = NULL,
 
   # aggregate the data if it does not contain the 'date', 'cases', and 'deaths'
   # columns
-  if (all(c("date_variable_name", "cases_status", "death_outcome",
-            "diagnosis_status", "diagnosis_outcome") %in% names(args_list))) {
+  date_variable_name <- args_list[["date_variable_name"]]
+  cases_status       <- args_list[["cases_status"]]
+  death_outcome      <- args_list[["death_outcome"]]
+  diagnosis_status   <- args_list[["diagnosis_status"]]
+  diagnosis_outcome  <- args_list[["diagnosis_outcome"]]
+  if (all(!is.null(date_variable_name) && !is.null(cases_status) &&
+          !is.null(death_outcome) && !is.null(diagnosis_status) &&
+          !is.null(diagnosis_outcome))) {
     cfr_data <- prepare_cfr_data(
       data               = data,
-      date_variable_name = args_list[["date_variable_name"]],
-      cases_status       = args_list[["cases_status"]],
-      death_outcome      = args_list[["death_outcome"]],
-      diagnosis_status   = args_list[["diagnosis_status"]],
-      diagnosis_outcome  = args_list[["diagnosis_outcome"]]
+      date_variable_name = date_variable_name,
+      cases_status       = cases_status,
+      death_outcome      = death_outcome,
+      diagnosis_status   = diagnosis_status,
+      diagnosis_outcome  = diagnosis_outcome
     )
     cfr_res <- calculate_cfr_from_incidence(
-      data              = cfr_data,
-      epidist           = epidist
+      data               = cfr_data,
+      epidist            = epidist
     )
     return(cfr_res)
   }
@@ -478,17 +487,11 @@ get_severity <- function(disease_name      = NULL,
   }
 }
 
-# epidemic_phase = NULL,
-# infection_type = "close_contact",
-# scope          = NULL,
-# study_question = "severity",
-
 #' @examples
 #' estimate cfr using incidence data
 #' run_pipeline(
 #'   disease_name      = "Marburg Virus Disease",
-#'   data              = readRDS(data,
-#'                               system.file("extdata",
+#'   data              = readRDS(system.file("extdata",
 #'                                           "Marburg_EqGuinea_incidence.RDS",
 #'                                           package = "episoap")),
 #'   account_for_delay = FALSE,
@@ -513,14 +516,14 @@ get_severity <- function(disease_name      = NULL,
 #'   values             = c(8, 2, 16)
 #' )
 #'
-#' estimate cfr using linelist data
+#' estimate cfr using count data
 #' run_pipeline(
 #'   disease_name       = "Marburg Virus Disease",
 #'   data               = NULL,
 #'   account_for_delay  = FALSE,
-#'   epidist            = NULL
+#'   epidist            = NULL,
 #'   total_cases        = 70,
-#'   total_deaths       = 25
+#'   total_deaths       = 25,
 #'   death_in_confirmed = 12
 #' )
 #'
