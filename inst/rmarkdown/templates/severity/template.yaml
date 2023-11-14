@@ -1,0 +1,4 @@
+name: Severity Report
+description: >
+  A template for estimating severity (underreporting and case-fatality ratio)
+create_dir: TRUE
