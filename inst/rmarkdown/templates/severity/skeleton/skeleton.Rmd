@@ -161,6 +161,14 @@ renv::use(
 )
 ```
 
+# Outline of the report
+
+This report provides a template for estimating the severity of disease depending on the type of data that is available to the user. In addition, this report also provides a template to estimate the proportion of cases that are ascertained during an infectious disease outbreak.
+
+
+
+
+
 
 # Outbreak of Marburg and Ebola
 
@@ -402,9 +410,10 @@ dt_ccfr_static_ebola <- cfr::cfr_static(
 
 # Fit with EpiNow2
 # Get parameters from epiparameter and format for EpiNow2
-param_ebola <- distributional::parameters(onset_to_death_ebola)
+param_ebola <- epiparameter::get_parameters(onset_to_death_ebola)
 
-onset_to_death_meansd <- epiparameter::gamma_shapescale2meansd(
+onset_to_death_meansd <- epiparameter::convert_params_to_summary_stats(
+   distribution = "gamma",
   shape = param_ebola[["shape"]],
   scale = param_ebola[["scale"]] 
 )
