@@ -385,7 +385,7 @@ si_epiparameter <- epiparameter::epidist_db(
    )
 
 si_params <- as.list(get_parameters(si_epiparameter))
-si_dist <- "lnorm" #how to extract this directly from <epidist>?
+si_dist <- family(si_epiparameter)
 si_mean <- si_epiparameter$summary_stats$mean
 si_sd <- si_epiparameter$summary_stats$sd
 ```
@@ -421,7 +421,7 @@ ggplot(
   data.frame(delay = si_x, prob = si$d(si_x)),
   aes(x = delay, y = prob)
 ) +
-  geom_col(fill = "darkgrey") +
+  geom_col(fill = green_grey) +
   labs(
     title = "Serial interval distribution",
     x = "Days from primary to secondary onset",
