@@ -19,9 +19,9 @@ params:
   use_epiparameter: 
     label: "Should the serial interval distribution be extracted directly from the epiparameter package?"
     value: FALSE
-  epiparameter_pathogen: 
+  epiparameter_disease: 
     label: "Name of the pathogen in the epiparameter database if `use_parameter = TRUE`."
-    value: "SARS_CoV_2_wildtype"
+    value: "COVID-19"
   si_mean:
     label: "Mean of the distribution for serial interval if not using value from epiparameter. Ignored if `use_epiparameter = TRUE`."
     value: 4.2
@@ -377,14 +377,17 @@ discretized Gamma.
 ## Results
 
 ```{r, eval = params$use_epiparameter}
-si_epiparameter <- epiparameter::epidist(
-  params$epiparameter_pathogen,
-  "serial_interval"
-)
-si_params <- si_epiparameter$param
-si_dist <- si_epiparameter$dist
-si_mean <- si_params[[1]]
-si_sd <- si_params[[2]]
+si_epiparameter <- epiparameter::epidist_db(
+  disease =  params$epiparameter_disease,
+  epi_dist =  "serial_interval",
+  author = "Nishiura",
+  single_epidist = T
+   )
+
+si_params <- as.list(get_parameters(si_epiparameter))
+si_dist <- family(si_epiparameter)
+si_mean <- si_epiparameter$summary_stats$mean
+si_sd <- si_epiparameter$summary_stats$sd
 ```
 
 ```{r, eval = !params$use_epiparameter}
