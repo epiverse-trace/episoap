@@ -381,8 +381,8 @@ si_epiparameter <- epiparameter::epidist_db(
   disease =  params$epiparameter_disease,
   epi_dist =  "serial_interval",
   author = "Nishiura",
-  single_epidist = T
-   )
+  single_epidist = TRUE
+  )
 
 si_params <- as.list(get_parameters(si_epiparameter))
 si_dist <- family(si_epiparameter)
