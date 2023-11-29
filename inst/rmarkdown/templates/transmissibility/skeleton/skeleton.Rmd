@@ -416,26 +416,13 @@ si_params <- epiparameter::convert_summary_stats_to_params(
 ```
 
 ```{r}
-# do.call() because we want to pass `si_params` names as the name of arguments.
-# This is important if params in si_params are not the first arguments of the
-# q...() function. For example, if a gamma distribution is define by its shape
-# and scale, instead of shape and rate.
-si <- do.call(
-  distcrete,
-  c(
-    list(si_dist,
-      interval = 1,
-      w = 0
-    ),
-    si_params
-  )
-)
-si_x <- seq(1L, to = si$q(0.999), by = 1L)
+si <- epiparameter::discretise(si_epiparameter)
+si_x <- seq(1L, to = si$prob_dist$qf(0.999), by = 1L)
 ```
 
 ```{r}
 ggplot(
-  data.frame(delay = si_x, prob = si$d(si_x)),
+  data.frame(delay = si_x, prob = si$prob_dist$d(si_x)),
   aes(x = delay, y = prob)
 ) +
   geom_col(fill = green_grey) +
