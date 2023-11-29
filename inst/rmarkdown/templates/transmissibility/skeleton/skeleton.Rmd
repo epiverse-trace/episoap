@@ -20,7 +20,7 @@ params:
     label: "Should the serial interval distribution be extracted directly from the epiparameter package?"
     value: FALSE
   epiparameter_disease: 
-    label: "Name of the pathogen in the epiparameter database if `use_parameter = TRUE`."
+    label: "Name of the disease in the epiparameter database if `use_parameter = TRUE`."
     value: "COVID-19"
   si_mean:
     label: "Mean of the distribution for serial interval if not using value from epiparameter. Ignored if `use_epiparameter = TRUE`."
