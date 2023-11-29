@@ -396,7 +396,7 @@ si_sd <- params$si_sd
 si_dist <- params$si_dist
 si_cv <- si_sd / si_mean
 si_params <- epiparameter::convert_summary_stats_to_params(
-  distribution = "gamma", mean = si_mean, sd = si_sd) 
+distribution = "gamma", mean = si_mean, sd = si_sd) 
 ```
 
 ```{r}
