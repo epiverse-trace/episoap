@@ -221,8 +221,6 @@ library(linelist)
 library(janitor)
 library(kableExtra)
 library(incidence2)
-library(distcrete)
-library(epitrix)
 library(grateful)
 library(epiparameter)
 
