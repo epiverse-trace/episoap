@@ -52,8 +52,6 @@ last_trends <- last_counts  %>%
 plot(last_trends,
   angle = 45,
   date_format = "%d %b %y",
-  color = "white",
-  fill = green_grey,
   alpha = 0.8,
   n_breaks = 12,
   nrow = n_groups,
