@@ -20,6 +20,11 @@ params:
     TOTAL_CASES: NULL
     TOTAL_DEATHS: NULL
     DEATH_IN_CONFIRMED: NULL
+    INTERVAL: 1
+    SHAPE: NULL
+    SCALE: NULL
+    MEANLOG: NULL
+    SDLOG: NULL
 ---
 
 ```{r setup, include=FALSE}
@@ -50,6 +55,11 @@ values             <- params[["VALUES"]]
 total_cases        <- params[["TOTAL_CASES"]]
 total_deaths       <- params[["TOTAL_DEATHS"]]
 death_in_confirmed <- params[["DEATH_IN_CONFIRMED"]]
+interval           <- params[["INTERVAL"]]
+shape              <- params[["SHAPE"]]
+scale              <- params[["SCALE"]]
+meanlog            <- params[["MEANLOG"]]
+sdlog              <- params[["SDLOG"]]
 ```
 
 # severity
@@ -62,7 +72,12 @@ cfr <- episoap::get_severity(
   epidist            = epidist,
   values             = values,
   type               = type,
+  interval           = interval,
   distribution       = distribution,
+  shape              = shape,
+  scale              = scale,
+  meanlog            = meanlog,
+  sdlog              = sdlog,
   date_variable_name = date_variable_name,
   cases_status       = cases_status,
   death_outcome      = death_outcome,

@@ -126,7 +126,133 @@ calculate_cfr_from_counts <- function(total_cases,
   res_cfr
 }
 
-#' Calculate CFR from incidence data
+get_delay_distro_params <- function(tmp_data,
+                                    type, values, distribution,
+                                    shape, scale,
+                                    meanlog, sdlog) {
+  if (all(!is.null(type) && !is.null(values) && !is.null(distribution))) {
+    args_list <- list(type         = type,
+                      values       = values,
+                      distribution = distribution)
+    param     <- extract_params(tmp_data, args_list)
+  } else if (!is.null(shape) && !is.null(scale)) {
+    param <- list(shape = shape, scale = scale)
+  } else if (!is.null(meanlog) && !is.null(sdlog)) {
+    param <- list(meanlog = meanlog, sdlog = sdlog)
+  } else {
+    stop("Please provide the distribution parameters or summary statistics.")
+  }
+  return(param)
+}
+
+calculate_cfr_from_linelist <- function(data, account_for_delay, epidist,
+                                        type, values, distribution, interval,
+                                        shape, scale,
+                                        meanlog, sdlog) {
+  # initialize the output object
+  res_cfr      <- list()
+  output_names <- c("cfr", "cfr_in_confirmed_cases")
+  j            <- 1L
+  for (i in c("cfr_data_all_cases", "cfr_data_confirmed_cases")) {
+    tmp_data   <- data[[i]]
+
+    # convert dates to sequential if necessary
+    if (!identical(unique(diff(tmp_data[["date"]])), 1L)) {
+      tmp_data <- get_sequential_dates(tmp_data)
+    }
+
+    # calculate CFR using the provided delay distribution
+    if (account_for_delay && !is.null(epidist)) {
+      res_cfr[[output_names[j]]] <- cfr::cfr_static(
+        data          = tmp_data,
+        delay_density = epidist
+      )
+      j <- j + 1L
+    } else if (account_for_delay && is.null(epidist)) {
+      # calculate CFR using the delay distribution parameters
+      param <- get_delay_distro_params(tmp_data,
+                                       type, values, distribution,
+                                       shape, scale,
+                                       meanlog, sdlog)
+
+      if (distribution %in% c("gamma", "weibull")) {
+        onset_to_death_distribution <- distcrete::distcrete(
+          name     = "gamma",
+          shape    = param[["shape"]],
+          scale    = param[["scale"]],
+          interval = interval
+        )
+        res_cfr[[output_names[j]]] <- cfr::cfr_static(
+          data          = tmp_data,
+          delay_density = onset_to_death_distribution$d
+        )
+      } else {
+        onset_to_death_distribution <- distributional::dist_lognormal(
+          mu    = param[["meanlog"]],
+          sigma = param[["sdlog"]]
+        )
+        res_cfr[[output_names[j]]] <- cfr::cfr_static(
+          data          = tmp_data,
+          delay_density = function(x) unlist(density(onset_to_death_distribution, x)) # nolint: line_length_linter
+        )
+      }
+      j <- j + 1L
+    }
+  }
+
+  return(res_cfr)
+}
+
+calculate_cfr_from_incidence <- function(data, epidist, account_for_delay,
+                                         type, values, distribution, interval,
+                                         shape, scale,
+                                         meanlog, sdlog) {
+  res_cfr <- list()
+  if (account_for_delay && !is.null(epidist)) {
+    res_cfr[["cfr"]] <- cfr::cfr_static(
+      data          = data,
+      delay_density = epidist
+    )
+  } else if (account_for_delay && is.null(epidist)) {
+    param <- get_delay_distro_params(data,
+                                     type, values, distribution,
+                                     shape, scale,
+                                     meanlog, sdlog)
+    if (distribution %in% c("gamma", "weibull")) {
+      onset_to_death_distribution <- distcrete::distcrete(
+        name     = "gamma",
+        shape    = param[["shape"]],
+        scale    = param[["scale"]],
+        interval = interval
+      )
+      res_cfr[["cfr"]] <- cfr::cfr_static(
+        data          = data,
+        delay_density = onset_to_death_distribution$d
+      )
+    } else {
+      onset_to_death_distribution <- distributional::dist_lognormal(
+        mu    = param[["meanlog"]],
+        sigma = param[["sdlog"]]
+      )
+      res_cfr[["cfr"]] <- cfr::cfr_static(
+        data          = data,
+        delay_density = function(x) unlist(density(onset_to_death_distribution,
+                                                   x))
+      )
+    }
+  } else {
+    res_cfr[["cfr"]] <- cfr::cfr_static(
+      data          = data,
+      delay_density = NULL
+    )
+  }
+
+  res_cfr[["cfr_in_confirmed_cases"]] <- NULL
+
+  return(res_cfr)
+}
+
+#' Calculate CFR from incidence or linelist data
 #'
 #' @param data the input data
 #' @param epidist an `epidist` object that contains the distribution parameters
@@ -152,43 +278,31 @@ calculate_cfr_from_counts <- function(total_cases,
 #'   data              = cfr_data,
 #'   epidist           = NULL
 #' )
-calculate_cfr_from_incidence <- function(data, epidist = NULL) {
-  # initialise the output object
-  res_cfr      <- list()
-  output_names <- c("cfr", "cfr_in_confirmed_cases")
+calculate_cfr <- function(data,
+                          epidist           = NULL,
+                          account_for_delay = FALSE,
+                          type, values, distribution, interval,
+                          shape, scale,
+                          meanlog, sdlog) {
 
   if (is.list(data) && all(names(data) %in% c("cfr_data_all_cases",
-                                           "cfr_data_confirmed_cases"))) {
-    j <- 1L
-    for (i in c("cfr_data_all_cases", "cfr_data_confirmed_cases")) {
-      tmp_data <- data[[i]]
-
-      # convert dates to sequential if necessary
-      if (!identical(unique(diff(tmp_data[["date"]])), 1L)) {
-        tmp_data <- get_sequential_dates(tmp_data)
-      }
-
-      # calculate CFR
-      res_cfr[[output_names[j]]] <- cfr::cfr_static(
-        data              = tmp_data,
-        epidist           = epidist,
-        poisson_threshold = 100L
-      )
-      j <- j + 1L
-    }
+                                              "cfr_data_confirmed_cases"))) {
+    res_cfr <- calculate_cfr_from_linelist(data, account_for_delay, epidist,
+                                           type, values, distribution, interval,
+                                           shape, scale,
+                                           meanlog, sdlog)
   } else if (is.data.frame(data) && all(c("date", "cases", "deaths") %in%
                                         names(data))) {
-
     # convert dates to sequential if necessary
     if (!(unique(diff(data[["date"]])) == 1L)) {
-      # this function is based on `incidence2` but it is not actually doing
-      # what we want. Need to build a function for this.
-      data <- get_sequential_dates(data)
+      data  <- get_sequential_dates(data)
     }
-    res_cfr[["cfr"]] <- cfr::cfr_static(data              = data,
-                                        epidist           = epidist,
-                                        poisson_threshold = 100L)
-    res_cfr[["cfr_in_confirmed_cases"]] <- NULL
+    res_cfr <- calculate_cfr_from_incidence(
+      data, epidist, account_for_delay,
+      type, values, distribution, interval,
+       shape, scale,
+       meanlog, sdlog
+    )
   } else {
     stop("Incorrect input data format...\n",
          "'data' should be a data frame with 3 columns named as 'date',",
@@ -232,7 +346,7 @@ get_sequential_dates <- function(data) {
   seq_date
 }
 
-#' Create the `epidist` object
+#' Create the delay distribution object
 #'
 #' @param data the input data frame or linelist object
 #' @param disease the name of the disease of interest
@@ -249,6 +363,8 @@ get_sequential_dates <- function(data) {
 #'   \item scale: the scale of the specified distribution (when distribution = gamma or weibull) # nolint: line_length_linter
 #'   \item meanlog: the meanlog of the specified distribution (when distribution = lnorm) # nolint: line_length_linter
 #'   \item sdlog: the sdlog of the specified distribution (when distribution = lnorm) # nolint: line_length_linter
+#'   \item interval: the interval to discretise the interval onto. Default is 1
+#'      for daily case and death data.
 #'   }
 #'
 #' @return an object of type `epidist` with the epidemiological parameters of
@@ -265,7 +381,7 @@ get_sequential_dates <- function(data) {
 #'   distribution = "gamma"
 #' )
 get_onset_to_death_distro <- function(data,
-                                      disease      = "Marburg Virus Disease",
+                                      disease = "Marburg Virus Disease",
                                       ...) {
   checkmate::assert_data_frame(data, min.rows = 1L, min.cols = 1L,
                                null.ok = FALSE)
@@ -274,38 +390,28 @@ get_onset_to_death_distro <- function(data,
   args_list <- list(...) #distribution should be mandatory in this list
 
   # get the epidist object
-  onset_death <- epiparameter::epidist_db(disease = disease,
-                                          single_epidist = TRUE)
-  if (!epiparameter::is_parameterised(onset_death)) {
-    if (all(c("type", "values", "distribution") %in% names(args_list))) {
-      param <- extract_params(data, args_list)
-    } else if (any(c("shape", "scale", "meanlog", "sdlog") %in% names(args_list))) { # nolint: line_length_linter
-      param <- get_params(args_list)
-    } else {
-      stop("Please provide the distribution parameters or summary statistics.")
-    }
-
-    if (args_list[["distribution"]] %in% c("gamma", "weibull")) {
-      onset_death <- epiparameter::epidist(
-        disease                  = disease,
-        epi_dist                 = "onset_to_death",
-        prob_distribution        = args_list[["distribution"]],
-        prob_distribution_params = c(shape = param[["shape"]],
-                                     scale = param[["scale"]])
-      )
-    } else {
-      onset_death <- epiparameter::epidist(
-        disease                  = disease,
-        epi_dist                 = "onset_to_death",
-        prob_distribution        = args_list[["distribution"]],
-        prob_distribution_params = c(meanlog = param[["meanlog"]],
-                                     sdlog   = param[["sdlog"]])
-      )
-    }
+  if (all(c("type", "values", "distribution") %in% names(args_list))) {
+    param <- extract_params(data, args_list)
+  } else if (any(c("shape", "scale", "meanlog", "sdlog") %in% names(args_list))) { # nolint: line_length_linter
+    param <- get_params(args_list)
+  } else {
+    stop("Please provide the distribution parameters or summary statistics.")
   }
 
+  if (args_list[["distribution"]] %in% c("gamma", "weibull")) {
+    onset_death <- distcrete::distcrete(
+      name     = args_list[["distribution"]],
+      shape    = param[["shape"]],
+      scale    = param[["scale"]],
+      interval = args_list[["interval"]]
+    )
+  } else {
+    onset_death <- distributional::dist_lognormal(mu    = param[["meanlog"]],
+                                                  sigma = param[["sdlog"]])
+  }
   onset_death
 }
+
 
 #' Extract the distribution parameters from percentiles, median and range
 #'
@@ -419,23 +525,16 @@ get_severity <- function(disease_name      = NULL,
   # get the additional arguments
   args_list <- list(...)
 
-  # get the delay distribution if not provided
-  if (account_for_delay && is.null(epidist)) {
-    type         <- args_list[["type"]]
-    values       <- args_list[["values"]]
-    distribution <- args_list[["distribution"]]
-    if (all(!(is.null(type) && !is.null(values) && !is.null(distribution)))) {
-      epidist <- get_onset_to_death_distro(
-        data         = data,
-        disease      = disease_name,
-        type         = type,
-        values       = values,
-        distribution = distribution)
-    } else {
-      epidist <- get_onset_to_death_distro(data    = data,
-                                           disease = disease_name)
-    }
-  }
+  # get the delay distribution parameters if the delay distribution is
+  # not provided
+  type         <- args_list[["type"]]
+  values       <- args_list[["values"]]
+  distribution <- args_list[["distribution"]]
+  interval     <- args_list[["interval"]]
+  meanlog      <- args_list[["meanlog"]]
+  sdlog        <- args_list[["sdlog"]]
+  shape        <- args_list[["sdlog"]]
+  scale        <- args_list[["sdlog"]]
 
   # estimate CFR from count data , "death_in_confirmed"
   total_cases        <- args_list[["total_cases"]]
@@ -443,7 +542,7 @@ get_severity <- function(disease_name      = NULL,
   death_in_confirmed <- args_list[["death_in_confirmed"]]
   if (all(!is.null(total_cases) && !is.null(total_deaths))) {
     message("Estimating severity from count data...")
-    cfr_res <- calculate_cfr_from_counts(
+    cfr_res          <- calculate_cfr_from_counts(
       total_cases        = total_cases,
       total_deaths       = total_deaths,
       death_in_confirmed = death_in_confirmed
@@ -469,9 +568,12 @@ get_severity <- function(disease_name      = NULL,
       diagnosis_status   = diagnosis_status,
       diagnosis_outcome  = diagnosis_outcome
     )
-    cfr_res <- calculate_cfr_from_incidence(
-      data               = cfr_data,
-      epidist            = epidist
+    cfr_res <- calculate_cfr(
+      data    = cfr_data,
+      epidist = epidist, account_for_delay,
+      type, values, distribution, interval,
+      shape, scale,
+      meanlog, sdlog
     )
     return(cfr_res)
   }
@@ -479,9 +581,13 @@ get_severity <- function(disease_name      = NULL,
   if (all(c("date", "cases", "deaths") %in% names(data))) {
     data <- data %>%
       dplyr::select(c(date, cases, deaths))
-    cfr_res <- calculate_cfr_from_incidence(
+    cfr_res <- calculate_cfr(
       data              = data,
-      epidist           = epidist
+      epidist           = epidist,
+      account_for_delay = account_for_delay,
+      type, values, distribution, interval,
+      shape, scale,
+      meanlog, sdlog
     )
     return(cfr_res)
   }
@@ -498,14 +604,15 @@ get_severity <- function(disease_name      = NULL,
 #'   epidist           = NULL
 #' )
 #'
-#' estimate cfr using linelist data
+#' estimate cfr using linelist data - the delay distribution parameters are
+#' taken from the user-supplied arguments
 #' run_pipeline(
-#'   disease_name      = "Marburg Virus Disease",
-#'   data              = read.csv(system.file("extdata",
-#'                                            "Marburg_EqGuinea_linelist.csv",
+#'   disease_name       = "Marburg Virus Disease",
+#'   data               = read.csv(system.file("extdata",
+#'                                             "Marburg_EqGuinea_linelist.csv",
 #'                                             package = "episoap")),
-#'   account_for_delay = TRUE,
-#'   epidist           = NULL,
+#'   account_for_delay  = TRUE,
+#'   epidist            = NULL,
 #'   date_variable_name = "Onset_week",
 #'   cases_status       = "Status",
 #'   death_outcome      = "dead",
@@ -513,7 +620,25 @@ get_severity <- function(disease_name      = NULL,
 #'   diagnosis_outcome  = "confirmed",
 #'   distribution       = "gamma",
 #'   type               = "range",
-#'   values             = c(8, 2, 16)
+#'   values             = c(8, 2, 16),
+#'   interval           = 1
+#' )
+#'
+#' run_pipeline(
+#'   disease_name       = "Marburg Virus Disease",
+#'   data               = read.csv(system.file("extdata",
+#'                                             "Marburg_EqGuinea_linelist.csv",
+#'                                             package = "episoap")),
+#'   account_for_delay  = TRUE,
+#'   epidist            = NULL,
+#'   date_variable_name = "Onset_week",
+#'   cases_status       = "Status",
+#'   death_outcome      = "dead",
+#'   diagnosis_status   = "Type",
+#'   diagnosis_outcome  = "confirmed",
+#'   distribution       = "lnorm",
+#'   meanlog            = 2.5,
+#'   sdlog              = 2
 #' )
 #'
 #' estimate cfr using count data
@@ -532,8 +657,8 @@ run_pipeline <- function(disease_name,
                          account_for_delay = TRUE,
                          epidist = NULL,
                          ...) {
-  args_list <- list(...)
-  parameters    <- list(
+  args_list  <- list(...)
+  parameters <- list(
     DISEASE_NAME       = disease_name,
     DATA               = data,
     ACCOUNT_FOR_DELAY  = account_for_delay,
@@ -552,7 +677,7 @@ run_pipeline <- function(disease_name,
 
   # get parameters needed to estimate CFR from count
   if (all(c("total_cases", "total_deaths") %in% names(args_list))) {
-    death_in_confirmed <- NULL
+    death_in_confirmed   <- NULL
     if ("death_in_confirmed" %in% names(args_list)) {
       death_in_confirmed <- args_list[["death_in_confirmed"]]
     }
@@ -565,21 +690,19 @@ run_pipeline <- function(disease_name,
     parameters[["TYPE"]]         <- args_list[["type"]]
     parameters[["VALUES"]]       <- args_list[["values"]]
     parameters[["DISTRIBUTION"]] <- args_list[["distribution"]]
+    parameters[["INTERVAL"]]     <- args_list[["interval"]]
+  }
+  if (all(c("meanlog", "sdlog", "distribution") %in% names(args_list))) {
+    parameters[["MEANLOG"]]      <- args_list[["meanlog"]]
+    parameters[["SDLOG"]]        <- args_list[["sdlog"]]
+    parameters[["DISTRIBUTION"]] <- args_list[["distribution"]]
   }
 
   # estimate CFR
-  # system.file("rmarkdown", "test_severity.Rmd",package = "episoap")
-  # rmarkdown::render("/Users/karimmane/Documents/Karim/LSHTM/TRACE_dev/Packages/On_trace_github/episoap/inst/rmarkdown/templates/test_severity.Rmd",
-  #                   params = list(
-  #                     DISEASE_NAME       = disease_name,
-  #                     DATA               = data,
-  #                     ACCOUNT_FOR_DELAY  = account_for_delay,
-  #                     EPIDIST            = epidist
-  #                   ),
-  #                   output_dir = getwd(),
-  #                   output_file = "test.html",
-  #                   output_format = NULL)
-  rmarkdown::render("/Users/karimmane/Documents/Karim/LSHTM/TRACE_dev/Packages/On_trace_github/episoap/inst/rmarkdown/templates/test_severity.Rmd",
+  # input         = "/Users/karimmane/Documents/Karim/LSHTM/TRACE_dev/Packages/On_trace_github/episoap/inst/rmarkdown/templates/test_severity.Rmd",
+  rmarkdown::render(input         = file.path(.libPaths(), "episoap",
+                                              "rmarkdown", "templates",
+                                              "test_severity.Rmd"),
                     params        = parameters,
                     output_dir    = getwd(),
                     output_file   = "test.html",
