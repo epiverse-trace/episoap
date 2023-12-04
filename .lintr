@@ -15,9 +15,10 @@ linters: all_linters(
     # Use minimum R declared in DESCRIPTION or fall back to current R version.
     # Install etdev package from https://github.com/epiverse-trace/etdev
     backport_linter(if (length(x <- etdev::extract_min_r_version())) x else getRversion()),
-    commented_code_linter = NULL, # Necessary because we want to keep commented code in the template
-    object_usage_linter = NULL,   # Necessary because we use Rmd child documents
-    namespace_linter = NULL       # Necessary because we use Rmd child documents
+    commented_code_linter = NULL, # because we want to keep commented code in the template
+    object_usage_linter = NULL,   # because we use Rmd child documents
+    namespace_linter = NULL,      # because we use Rmd child documents
+    missing_package_linter = NULL # because packages in reports are handled via renv
   )
 exclusions: list(
     "tests/testthat.R" = list(
