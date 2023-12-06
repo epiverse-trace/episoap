@@ -16,20 +16,20 @@ params:
   r_estim_window:
     label: "Number of days to include to get the latest observed value of Rt."
     value: 21
-  use_epiparameter: 
+  use_epiparameter_database: 
     label: "Should the serial interval distribution be extracted directly from the epiparameter package?"
     value: FALSE
   epiparameter_disease: 
-    label: "Name of the disease in the epiparameter database if `use_parameter = TRUE`."
+    label: "Name of the disease in the epiparameter database if `use_parameter_database = TRUE`."
     value: "COVID-19"
   si_mean:
-    label: "Mean of the distribution for serial interval if not using value from epiparameter. Ignored if `use_epiparameter = TRUE`."
+    label: "Mean of the distribution for serial interval if not using value from epiparameter. Ignored if `use_epiparameter_database = TRUE`."
     value: 4.2
   si_sd: 
-    label: "Standard deviation of the distribution for serial interval if not using value from epiparameter. Ignored if `use_epiparameter = TRUE`."
+    label: "Standard deviation of the distribution for serial interval if not using value from epiparameter. Ignored if `use_epiparameter_database = TRUE`."
     value: 4.9
   si_dist: 
-    label: "Choice of probability distribution for serial interval if not using value from epiparameter. Ignored if `use_epiparameter = TRUE`."
+    label: "Choice of probability distribution for serial interval if not using value from epiparameter. Ignored if `use_epiparameter_database = TRUE`."
     value: "gamma"
     choices: ["beta", "binom", "cauchy", "chisq", "exp", "f", "gamma", "geom", "hyper", "lnorm", "logis", "nbinom", "norm", "pois", "smirnov", "t", "tukey", "unif", "weibull", "wilcox"]
   data_file: 
@@ -374,7 +374,7 @@ discretized Gamma.
 
 ## Results
 
-```{r, eval = params$use_epiparameter}
+```{r, eval = params$use_epiparameter_database}
 si_epiparameter <- epiparameter::epidist_db(
   disease =  params$epiparameter_disease,
   epi_dist =  "serial_interval",
@@ -387,7 +387,7 @@ si_mean <- si_epiparameter$summary_stats$mean
 si_sd <- si_epiparameter$summary_stats$sd
 ```
 
-```{r, eval = !params$use_epiparameter}
+```{r, eval = !params$use_epiparameter_database}
 si_mean <- params$si_mean
 si_sd <- params$si_sd
 si_dist <- params$si_dist
