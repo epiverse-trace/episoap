@@ -100,7 +100,7 @@ renv::use(
   "htmltools@0.5.7",
   "httpuv@1.6.12",
   "httr@1.4.7",
-  "incidence2@2.2.1",
+  "incidence2@2.2.3",
   "isoband@0.2.7",
   "janitor@2.2.0",
   "jquerylib@0.1.4",
@@ -452,7 +452,7 @@ i_recent <- dat_raw %>%
 ```{r}
 dat_i_day <- dat_raw %>%
   incidence("date",
-    interval = 1,
+    interval = "daily",
     counts = count_var,
     groups = group_var
   ) %>%
