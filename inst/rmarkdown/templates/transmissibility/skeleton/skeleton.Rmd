@@ -337,7 +337,8 @@ This graph shows the total number of cases per group:
 
 ```{r }
 total_cases <- dat %>%
-  select_tags(location, counts) %>%
+  tags_df() %>%
+  select(location, counts) %>%
   group_by(location) %>%
   summarise(cases = sum(counts)) %>%
   mutate(location = fct_reorder(
