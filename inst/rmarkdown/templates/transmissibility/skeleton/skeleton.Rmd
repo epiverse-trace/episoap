@@ -381,7 +381,7 @@ si_epiparameter <- epiparameter::epidist_db(
   single_epidist = TRUE
 )
 
-si_params <- as.list(get_parameters(si_epiparameter))
+si_params <- get_parameters(si_epiparameter)
 si_dist <- family(si_epiparameter)
 si_mean <- si_epiparameter$summary_stats$mean
 si_sd <- si_epiparameter$summary_stats$sd
