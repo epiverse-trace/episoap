@@ -9,5 +9,10 @@
 #' @export
 #'
 list_templates <- function() {
-  list.files(system.file("rmarkdown", "templates", package = "episoap"))
+
+  reps <- list.files(system.file("rmarkdown", "templates", package = "episoap"))
+  stable_reps <- grep("^_", reps, invert = TRUE, value = TRUE)
+
+  return(stable_reps)
+
 }
