@@ -414,7 +414,7 @@ si_params <- epiparameter::convert_summary_stats_to_params(
 ```
 
 ```{r}
-si <- epiparameter::discretise(si_epiparameter)
+si <- epiparameter::discretise(si_epidist)
 si_x <- seq(1L, to = si$prob_dist$qf(0.999), by = 1L)
 ```
 
