@@ -397,10 +397,10 @@ si_epidist <- epiparameter::epidist_db(
   single_epidist = TRUE
 )
 
-si_params <- get_parameters(si_epiparameter)
-si_dist <- family(si_epiparameter)
-si_mean <- si_epiparameter$summary_stats$mean
-si_sd <- si_epiparameter$summary_stats$sd
+si_params <- get_parameters(si_epidist)
+si_dist <- family(si_epidist)
+si_mean <- si_epidist$summary_stats$mean
+si_sd <- si_epidist$summary_stats$sd
 ```
 
 ```{r, eval = !params$use_epiparameter_database}
