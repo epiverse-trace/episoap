@@ -378,7 +378,8 @@ discretized Gamma.
 si_epidist <- epiparameter::epidist_db(
   disease =  params$disease_name,
   epi_dist =  "serial_interval",
-  single_epidist = TRUE
+  single_epidist = TRUE,
+  subset = is_parameterised
 )
 
 si_params <- get_parameters(si_epidist)
