@@ -28,7 +28,8 @@ jobs:
         with:
           extra-packages:
             sodium # it would be good to automatically identify system dependencies in the future
-      - run: |
+      - name: Test report rendering
+        run: |
           library(episoap)
           for (tp in list_templates()) {
             rmarkdown::render(
