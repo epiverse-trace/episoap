@@ -44,7 +44,7 @@
 #   diagnosis_outcome  = "confirmed",
 #   distribution       = "lnorm",
 #   meanlog            = 2.5,
-#   sdlog              = 2
+#   sdlog              = 1.2
 # )
 #
 #
@@ -72,6 +72,6 @@
 # diagnosis_outcome  = "confirmed";
 # distribution       = "lnorm";
 # meanlog            = 2.5;
-# sdlog              = 2;
+# sdlog              = 1.2;
 # type = NULL; values = NULL; interval=NULL; shape=NULL; scale=NULL
-
+#

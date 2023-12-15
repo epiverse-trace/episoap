@@ -60,12 +60,13 @@ shape              <- params[["SHAPE"]]
 scale              <- params[["SCALE"]]
 meanlog            <- params[["MEANLOG"]]
 sdlog              <- params[["SDLOG"]]
+run_severity       <- TRUE
 ```
 
 # severity
 
-```{r echo=FALSE, eval=TRUE}
-cfr <- episoap::get_severity(
+```{r echo=FALSE, eval=run_severity}
+cfr <- get_severity(
   disease_name       = disease,
   data               = data,
   account_for_delay  = account_for_delay,

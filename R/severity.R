@@ -10,7 +10,7 @@
 
 #' Get the input data for {cfr} functions
 #'
-#' @param data
+#' @param data the input data
 #' @param date_variable_name the name of the column with the dates when cases
 #'    were registered
 #' @param cases_status the name of the column with the information about whether
@@ -27,7 +27,6 @@
 #'    confirmed cases only. Note that the later will be `NULL` if the
 #'    `diagnosis_status` and `diagnosis_outcome` are not provided.
 #' @keywords internal
-#' @noRd
 #'
 #' @examples
 #' data = read.csv(system.file("extdata", "Marburg_EqGuinea_linelist.csv",
@@ -88,11 +87,9 @@ prepare_cfr_data <- function(data,
 #' @param death_in_confirmed a `numeric` that represents the number of death in
 #'    among the confirmed cases.
 #'
-#' @return
+#' @return an object of type `list` with 2 elements of type `data frame`.
 #' @keywords internal
-#' @noRd
 #'
-#' @examples
 calculate_cfr_from_counts <- function(total_cases,
                                       total_deaths,
                                       death_in_confirmed) {
@@ -126,6 +123,13 @@ calculate_cfr_from_counts <- function(total_cases,
   res_cfr
 }
 
+#' Get the delay distribution parameters
+#'
+#' @inheritParams get_severity
+#'
+#' @return an object an type `list` with the delay distribution parameters
+#' @keywords internal
+#'
 get_delay_distro_params <- function(tmp_data,
                                     type, values, distribution,
                                     shape, scale,
@@ -145,6 +149,14 @@ get_delay_distro_params <- function(tmp_data,
   return(param)
 }
 
+#' Estimate disease severity from linelist object
+#'
+#' @inheritParams get_severity
+#'
+#' @return an object of type `list` with 1 or 2 data frames that contains the
+#'    CFR values in all cases and in confirmed cases only.
+#' @keywords internal
+#'
 calculate_cfr_from_linelist <- function(data, account_for_delay, epidist,
                                         type, values, distribution, interval,
                                         shape, scale,
@@ -153,7 +165,7 @@ calculate_cfr_from_linelist <- function(data, account_for_delay, epidist,
   res_cfr      <- list()
   output_names <- c("cfr", "cfr_in_confirmed_cases")
   j            <- 1L
-  for (i in c("cfr_data_all_cases", "cfr_data_confirmed_cases")) {
+  for (i in c("cfr_data_all_cases", "cfr_data_confirmed_cases")) { #
     tmp_data   <- data[[i]]
 
     # convert dates to sequential if necessary
@@ -203,6 +215,14 @@ calculate_cfr_from_linelist <- function(data, account_for_delay, epidist,
   return(res_cfr)
 }
 
+#' Estimate disease severity from incidence object
+#'
+#' @inheritParams get_severity
+#'
+#' @return an object of type `list` with 2 data frames that contains the
+#'    CFR values in all cases and in confirmed cases only.
+#' @keywords internal
+#'
 calculate_cfr_from_incidence <- function(data, epidist, account_for_delay,
                                          type, values, distribution, interval,
                                          shape, scale,
@@ -263,7 +283,6 @@ calculate_cfr_from_incidence <- function(data, epidist, account_for_delay,
 #'   \item cfr_in_confirmed_cases: the CFR among the confirmed cases only
 #' }
 #' @keywords internal
-#' @noRd
 #'
 #' @examples
 #' cfr_data <- prepare_cfr_data(
@@ -322,9 +341,7 @@ calculate_cfr <- function(data,
 #' @return a data frame with 3 columns named as 'date', 'cases', 'deaths'. This
 #'    is the format required by the `cfr::cfr_static()` function
 #' @keywords internal
-#' @noRd
 #'
-#' @examples
 get_sequential_dates <- function(data) {
   idx  <- match("date", names(data))
   date <- seq.Date(as.Date(data[["date"]][[1L]]),
@@ -370,7 +387,6 @@ get_sequential_dates <- function(data) {
 #' @return an object of type `epidist` with the epidemiological parameters of
 #'    the disease of interest.
 #' @keywords internal
-#' @noRd
 #'
 #' @examples
 #' onset_death <- get_onset_to_death_distro(
@@ -419,7 +435,6 @@ get_onset_to_death_distro <- function(data,
 #' @param arg_list a list with the parameters
 #'
 #' @keywords internal
-#' @noRd
 #'
 extract_params <- function(data, arg_list) {
   checkmate::assert_list(arg_list, null.ok = FALSE, min.len = 1L)
@@ -435,7 +450,6 @@ extract_params <- function(data, arg_list) {
 #' @param arg_list a list with the parameters
 #'
 #' @keywords internal
-#' @noRd
 #'
 get_params <- function(arg_list) {
   if (c("shape", "scale") %in% arg_list) {
@@ -513,7 +527,14 @@ print_cfr <- function(cfr) {
 #' @returns a list of data frames that contains the severity estimates.
 #'
 #' @examples
-#' # example code
+#' cfr <- get_severity(
+#'   disease_name = "Marburg Virus Disease",
+#'   data         = read.csv(system.file("extdata",
+#'                                       "Marburg_EqGuinea_incidence.RDS",
+#'                                       package = "episoap")),
+#'   account_for_delay = FALSE,
+#'   epidist           = NULL
+#' )
 #'
 #'
 get_severity <- function(disease_name      = NULL,
@@ -533,8 +554,8 @@ get_severity <- function(disease_name      = NULL,
   interval     <- args_list[["interval"]]
   meanlog      <- args_list[["meanlog"]]
   sdlog        <- args_list[["sdlog"]]
-  shape        <- args_list[["sdlog"]]
-  scale        <- args_list[["sdlog"]]
+  shape        <- args_list[["shape"]]
+  scale        <- args_list[["scale"]]
 
   # estimate CFR from count data , "death_in_confirmed"
   total_cases        <- args_list[["total_cases"]]
@@ -638,7 +659,7 @@ get_severity <- function(disease_name      = NULL,
 #'   diagnosis_outcome  = "confirmed",
 #'   distribution       = "lnorm",
 #'   meanlog            = 2.5,
-#'   sdlog              = 2
+#'   sdlog              = 1.2
 #' )
 #'
 #' estimate cfr using count data
@@ -699,10 +720,11 @@ run_pipeline <- function(disease_name,
   }
 
   # estimate CFR
-  # input         = "/Users/karimmane/Documents/Karim/LSHTM/TRACE_dev/Packages/On_trace_github/episoap/inst/rmarkdown/templates/test_severity.Rmd",
-  rmarkdown::render(input         = file.path(.libPaths(), "episoap",
-                                              "rmarkdown", "templates",
-                                              "test_severity.Rmd"),
+  # tmp_input         = "/Users/karimmane/Documents/Karim/LSHTM/TRACE_dev/Packages/On_trace_github/episoap/inst/rmarkdown/templates/test_severity.Rmd"
+  tmp_input = file.path(.libPaths(), "episoap",
+                        "rmarkdown", "templates",
+                        "test_severity.Rmd")
+  rmarkdown::render(input         = tmp_input,
                     params        = parameters,
                     output_dir    = getwd(),
                     output_file   = "test.html",
