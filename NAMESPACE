@@ -2,7 +2,7 @@
 
 export(get_severity)
 export(list_templates)
-export(print_cfr)
+export(reformat_cfr)
 export(theme_episoap)
 importFrom(ggplot2,"%+replace%")
 importFrom(ggplot2,element_line)

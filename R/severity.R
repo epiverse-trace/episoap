@@ -473,19 +473,16 @@ get_params <- function(arg_list) {
 #'
 #' @examples
 #' cfr <- get_severity(
-#'   data              = read.csv(system.file("extdata",
-#'                                            "Marburg_EqGuinea_linelist.csv",
-#'                                             package = "episoap")),
-#'   infection_type    = "direct_contact",
-#'   cases_status      = "Status",
-#'   outcomes          = c("dead", "recovered"),
-#'   diagnosis_status  = "Type",
-#'   diagnosis_outcome = "confirmed"
+#'   disease_name = "Marburg Virus Disease",
+#'   data         = readRDS(system.file("extdata",
+#'                                       "Marburg_EqGuinea_incidence.RDS",
+#'                                       package = "episoap")),
+#'   account_for_delay = FALSE,
+#'   epidist           = NULL
 #' )
 #' print(cfr)
 #'
-print_cfr <- function(cfr) {
-
+reformat_cfr <- function(cfr) {
   if (inherits(cfr, "vector")) {
     cfr <- as.table(cfr)
     names(cfr) <- c("estimated_cfr", "lower_ci", "upper_ci")
@@ -503,14 +500,32 @@ print_cfr <- function(cfr) {
   }
 
   if (inherits(cfr, "list")) {
+    out <- list()
     for (res in names(cfr)) {
-      out <- cfr[[res]] %>%
+      out[[res]] <- cfr[[res]] %>%
         dplyr::mutate(`severity_mean` =
                         formattable::color_tile("white",
                                                 "#81A4CE")(`severity_mean`))
+
     }
   }
   out
+}
+
+print_cfr <- function(out) {
+  # the problem is related to the fact that kableExtra function's output do not
+  # show in the html file after rendering.
+  # Possibly try to have a .css file
+  if (inherits(out, "list")) {
+    for (res in names(out)) {
+      print(knitr::kable(out[[res]], format = "html", escape = FALSE, booktabs = TRUE,
+                   align = rep("c", ncol(out[[res]])),
+                   caption = res,
+                   digits = 5))
+
+      cat("\n")
+    }
+  }
 }
 
 #' Estimate severity based on the user-provided arguments
@@ -529,13 +544,12 @@ print_cfr <- function(cfr) {
 #' @examples
 #' cfr <- get_severity(
 #'   disease_name = "Marburg Virus Disease",
-#'   data         = read.csv(system.file("extdata",
+#'   data         = readRDS(system.file("extdata",
 #'                                       "Marburg_EqGuinea_incidence.RDS",
 #'                                       package = "episoap")),
 #'   account_for_delay = FALSE,
 #'   epidist           = NULL
 #' )
-#'
 #'
 get_severity <- function(disease_name      = NULL,
                          data              = NULL,
@@ -720,14 +734,15 @@ run_pipeline <- function(disease_name,
   }
 
   # estimate CFR
-  # tmp_input         = "/Users/karimmane/Documents/Karim/LSHTM/TRACE_dev/Packages/On_trace_github/episoap/inst/rmarkdown/templates/test_severity.Rmd"
-  tmp_input = file.path(.libPaths(), "episoap",
-                        "rmarkdown", "templates",
-                        "test_severity.Rmd")
+  tmp_output        = "/Users/karimmane/Documents/Karim/LSHTM/TRACE_dev/Packages/On_trace_github/episoap/inst/rmarkdown/templates/test.html"
+  tmp_input         = "/Users/karimmane/Documents/Karim/LSHTM/TRACE_dev/Packages/On_trace_github/episoap/inst/rmarkdown/templates/test_severity.Rmd"
+  # tmp_input = file.path(.libPaths(), "episoap",
+  #                       "rmarkdown", "templates",
+  #                       "test_severity.Rmd")
   rmarkdown::render(input         = tmp_input,
                     params        = parameters,
                     output_dir    = getwd(),
-                    output_file   = "test.html",
+                    output_file   = tmp_output,
                     output_format = NULL)
 }
 

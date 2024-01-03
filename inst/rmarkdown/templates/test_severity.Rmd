@@ -91,13 +91,31 @@ cfr <- get_severity(
 ```
 
 ```{r echo=FALSE, eval=TRUE, results='asis'}
-test <- print_cfr(cfr = cfr)
-knitr::kable(test, format = "html", escape = FALSE, booktabs = TRUE,
-           align = rep("c", length(cfr))) %>%
-kableExtra::kable_styling("responsive", full_width = FALSE) %>%
-kableExtra::footnote(general = "Estimated CFR (c.f. {cfr} package)",
-                     footnote_as_chunk = TRUE)
+test <- reformat_cfr(cfr)
+print_cfr(test)
 
+# if (inherits(test, "list")) {
+#   for (res in names(test)) {
+#     # header_temp = 3
+#     # names(header_temp) = get("res")
+#       kable_out <- knitr::kable(test[[res]], format = "html", escape = FALSE,
+#                    align = rep("c", ncol(test[[res]])), booktabs = TRUE) %>%
+#       kableExtra::kable_styling("responsive", full_width = FALSE) %>%
+#       kableExtra::footnote(general = "Estimated CFR (c.f. {cfr} package)",
+#                            footnote_as_chunk = TRUE)
+#       # add_header_above(header_temp))
+#       readr::write_file(kable_out,
+#                       "test.html",
+#                         append = TRUE)
+#   }
+# }
+
+# print_cfr(test)
+# knitr::kable(test, format = "html", escape = FALSE, booktabs = TRUE,
+#            align = rep("c", length(cfr))) %>%
+# kableExtra::kable_styling("responsive", full_width = FALSE) %>%
+# kableExtra::footnote(general = "Estimated CFR (c.f. {cfr} package)",
+#                      footnote_as_chunk = TRUE)
 ```
 
 

@@ -34,12 +34,11 @@ Estimate severity based on the user-provided arguments
 \examples{
 cfr <- get_severity(
   disease_name = "Marburg Virus Disease",
-  data         = read.csv(system.file("extdata",
+  data         = readRDS(system.file("extdata",
                                       "Marburg_EqGuinea_incidence.RDS",
                                       package = "episoap")),
   account_for_delay = FALSE,
   epidist           = NULL
 )
-
 
 }
