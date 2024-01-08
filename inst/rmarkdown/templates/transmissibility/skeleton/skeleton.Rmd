@@ -468,6 +468,6 @@ dat_i_day <- dat_raw %>%
 ```
 
 ```{r}
-grateful::cite_packages(output = "paragraph", out.dir = ".", pkgs = "Session")
+cite_packages(output = "paragraph", out.dir = ".", pkgs = "Session")
 ```
 
