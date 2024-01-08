@@ -393,9 +393,13 @@ si_mean <- params$si_mean
 si_sd <- params$si_sd
 si_dist <- params$si_dist
 si_cv <- si_sd / si_mean
-si_params <- epiparameter::convert_summary_stats_to_params(
-  distribution = params$si_dist, mean = si_mean, sd = si_sd
-)
+si_epidist <- epidist(
+  disease = params$disease_name,
+  epi_dist = "serial_interval",
+  prob_distribution = params$si_dist,
+  summary_stats = create_epidist_summary_stats(mean = params$si_mean,
+                                               sd = params$si_sd),
+  auto_calc_params = TRUE)
 ```
 
 ```{r}
