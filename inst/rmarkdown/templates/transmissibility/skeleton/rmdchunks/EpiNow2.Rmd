@@ -17,8 +17,10 @@ library(EpiNow2)
 # will use for generation_time
 si_gamma <- epiparameter::extract_param(
   type = "range",
-  values = c(median(si$r(1e3)), min(si$r(1e3)), max(si$r(1e3))),
-  distribution = "gamma",
+  values = c(median(si$prob_dist$r(1e3)),
+             min(si$prob_dist$r(1e3)),
+             max(si$prob_dist$r(1e3))),
+  distribution = params$si_dist,
   samples = 1e3
 )
 si_gamma <- epiparameter::gamma_shapescale2meansd(si_gamma[[1]], si_gamma[[2]])
