@@ -258,7 +258,7 @@ data_path <- params$data_file
 
 ```{r}
 dat_raw <- data_path %>%
-  rio::import() %>%
+  import() %>%
   tibble() %>%
   # rio (via readxl) tends to use POSIXct for what is encoded as Date in the
   # original data file.
