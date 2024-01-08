@@ -23,7 +23,8 @@ si_gamma <- epiparameter::extract_param(
   distribution = params$si_dist,
   samples = 1e3
 )
-si_gamma <- epiparameter::gamma_shapescale2meansd(si_gamma[[1]], si_gamma[[2]])
+si_gamma <- epiparameter::convert_params_to_summary_stats(
+  distribution = "gamma", shape = si_gamma[[1]], scale = si_gamma[[2]])
 
 generation_time <- list(
   mean = si_gamma$mean,
