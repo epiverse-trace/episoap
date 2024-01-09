@@ -384,8 +384,7 @@ probability distribution. This distribution is a key input to methods use for
 estimating the reproduction number ($R$). 
 
 Here, we assume that the mean and standard deviation of the $si$ is known, and
-provided as an input by the user. We model the $si$ distribution as a
-discretized Gamma. 
+provided as an input by the user.
 
 ## Results
 
