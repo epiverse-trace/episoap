@@ -281,7 +281,7 @@ dat_raw <- data_path %>%
   mutate(across(where(\(x) inherits(x, "POSIXct")), as.Date))
 ```
 
-Once imported into __R__, the dataset called `dat` includes:
+Once imported into __R__, the dataset called `dat_raw` includes:
 
 * `date`: the date of admission
 * `region`: the NHS region
