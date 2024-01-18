@@ -628,6 +628,59 @@ get_severity <- function(disease_name      = NULL,
   }
 }
 
+
+#' Extract the severity parameters from the input arguments
+#'
+#' @param parameters a list of parameters to be populated with the severity
+#'    parameters
+#' @param severity_params a list with the user-specified arguments to be used
+#'    for the CFR calculation
+#'
+#' @return the input list of parameters with extra arguments from the
+#'    'severity_params' object
+#' @keywords internal
+#'
+get_severity_params <- function(parameters, severity_params) {
+  if (!is.null(severity_params)) {
+    parameters[["ACCOUNT_FOR_DELAY"]] <- severity_params[["account_for_delay"]]
+    parameters[["EPIDIST"]]           <- severity_params[["epidist"]]
+
+    # get parameters needed to create the incidence data
+    if (all(c("date_variable_name", "cases_status", "death_outcome",
+              "diagnosis_status", "diagnosis_outcome") %in% names(severity_params))) { # nolint: line_length_linter
+      parameters[["DATE_VARIABLE_NAME"]] <- severity_params[["date_variable_name"]] # nolint: line_length_linter
+      parameters[["CASES_STATUS"]]       <- severity_params[["cases_status"]]
+      parameters[["DEATH_OUTCOME"]]      <- severity_params[["death_outcome"]]
+      parameters[["DIAGNOSIS_STATUS"]]   <- severity_params[["diagnosis_status"]] # nolint: line_length_linter
+      parameters[["DIAGNOSIS_OUTCOME"]]  <- severity_params[["diagnosis_outcome"]] # nolint: line_length_linter
+    }
+
+    # get parameters needed to estimate CFR from count
+    if (all(c("total_cases", "total_deaths") %in% names(severity_params))) {
+      death_in_confirmed   <- NULL
+      if ("death_in_confirmed" %in% names(severity_params)) {
+        death_in_confirmed <- severity_params[["death_in_confirmed"]]
+      }
+      parameters[["TOTAL_CASES"]]  <- severity_params[["total_cases"]]
+      parameters[["TOTAL_DEATHS"]] <- severity_params[["total_deaths"]]
+    }
+
+    # get parameters needed to calculate the delay distribution
+    if (all(c("type", "values", "distribution") %in% names(severity_params))) {
+      parameters[["TYPE"]]         <- severity_params[["type"]]
+      parameters[["VALUES"]]       <- severity_params[["values"]]
+      parameters[["DISTRIBUTION"]] <- severity_params[["distribution"]]
+      parameters[["INTERVAL"]]     <- severity_params[["interval"]]
+    }
+    if (all(c("meanlog", "sdlog", "distribution") %in% names(severity_params))) {
+      parameters[["MEANLOG"]]      <- severity_params[["meanlog"]]
+      parameters[["SDLOG"]]        <- severity_params[["sdlog"]]
+      parameters[["DISTRIBUTION"]] <- severity_params[["distribution"]]
+    }
+  }
+  return(parameters)
+}
+
 #' @examples
 #' estimate cfr using incidence data
 #' run_pipeline(

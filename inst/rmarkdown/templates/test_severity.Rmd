@@ -118,4 +118,10 @@ print_cfr(test)
 #                      footnote_as_chunk = TRUE)
 ```
 
+# Transmissibility
+
+```{r}
+
+```
+
 
