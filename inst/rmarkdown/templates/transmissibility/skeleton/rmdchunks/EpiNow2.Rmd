@@ -13,25 +13,8 @@ library(EpiNow2)
 ### Results
 
 ```{r rt-wrappers-prep}
-# Approximate serial interval with gamma distribution since this is what EpiNow2
-# will use for generation_time
-si_gamma <- epiparameter::extract_param(
-  type = "range",
-  values = c(median(si$prob_dist$r(1e3)),
-             min(si$prob_dist$r(1e3)),
-             max(si$prob_dist$r(1e3))),
-  distribution = params$si_dist,
-  samples = 1e3
-)
-si_gamma <- epiparameter::convert_params_to_summary_stats(
-  distribution = "gamma", shape = si_gamma[[1]], scale = si_gamma[[2]])
-
-generation_time <- list(
-  mean = si_gamma$mean,
-  mean_sd = 0,
-  sd = si_gamma$sd,
-  sd_sd = 0,
-  max = max(si_x)
+generation_time <-  generation_time_opts(
+  dist_spec(pmf = si$prob_dist$d(si_x))
 )
 ```
 
@@ -50,9 +33,10 @@ associated 95% credibility intervals
 # for a long time!
 res_epinow2_global <- dat_i_day %>%
   regroup() %>%
-  dplyr::rename(
-    confirm = .data[[count_var]],
-    date    = date_index
+  dplyr::mutate(
+    confirm = count,
+    date    = as.Date(date_index),
+    .keep   = "unused"
   ) %>%
   epinow(
     generation_time = generation_time,
