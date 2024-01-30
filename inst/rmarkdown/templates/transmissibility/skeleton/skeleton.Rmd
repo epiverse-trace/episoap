@@ -204,13 +204,11 @@ knitr::include_graphics("transmissibility_pipeline.svg")
 
 # Data preparation
 
-## Loading libraries
+```{r, include=FALSE}
+#The following code loads required packages; missing packages will be installed
+#automatically, but will require a working internet connection for the
+#installation to be successful.
 
-The following code loads required packages; missing packages will be installed
-automatically, but will require a working internet connection for the
-installation to be successful.
-
-```{r}
 library(dplyr)
 library(ggplot2)
 library(forcats)
