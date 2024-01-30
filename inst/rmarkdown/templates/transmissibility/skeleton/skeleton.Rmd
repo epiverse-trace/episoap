@@ -265,12 +265,9 @@ dat_raw <- data_path %>%
 
 Once imported into __R__, the dataset called `dat_raw` includes:
 
-* `date`: the date of admission
-* `region`: the NHS region
-* `org_name`: the full name of the NHS trust
-* `org_code`: a short code for the NHS trust
-* `n`: number of new, confirmed COVID-19 cases admitted, including inpatients
-  who tested positive on that day, and new admissions with a positive test
+* `date`: the date of [enter description]
+* `region`: the region of [enter description]
+* `n`: number of new cases of [enter description]
 
 ## Identifying key data
 
