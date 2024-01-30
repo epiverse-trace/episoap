@@ -34,7 +34,7 @@ params:
     label: "Choice of probability distribution for serial interval if not using value from epiparameter. Ignored if `use_epiparameter_database = TRUE`."
     value: "gamma"
     choices: ["beta", "binom", "cauchy", "chisq", "exp", "f", "gamma", "geom", "hyper", "lnorm", "logis", "nbinom", "norm", "pois", "smirnov", "t", "tukey", "unif", "weibull", "wilcox"]
-  data_file: 
+  data_file:
     label: "Name of file containing case data, whether a line list or incidence data"
     value: "data/covid_linelist_england.rds"
     input: file
