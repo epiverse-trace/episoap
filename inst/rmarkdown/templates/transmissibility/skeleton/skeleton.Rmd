@@ -247,10 +247,11 @@ The dataset analysed here is a simplified version, providing incidence of
 hospital admissions by NHS trust.
 
 The data file is named "*covid_hosp_uk_20201024.xlsx*" and is located in
-the *data/* folder. To adapt this report to another dataset, change the name of
-the file in the `data_file` parameter at the top of this document.
+the *data/* folder. 
 
 ```{r}
+# To adapt this report to another dataset, change the name of
+# the file in the `data_file` parameter at the top of this document.
 data_path <- params$data_file
 ```
 
