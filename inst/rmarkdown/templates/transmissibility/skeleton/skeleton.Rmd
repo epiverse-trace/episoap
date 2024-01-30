@@ -33,7 +33,7 @@ params:
     value: "gamma"
     choices: ["beta", "binom", "cauchy", "chisq", "exp", "f", "gamma", "geom", "hyper", "lnorm", "logis", "nbinom", "norm", "pois", "smirnov", "t", "tukey", "unif", "weibull", "wilcox"]
   data_file: 
-    label: "Name of file containing the count data over time"
+    label: "Path to file to be used by this report template, which must contain disease case counts over time"
     value: "data/covid_hosp_uk_20201024.xlsx"
     input: file
   rt_estimator: 
