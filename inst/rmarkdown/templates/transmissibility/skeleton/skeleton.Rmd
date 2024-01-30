@@ -238,16 +238,13 @@ theme_set(theme_episoap())
 
 ##  Importing the data
 
-To illustrate the different analyses, we use real data reporting daily numbers
-of COVID-19 hospitalisations in England as of the 24 October 2020, broken down
-to the hospital and National Health Service (NHS) region level. The data is
-available online from the NHS England's
-[website](https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/).
-The dataset analysed here is a simplified version, providing incidence of
-hospital admissions by NHS trust.
+To illustrate the different analyses, we use data reporting daily numbers of 
+[enter disease name] in [enter location] during [enter timeframe], 
+and is stratified by [enter region level]. 
+The data is available from [enter data source].
 
-The data file is named "*covid_hosp_uk_20201024.xlsx*" and is located in
-the *data/* folder. 
+The data file is named "*file_name.xlsx*" and is located in
+the *data/* folder.
 
 ```{r}
 # To adapt this report to another dataset, change the name of
