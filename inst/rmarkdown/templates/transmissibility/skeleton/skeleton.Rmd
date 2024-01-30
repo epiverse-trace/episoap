@@ -192,7 +192,7 @@ showtext::showtext_auto()
 
 ## Estimating transmissibility from stratified population
 
-This report provides a template for estimating transmissibility (i.e., how fast
+This report estimates disease transmissibility (i.e., how fast
 a disease spreads) from a stratified population. It performs basic descriptive
 analyses, and uses different approaches for estimating transmissibility. The key
 steps of the report include:
