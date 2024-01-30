@@ -254,15 +254,13 @@ apt install libsodium-dev cmake
 
 ##  Importing the data
 
-To illustrate the different analyses, we use real data reporting line list 
-(individual level) data of Covid-19 cases in England in the second half of 2020.
-The data was downloaded from <global.health>:
+To illustrate the different analyses, we use data reporting daily numbers of 
+[enter disease name] in [enter location] during [enter timeframe], 
+and is stratified by [enter region level]. 
+The data is available from [enter data source].
 
-> Xu, B., Gutierrez, B., Mekaru, S. et al. Epidemiological data from the COVID-19 outbreak, real-time case information. Sci Data 7, 106 (2020). https://doi.org/10.1038/s41597-020-0448-0 
-
-The data file is named "*covid_linelist_england.rds*" and is located in
-the *data/* folder. To adapt this report to another dataset, change the name of
-the file in the `data_file` parameter at the top of this document.
+The data file is named "*file_name.rds*" and is located in
+the *data/* folder.
 
 ```{r}
 # To adapt this report to another dataset, change the name of
