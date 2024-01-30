@@ -265,6 +265,8 @@ the *data/* folder. To adapt this report to another dataset, change the name of
 the file in the `data_file` parameter at the top of this document.
 
 ```{r}
+# To adapt this report to another dataset, change the name of
+# the file in the `data_file` parameter at the top of this document.
 data_path <- params$data_file
 ```
 
