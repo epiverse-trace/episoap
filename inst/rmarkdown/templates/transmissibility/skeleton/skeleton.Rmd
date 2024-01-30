@@ -285,6 +285,10 @@ Once imported into __R__, the dataset called `dat_raw` includes:
 * `region`: the region of [enter description]
 * `n`: number of new cases of [enter description]
 
+```{r}
+head(dat_raw)
+```
+
 ## Identifying key data
 
 __Note__: this is not used for now, as there is no integration of linelist with
