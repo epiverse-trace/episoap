@@ -60,10 +60,10 @@ You may need to install system dependencies:
 
 ```
 # macOS
-brew install libsodium
+brew install libsodium cmake
 
 # Linux (Debian based)
-apt install libsodium-dev
+apt install libsodium-dev cmake
 ```
 
 ## Related projects
