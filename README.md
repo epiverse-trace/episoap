@@ -54,6 +54,18 @@ episoap::list_templates()
 #> [1] "transmissibility"
 ```
 
+### System dependencies
+
+You may need to install system dependencies:
+
+```
+# macOS
+brew install libsodium
+
+# Linux (Debian based)
+apt install libsodium-dev
+```
+
 ## Related projects
 
 This project has some overlap with other R packages:
