@@ -184,9 +184,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Outline of the report
+## Outline of the report
 
-## Estimating transmissibility from stratified population
+### Estimating transmissibility from stratified population
 
 This report provides a template for estimating transmissibility (i.e., how fast
 a disease spreads) from a stratified population. It performs basic descriptive
@@ -203,9 +203,9 @@ steps of the report include:
 knitr::include_graphics("transmissibility_pipeline.svg")
 ```
 
-# Data preparation
+## Data preparation
 
-## Loading libraries
+### Loading libraries
 
 The following code loads required packages; missing packages will be installed
 automatically, but will require a working internet connection for the
@@ -241,7 +241,7 @@ dark_pink <- "#B45D75"
 theme_set(theme_episoap())
 ```
 
-##  Importing the data
+### Importing the data
 
 To illustrate the different analyses, we use real data reporting daily numbers
 of COVID-19 hospitalisations in England as of the 24 October 2020, broken down
@@ -270,7 +270,7 @@ dat_raw <- data_path %>%
   mutate(across(where(\(x) inherits(x, "POSIXct")), as.Date))
 ```
 
-Once imported into __R__, the dataset called `dat` includes:
+Once imported into **R**, the dataset called `dat` includes:
 
 * `date`: the date of admission
 * `region`: the NHS region
@@ -279,9 +279,9 @@ Once imported into __R__, the dataset called `dat` includes:
 * `n`: number of new, confirmed COVID-19 cases admitted, including inpatients
   who tested positive on that day, and new admissions with a positive test
 
-## Identifying key data
+### Identifying key data
 
-__Note__: this is not used for now, as there is no integration of linelist with
+**Note**: this is not used for now, as there is no integration of linelist with
 other existing tools.
 
 Here we identify the key data needed in the analyses, including:
@@ -305,11 +305,11 @@ dat <- dat_raw %>%
   )
 ```
 
-# Descriptive analyses
+## Descriptive analyses
 
-## Epidemic curves
+### Epidemic curves
 
-This section creates epidemic curves ("_epicurves_"), with or without stratification.
+This section creates epidemic curves ("*epicurves*"), with or without stratification.
 
 ```{r}
 # convert daily incidence into weekly incidence using incidence2
@@ -331,7 +331,7 @@ dat_i %>%
   labs(title = "Incidence of cases over time")
 ```
 
-## Numbers of cases
+### Numbers of cases
 
 This graph shows the total number of cases per group:
 
@@ -362,11 +362,11 @@ total_cases %>%
 ```
 
 
-# Serial interval distribution
+## Serial interval distribution
 
-## Explanations
+### Explanations
 
-The _serial interval_ ($si$) is the delay between the date of symptom onsets of primary
+The *serial interval* ($si$) is the delay between the date of symptom onsets of primary
 case and the secondary cases they have infected. Because this delay varies from
 one transmission pair to another, we will characterise this variation using a
 probability distribution. This distribution is a key input to methods use for
@@ -376,7 +376,7 @@ Here, we assume that the mean and standard deviation of the $si$ is known, and
 provided as an input by the user. We model the $si$ distribution as a
 discretized Gamma. 
 
-## Results
+### Results
 
 ```{r, eval = params$use_epiparameter}
 si_epiparameter <- epiparameter::epidist(
@@ -432,7 +432,7 @@ ggplot(
   )
 ```
 
-# Growth rate ($r$) and reproduction number ($R$)
+## Growth rate ($r$) and reproduction number ($R$)
 
 ```{r}
 last_date <- dat %>%
