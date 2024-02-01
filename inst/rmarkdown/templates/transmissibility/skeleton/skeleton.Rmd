@@ -241,6 +241,18 @@ dark_pink <- "#B45D75"
 theme_set(theme_episoap())
 ```
 
+### System dependencies
+
+You may need to install system dependencies to be able to generate this report:
+
+```sh
+# macOS
+brew install libsodium cmake
+
+# Linux (Debian based)
+apt install libsodium-dev cmake
+```
+
 ##  Importing the data
 
 To illustrate the different analyses, we use real data reporting daily numbers
