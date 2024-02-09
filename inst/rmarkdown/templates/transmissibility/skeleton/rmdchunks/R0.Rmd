@@ -13,7 +13,7 @@ library(R0)
 ### Results
 
 ```{r rt-wrappers-prep}
-mGT <- generation.time("empirical", si$d(si_x))
+mGT <- generation.time("empirical", si$prob_dist$d(si_x))
 
 # Helper function to get R0 outputs in a tidy format, compatible with pipelines
 r0_quantiles <- function(Rt) {
