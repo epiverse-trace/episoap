@@ -16,13 +16,12 @@ library(EpiEstim)
 # Function to process a distrcrete object and output `si_discr` argument for
 # EpiEstim::make_config
 
-wrap_si <- function(x) {
-  stopifnot(inherits(x, "distcrete"))
-  max_x <- x$q(0.999)
-  x <- si$d(seq_len(max_x))
-  x[1] <- 0
-  x <- x / sum(x)
-  x
+wrap_si <- function(si) {
+  domain <- seq(1L, to = si$prob_dist$qf(0.999), by = 1L)
+  pmf <- si$prob_dist$d(domain)
+  pmf[1] <- 0
+  pmf <- pmf / sum(pmf)
+  pmf
 }
 
 
