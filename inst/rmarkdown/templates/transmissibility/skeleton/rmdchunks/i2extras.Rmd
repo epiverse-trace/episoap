@@ -141,7 +141,7 @@ This section contains:
 
 ```{r }
 res_R_wl <- last_trends %>%
-  mutate(R = map(model, epitrix::lm2R0_sample, w = si, 500)) %>%
+  mutate(R = map(model, epitrix::lm2R0_sample, w = si$prob_dist$d(si_x))) %>%
   dplyr::select({{ group_var }}, R) %>%
   unnest(R)
 
