@@ -420,7 +420,7 @@ si_epidist <- epidist(
 
 ```{r}
 si <- epiparameter::discretise(si_epidist)
-si_x <- seq(1L, to = si$prob_dist$qf(0.999), by = 1L)
+si_x <- seq(1L, to = quantile(si, 0.999), by = 1L)
 ```
 
 ```{r}
