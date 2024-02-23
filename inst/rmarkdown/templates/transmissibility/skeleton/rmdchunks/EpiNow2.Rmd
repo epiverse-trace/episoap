@@ -14,7 +14,7 @@ library(EpiNow2)
 
 ```{r rt-wrappers-prep}
 generation_time <-  generation_time_opts(
-  dist_spec(pmf = si$prob_dist$d(si_x))
+  dist_spec(pmf = density(si, at = si_x))
 )
 ```
 
