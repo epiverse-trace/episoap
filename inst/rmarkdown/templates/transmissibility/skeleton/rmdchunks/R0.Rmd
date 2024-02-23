@@ -44,12 +44,12 @@ associated 95% credibility intervals
 res_r0_global <- dat_i_day %>%
   regroup() %>%
   mutate(r0_quantiles(estimate.R(
-      get_count_value(.),
-      mGT,
-      date_index,
-      begin = 1L, end = length(date_index),
-      nsim = 1e4, method = "TD"
-    )$estimates$TD)
+    get_count_value(.),
+    mGT,
+    date_index,
+    begin = 1L, end = length(date_index),
+    nsim = 1e4, method = "TD"
+  )$estimates$TD)
   )
 ```
 
@@ -129,18 +129,18 @@ res_r0_group %>%
   na.omit() %>%
   filter(date_index == max(date_index)) %>%
   ggplot(aes(y = .data[[group_var]]), fill = custom_grey) +
-    geom_point(aes(x = median), color = dark_green) +
-    geom_errorbar(aes(xmin = lower, xmax = upper), color = dark_green) +
-    geom_vline(xintercept = 1, color = dark_pink) +
-    labs(
-      title = "Latest estimates of Rt",
-      subtitle = sprintf(
-        "As of %s",
-        format(max(get_dates(dat_i_day)), "%d %B %Y")
-      ),
-      y = "",
-      x = "Instantaneous Reproduction Number (Rt)"
-    )
+  geom_point(aes(x = median), color = dark_green) +
+  geom_errorbar(aes(xmin = lower, xmax = upper), color = dark_green) +
+  geom_vline(xintercept = 1, color = dark_pink) +
+  labs(
+    title = "Latest estimates of Rt",
+    subtitle = sprintf(
+      "As of %s",
+      format(max(get_dates(dat_i_day)), "%d %B %Y")
+    ),
+    y = "",
+    x = "Instantaneous Reproduction Number (Rt)"
+  )
 ```
 
 ```{r rt-table-group}
