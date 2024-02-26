@@ -414,8 +414,8 @@ si_epidist <- epidist(
   epi_dist = "serial_interval",
   prob_distribution = params$si_dist,
   summary_stats = create_epidist_summary_stats(mean = params$si_mean,
-                                               sd = params$si_sd),
-  auto_calc_params = TRUE)
+                                               sd = params$si_sd)
+)
 ```
 
 ```{r}
