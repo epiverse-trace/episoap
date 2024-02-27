@@ -408,7 +408,6 @@ si_sd <- si_params["sd"]
 si_mean <- params$si_mean
 si_sd <- params$si_sd
 si_dist <- params$si_dist
-si_cv <- si_sd / si_mean
 si_epidist <- epidist(
   disease = params$disease_name,
   epi_dist = "serial_interval",
