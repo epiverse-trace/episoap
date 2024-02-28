@@ -26,9 +26,10 @@ jobs:
           use-public-rspm: true
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          # it would be good to automatically identify system dependencies in the future
           extra-packages: |
             local::.
-            sodium # it would be good to automatically identify system dependencies in the future
+            sodium 
       - name: Test report rendering
         run: |
           library(episoap)
