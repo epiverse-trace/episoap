@@ -31,13 +31,14 @@ associated 95% credible intervals
 ```{r rt-estim-global}
 # Warning, this step will take 2 cores of your computer and may be running
 # for a long time!
-res_epinow2_global <- dat_i_day %>%
+res_epinow2_aggreg <- dat_i_day %>%
   regroup() %>%
   dplyr::mutate(
     confirm = count,
     date    = as.Date(date_index),
     .keep   = "unused"
   ) %>%
+  #dplyr::mutate(date = as.Date(date)) %>%
   epinow(
     generation_time = generation_time,
     stan = stan_opts(samples = 1e3, chains = 2),
@@ -62,7 +63,7 @@ plot(res_epinow2_global, "R") +
 ```
 
 ```{r rt-table-global}
-res_epinow2_global$estimates$summarised %>%
+res_epinow2_aggreg$estimates$summarised %>%
   dplyr::filter(variable == "R") %>%
   tail(params$r_estim_window) %>%
   dplyr::select(date, mean, median, lower_95, upper_95) %>%
