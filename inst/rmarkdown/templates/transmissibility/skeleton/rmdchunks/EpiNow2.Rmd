@@ -90,6 +90,7 @@ res_epinow2_group <- dat_i_day %>%
     date    = date_index,
     region  = .data[[group_var]]
   ) %>%
+  dplyr::mutate(date = as.Date(date)) %>%
   regional_epinow(
     generation_time = generation_time_opts(generation_time),
     stan = stan_opts(samples = 1e3, chains = 2),
