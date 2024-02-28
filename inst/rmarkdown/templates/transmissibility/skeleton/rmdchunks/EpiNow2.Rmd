@@ -52,7 +52,7 @@ res_epinow2_aggreg <- dat_i_day %>%
 ```
 
 ```{r rt-plot-global}
-plot(res_epinow2_global, "R") +
+plot(res_epinow2_aggreg, "R") +
   scale_x_date(breaks = scales::pretty_breaks(n = 8), date_label = "%d %b %Y") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
   labs(
