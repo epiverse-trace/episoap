@@ -78,8 +78,8 @@
 </li>
 <li>all templates should include a diagram indicating the workflow provided by this package (<a href="inst/rmarkdown/templates/transmissibility-report/skeleton/transmissibility_pipeline.svg">example for the transmissibility report</a>)</li>
 <li>alternative branches in the pipeline should be provided as child Rmarkdown documents contained in an <code>rmdchunks</code> folder. The child documents can then be called in the main document with the following chunk:</li>
-</ul><div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="st">```</span><span class="at">{r, child=paste0("rmdchunks/", params$alternative_branch, ".Rmd")}</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="st">```</span></span></code></pre></div>
+</ul><div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="st">```</span><span class="at">{r, child=paste0("rmdchunks/", params$alternative_branch, ".Rmd")}</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="st">```</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="editing-an-existing-template">Editing an existing template<a class="anchor" aria-label="anchor" href="#editing-an-existing-template"></a></h3>
