@@ -391,7 +391,7 @@ discretized Gamma.
 ## Results
 
 ```{r, eval = params$use_epiparameter_database}
-si_epidist <- epiparameter::epidist_db(
+si_epidist <- epidist_db(
   disease =  params$disease_name,
   epi_dist =  "serial_interval",
   single_epidist = TRUE,
@@ -418,7 +418,7 @@ si_epidist <- epidist(
 ```
 
 ```{r}
-si <- epiparameter::discretise(si_epidist)
+si <- discretise(si_epidist)
 si_x <- seq(1L, to = quantile(si, 0.999), by = 1L)
 ```
 
