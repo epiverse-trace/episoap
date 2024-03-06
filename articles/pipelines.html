@@ -123,20 +123,20 @@ params:
   r_estim_window:
     label: "Number of days to include to get the latest observed value of Rt."
     value: 21
-  use_epiparameter: 
+  use_epiparameter_database: 
     label: "Should the serial interval distribution be extracted directly from the epiparameter package?"
     value: FALSE
-  epiparameter_pathogen: 
-    label: "Name of the pathogen in the epiparameter database if `use_parameter = TRUE`."
-    value: "SARS_CoV_2_wildtype"
+  disease_name: 
+    label: "Name of the disease of interest, also used to select diseases in the epiparameter database if `use_parameter_database = TRUE`."
+    value: "COVID-19"
   si_mean:
-    label: "Mean of the distribution for serial interval if not using value from epiparameter. Ignored if `use_epiparameter = TRUE`."
+    label: "Mean of the distribution for serial interval if not using value from epiparameter. Ignored if `use_epiparameter_database = TRUE`."
     value: 4.2
   si_sd: 
-    label: "Standard deviation of the distribution for serial interval if not using value from epiparameter. Ignored if `use_epiparameter = TRUE`."
+    label: "Standard deviation of the distribution for serial interval if not using value from epiparameter. Ignored if `use_epiparameter_database = TRUE`."
     value: 4.9
   si_dist: 
-    label: "Choice of probability distribution for serial interval if not using value from epiparameter. Ignored if `use_epiparameter = TRUE`."
+    label: "Choice of probability distribution for serial interval if not using value from epiparameter. Ignored if `use_epiparameter_database = TRUE`."
     value: "gamma"
     choices: ["beta", "binom", "cauchy", "chisq", "exp", "f", "gamma", "geom", "hyper", "lnorm", "logis", "nbinom", "norm", "pois", "smirnov", "t", "tukey", "unif", "weibull", "wilcox"]
   data_file: 
@@ -186,7 +186,7 @@ renv::use(
   "ellipsis@0.3.2",
   "epiverse-trace/episoap", # nolint
   "epitrix@0.4.0",
-  "epiverse-trace/epiparameter@fd250ce", # nolint 
+  "epiverse-trace/epiparameter@328706e", # nolint 
   "evaluate@0.23",
   "fansi@1.0.5",
   "farver@2.1.1",
@@ -329,8 +329,6 @@ library(linelist)
 library(janitor)
 library(kableExtra)
 library(incidence2)
-library(distcrete)
-library(epitrix)
 library(grateful)
 library(epiparameter)
 
@@ -382,7 +380,7 @@ data_path &lt;- params$data_file
 
 ```{r}
 dat_raw &lt;- data_path %&gt;%
-  rio::import() %&gt;%
+  import() %&gt;%
   tibble() %&gt;%
   # rio (via readxl) tends to use POSIXct for what is encoded as Date in the
   # original data file.
@@ -499,46 +497,41 @@ discretized Gamma.
 
 ## Results
 
-```{r, eval = params$use_epiparameter}
-si_epiparameter &lt;- epiparameter::epidist(
-  params$epiparameter_pathogen,
-  "serial_interval"
+```{r, eval = params$use_epiparameter_database}
+si_epidist &lt;- epidist_db(
+  disease =  params$disease_name,
+  epi_dist =  "serial_interval",
+  single_epidist = TRUE,
+  subset = is_parameterised
 )
-si_params &lt;- si_epiparameter$param
-si_dist &lt;- si_epiparameter$dist
-si_mean &lt;- si_params[[1]]
-si_sd &lt;- si_params[[2]]
+
+si_params &lt;- get_parameters(si_epidist)
+si_dist &lt;- family(si_epidist)
+si_mean &lt;- si_params["mean"]
+si_sd &lt;- si_params["sd"]
 ```
 
-```{r, eval = !params$use_epiparameter}
+```{r, eval = !params$use_epiparameter_database}
 si_mean &lt;- params$si_mean
 si_sd &lt;- params$si_sd
 si_dist &lt;- params$si_dist
-si_cv &lt;- si_sd / si_mean
-si_params &lt;- epitrix::gamma_mucv2shapescale(mu = si_mean, cv = si_cv)
+si_epidist &lt;- epidist(
+  disease = params$disease_name,
+  epi_dist = "serial_interval",
+  prob_distribution = params$si_dist,
+  summary_stats = create_epidist_summary_stats(mean = params$si_mean,
+                                               sd = params$si_sd)
+)
 ```
 
 ```{r}
-# do.call() because we want to pass `si_params` names as the name of arguments.
-# This is important if params in si_params are not the first arguments of the
-# q...() function. For example, if a gamma distribution is define by its shape
-# and scale, instead of shape and rate.
-si &lt;- do.call(
-  distcrete,
-  c(
-    list(si_dist,
-      interval = 1,
-      w = 0
-    ),
-    si_params
-  )
-)
-si_x &lt;- seq(1L, to = si$q(0.999), by = 1L)
+si &lt;- discretise(si_epidist)
+si_x &lt;- seq(1L, to = quantile(si, 0.999), by = 1L)
 ```
 
 ```{r}
 ggplot(
-  data.frame(delay = si_x, prob = si$d(si_x)),
+  data.frame(delay = si_x, prob = si$prob_dist$d(si_x)),
   aes(x = delay, y = prob)
 ) +
   geom_col(fill = green_grey) +
@@ -585,7 +578,7 @@ dat_i_day &lt;- dat_raw %&gt;%
 ```
 
 ```{r}
-grateful::cite_packages(output = "paragraph", out.dir = ".", pkgs = "Session")
+cite_packages(output = "paragraph", out.dir = ".", pkgs = "Session")
 ```</code></pre>
 </div>
 </div>
@@ -597,7 +590,7 @@ grateful::cite_packages(output = "paragraph", out.dir = ".", pkgs = "Session")
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by Hugo Gruson, Thibaut Jombart, data.org.</p>
+<p>Developed by Hugo Gruson, Thibaut Jombart, Carmen Tamayo, data.org.</p>
 </div>
 
 <div class="pkgdown-footer-right">
