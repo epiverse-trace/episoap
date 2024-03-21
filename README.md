@@ -37,8 +37,12 @@ Reports are provided a [rmarkdown
 templates](https://rstudio.github.io/rstudio-extensions/rmarkdown_templates.html).
 You can load them either via RStudio graphical interface
 
-![Graphical interface to open a soap rmarkdown template in
-RStudio](man/figures/template_rstudio.png)
+<figure>
+<img src="man/figures/template_rstudio.png"
+alt="Graphical interface to open a soap rmarkdown template in RStudio" />
+<figcaption aria-hidden="true">Graphical interface to open a soap
+rmarkdown template in RStudio</figcaption>
+</figure>
 
 or by running:
 
@@ -58,13 +62,11 @@ episoap::list_templates()
 
 You may need to install system dependencies:
 
-```
-# macOS
-brew install libsodium cmake
+    # macOS
+    brew install libsodium cmake
 
-# Linux (Debian based)
-apt install libsodium-dev cmake
-```
+    # Linux (Debian based)
+    apt install libsodium-dev cmake
 
 ## Related projects
 
