@@ -57,6 +57,18 @@ To get a list of the template reports available in this package, you can run:
 episoap::list_templates()
 ```
 
+### System dependencies
+
+You may need to install system dependencies:
+
+```
+# macOS
+brew install libsodium cmake
+
+# Linux (Debian based)
+apt install libsodium-dev cmake
+```
+
 ## Related projects
 
 This project has some overlap with other R packages:
