@@ -33,12 +33,12 @@ params:
     value: "gamma"
     choices: ["beta", "binom", "cauchy", "chisq", "exp", "f", "gamma", "geom", "hyper", "lnorm", "logis", "nbinom", "norm", "pois", "smirnov", "t", "tukey", "unif", "weibull", "wilcox"]
   data_file: 
-    label: "Name of file containing the count data over time"
-    value: "data/covid_hosp_uk_20201024.xlsx"
+    label: "Name of file containing the line list data"
+    value: "data/covid_linelist_england.rds"
     input: file
   rt_estimator: 
     label: "Which R package to use for Rt estimation"
-    value: "i2extras"
+    value: "EpiEstim"
     choices: ["EpiEstim", "EpiNow2", "i2extras", "R0"]
 bibliography: 
   - grateful-refs.bib
@@ -253,15 +253,13 @@ apt install libsodium-dev cmake
 
 ##  Importing the data
 
-To illustrate the different analyses, we use real data reporting daily numbers
-of COVID-19 hospitalisations in England as of the 24 October 2020, broken down
-to the hospital and National Health Service (NHS) region level. The data is
-available online from the NHS England's
-[website](https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/).
-The dataset analysed here is a simplified version, providing incidence of
-hospital admissions by NHS trust.
+To illustrate the different analyses, we use real data reporting line list 
+(individual level) data of Covid-19 cases in England in the second half of 2020.
+The data was downloaded from <global.health>:
 
-The data file is named "*covid_hosp_uk_20201024.xlsx*" and is located in
+> Xu, B., Gutierrez, B., Mekaru, S. et al. Epidemiological data from the COVID-19 outbreak, real-time case information. Sci Data 7, 106 (2020). https://doi.org/10.1038/s41597-020-0448-0 
+
+The data file is named "*covid_linelist_england.rds*" and is located in
 the *data/* folder. To adapt this report to another dataset, change the name of
 the file in the `data_file` parameter at the top of this document.
 
@@ -304,14 +302,11 @@ Here we identify the key data needed in the analyses, including:
 ```{r}
 date_var <- "date"
 group_var <- "region"
-count_var <- "n"
 
 dat <- dat_raw %>%
   make_linelist(
     date_admission = date_var,
-    location = group_var,
-    counts = count_var,
-    allow_extra = TRUE
+    location = group_var
   )
 ```
 
@@ -326,7 +321,6 @@ This section creates epidemic curves ("_epicurves_"), with or without stratifica
 dat_i <- dat_raw %>%
   incidence("date",
     interval = params$epicurve_unit,
-    counts = count_var,
     groups = group_var
   )
 
@@ -346,17 +340,16 @@ dat_i %>%
 This graph shows the total number of cases per group:
 
 ```{r }
-total_cases <- dat %>%
-  tags_df() %>%
-  select(location, counts) %>%
-  group_by(location) %>%
-  summarise(cases = sum(counts)) %>%
-  mutate(location = fct_reorder(
-    .f = location,
+total_cases <- dat_i %>%
+  select(any_of(c(group_var, "count"))) %>%
+  group_by(.data[[group_var]]) %>%
+  summarise(cases = sum(count)) %>%
+  mutate(group_var := fct_reorder(
+    .f = region,
     .x = cases
   ))
 
-ggplot(total_cases, aes(x = cases, y = location)) +
+ggplot(total_cases, aes(x = cases, y = group_var)) +
   geom_col(fill = green_grey) +
   labs(x = "Total number of cases", y = NULL)
 
@@ -448,7 +441,6 @@ last_date <- dat %>%
 days_to_keep <- params$incomplete_days + params$r_estim_window
 i_recent <- dat_raw %>%
   incidence("date",
-    counts = count_var,
     groups = group_var
   ) %>%
   keep_last(days_to_keep) %>% # keep data for fitting
@@ -459,7 +451,6 @@ i_recent <- dat_raw %>%
 dat_i_day <- dat_raw %>%
   incidence("date",
     interval = "daily",
-    counts = count_var,
     groups = group_var
   ) %>%
   keep_first(n_distinct(.$date_index) - params$incomplete_days)
