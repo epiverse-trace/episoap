@@ -343,7 +343,7 @@ total_cases <- dat_i %>%
   group_by(.data[[group_var]]) %>%
   summarise(cases = sum(count)) %>%
   mutate(group_var := fct_reorder(
-    .f = region,
+    .f = .data[[group_var]],
     .x = cases
   ))
 
