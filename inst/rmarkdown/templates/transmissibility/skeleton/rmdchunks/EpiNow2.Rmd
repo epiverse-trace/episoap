@@ -89,6 +89,7 @@ res_epinow2_global$estimates$summarised %>%
 
 ```{r rt-estim-group, message = FALSE}
 res_epinow2_group <- dat_i_day %>%
+  select("date_index", "region", "count") %>%
   dplyr::rename(
     confirm = .data[["count"]],
     date    = date_index,
