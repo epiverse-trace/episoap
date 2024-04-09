@@ -13,7 +13,7 @@ params:
     label: "An integer or character indicating the (fixed) size of the time interval used for computing the incidence. Passed as the `interval` argument in `incidence2::incidence()`."
     value: "week"
   incomplete_days: 
-    label: "Number of most recent days days to be excluded from the dataset when estimating Rt, as these data may not be fully complete at the time of reporting"
+    label: "Number of most recent days to be excluded from the dataset when estimating Rt, as these data may not be fully complete at the time of reporting"
     value: 7
   r_estim_window:
     label: "Number of days to include to get the latest observed value of Rt, excluding the most recent days specified by the parameter incomplete_days"
