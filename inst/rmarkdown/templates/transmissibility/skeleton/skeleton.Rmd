@@ -344,7 +344,7 @@ dat_i %>%
 
 ## Numbers of cases
 
-This graph shows the total number of cases per group:
+This graph shows the total number of cases per region:
 
 ```{r }
 total_cases <- dat_i %>%
