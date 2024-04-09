@@ -63,6 +63,10 @@ plot(res_epinow2_global, "R") +
 ```
 
 ```{r rt-table-global}
+#This code generates a table that contains Rt estimates for days in the
+#dataset (dat_i_day) with complete data, i.e., defined by the parameter
+#"params$r_estim_window"
+
 res_epinow2_global$estimates$summarised %>%
   dplyr::filter(variable == "R") %>%
   tail(params$r_estim_window) %>%
