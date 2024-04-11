@@ -1,0 +1,9 @@
+@import 'https://fonts.googleapis.com/css?family=DM+Sans:wght@300,400,600,700';
+@import 'https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400';
+
+body {
+  font-family: 'DM Sans', sans-serif;
+}
+pre code {
+  font-family: 'Roboto Mono', monospace;
+}
