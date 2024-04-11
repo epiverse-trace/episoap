@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output:
   rmarkdown::html_document:
     code_folding: "hide"
+    css: "style.css"
 link-citations: no
 params:
   epicurve_unit: 
