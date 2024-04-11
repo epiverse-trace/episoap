@@ -15,7 +15,6 @@ URL: https://epiverse-trace.github.io/episoap,
     https://github.com/epiverse-trace/episoap
 BugReports: https://github.com/epiverse-trace/episoap/issues
 Imports: 
-    ggplot2,
     renv (>= 0.13.0),
     rmarkdown
 Suggests: 
@@ -31,4 +30,4 @@ Config/Needs/website:
 Encoding: UTF-8
 Language: en-GB
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
+RoxygenNote: 7.3.1
