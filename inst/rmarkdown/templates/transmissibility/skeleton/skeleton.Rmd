@@ -302,6 +302,10 @@ Here we identify the key data needed in the analyses, including:
 ```{r}
 date_var <- "date"
 group_var <- "region"
+# Leave count_var as NULL if the data is really a linelist / patient-level data.
+# Update count_var to a character string with the name of the column if the data
+# is already aggregated.
+count_var <- NULL
 
 dat <- dat_raw %>%
   make_linelist(
@@ -321,6 +325,7 @@ This section creates epidemic curves ("_epicurves_"), with or without stratifica
 dat_i <- dat_raw %>%
   incidence("date",
     interval = params$epicurve_unit,
+    counts = count_var,
     groups = group_var
   )
 
@@ -451,6 +456,7 @@ i_recent <- dat_raw %>%
 dat_i_day <- dat_raw %>%
   incidence("date",
     interval = "daily",
+    counts = count_var,
     groups = group_var
   ) %>%
   keep_first(n_distinct(.$date_index) - params$incomplete_days)
