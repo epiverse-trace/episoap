@@ -77,7 +77,6 @@ renv::use(
   "distributional@0.3.2",
   "dplyr@1.1.4",
   "ellipsis@0.3.2",
-  "epiverse-trace/episoap", # nolint
   "epiverse-trace/epiparameter@328706e", # nolint 
   "evaluate@0.23",
   "fansi@1.0.6",
@@ -155,6 +154,7 @@ renv::use(
   "tidyselect@1.2.0",
   "timechange@0.2.0",
   "tinytex@0.50",
+  "epiverse-trace/tracetheme@v0.1.0", # nolint
   "tzdb@0.4.0",
   "utf8@1.2.4",
   "vctrs@0.6.5",
@@ -222,9 +222,6 @@ library(kableExtra)
 library(incidence2)
 library(grateful)
 library(epiparameter)
-
-# episoap is already installed since this is where this document comes from
-library(episoap)
 ```
 
 ```{r}
@@ -234,7 +231,7 @@ pale_green <- "#B2D1CC"
 dark_green <- "#005C5D"
 dark_pink <- "#B45D75"
 
-theme_set(theme_episoap())
+theme_set(tracetheme::theme_trace())
 ```
 
 <!--
