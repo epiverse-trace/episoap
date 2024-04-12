@@ -460,7 +460,7 @@ i_recent <- dat_raw %>%
 ```{r}
 dat_i_day <- dat_raw %>%
   incidence("date",
-    interval = "daily",
+    interval = 1L,
     counts = count_var,
     groups = group_var
   ) %>%
