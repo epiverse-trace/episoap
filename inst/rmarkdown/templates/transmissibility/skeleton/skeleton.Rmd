@@ -419,7 +419,7 @@ si_epidist <- epidist(
 
 ```{r}
 si <- discretise(si_epidist)
-si_x <- seq(1L, to = quantile(si, 0.999), by = 1L)
+si_x <- seq(quantile(si, 0.01), to = quantile(si, 0.999), by = 1L)
 ```
 
 ```{r}
