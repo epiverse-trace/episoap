@@ -446,6 +446,7 @@ last_date <- dat %>%
 days_to_keep <- params$incomplete_days + params$r_estim_window
 i_recent <- dat_raw %>%
   incidence("date",
+    counts = count_var,
     groups = group_var
   ) %>%
   keep_last(days_to_keep) %>% # keep data for fitting
