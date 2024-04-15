@@ -34,7 +34,7 @@ params:
     value: "gamma"
     choices: ["beta", "binom", "cauchy", "chisq", "exp", "f", "gamma", "geom", "hyper", "lnorm", "logis", "nbinom", "norm", "pois", "smirnov", "t", "tukey", "unif", "weibull", "wilcox"]
   data_file: 
-    label: "Name of file containing the line list data"
+    label: "Name of file containing case data, whether a linelist or incidence data"
     value: "data/covid_linelist_england.rds"
     input: file
   rt_estimator: 
