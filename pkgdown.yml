@@ -1,11 +1,11 @@
 pandoc: 3.1.11
-pkgdown: 2.0.7
+pkgdown: 2.0.8
 pkgdown_sha: ~
 articles:
-  pipelines: pipelines.html
   design: design.html
   episoap: episoap.html
-last_built: 2024-03-21T13:42Z
+  pipelines: pipelines.html
+last_built: 2024-04-17T09:14Z
 urls:
   reference: https://epiverse-trace.github.io/episoap/reference
   article: https://epiverse-trace.github.io/episoap/articles
