@@ -223,9 +223,9 @@ library(rio)
 library(linelist)
 library(janitor)
 library(kableExtra)
-library(incidence2)
 library(grateful)
 library(epiparameter)
+library(incidence2)
 ```
 
 ```{r}
@@ -320,7 +320,7 @@ dat <- dat_raw %>%
 
 ## Epidemic curves
 
-This section creates epidemic curves ("_epicurves_"), with and without stratification by [name of grouping variable].
+This section creates epidemic curves ("_epicurves_"), with or without stratification.
 
 ```{r}
 # convert daily incidence into weekly incidence using incidence2
@@ -336,19 +336,10 @@ n_groups <- dplyr::n_distinct(get_groups(dat_i)[[1]])
 small_counts <- max(get_count_value(dat_i)) < 20
 ```
 
-```{r}
-#Plot to visualise an epicurve with total cases of disease over time
-dat_i %>%
-  plot(fill = group_var, angle = 45, colour_palette = muted) +
-  labs(
-    title = "Weekly incidence of disease cases", x = "", y = "Incidence")
-```
-
 ```{r fig.height = 5 / 3 * n_groups}
-#Plot to generate epicurves stratified by group_var
 dat_i %>%
   plot(alpha = 1, nrow = n_groups) +
-  labs(x = "", y = "Incidence")
+  labs(title = "Incidence of cases over time")
 ```
 
 ## Numbers of cases
