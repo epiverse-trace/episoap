@@ -282,7 +282,7 @@ dat_raw <- data_path %>%
 Once imported into __R__, the dataset called `dat_raw` includes:
 
 * `date`: the date of [enter description]
-* `region`: the region of [enter description]
+* `group`: [enter description of grouping variable, e.g., region, age, gender]
 * `n`: number of new cases of [enter description]
 
 ```{r}
