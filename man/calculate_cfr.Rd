@@ -34,7 +34,7 @@ a \code{list} of the following 2 elements:
 Calculate CFR from incidence or linelist data
 }
 \examples{
-cfr_data <- prepare_cfr_data(
+cfr_data <- convert_to_incidence(
   data               = data,
   date_variable_name = "Onset_week",
   cases_status       = "Status",

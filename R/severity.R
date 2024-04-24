@@ -1,83 +1,3 @@
-
-## data preparation function - this will output the data in the form that
-## cfr_static requires (done)
-##
-## have a function that uses this data and calls cfr_static (in progress)
-##
-## have another function to take variables from the user (in progress - will be
-## combine with the above function)
-##
-
-#' Get the input data for {cfr} functions
-#'
-#' @param data the input data
-#' @param date_variable_name the name of the column with the dates when cases
-#'    were registered
-#' @param cases_status the name of the column with the information about whether
-#'    a case was dead or recovered
-#' @param death_outcome a character with the value, in the cases_status column,
-#'    that is used to specify whether the case was dead
-#' @param diagnosis_status the name of the column with the cases diagnosis
-#'    outcome.
-#' @param diagnosis_outcome the value, in the column with the cases diagnosis
-#'    outcome, used to represent the confirmed cases.
-#'
-#' @return a `list` of 2 elements of type data frame. These are the aggregated
-#'    data to calculate CFR across all cases and the one for CFR among the
-#'    confirmed cases only. Note that the later will be `NULL` if the
-#'    `diagnosis_status` and `diagnosis_outcome` are not provided.
-#' @keywords internal
-#'
-#' @examples
-#' data = read.csv(system.file("extdata", "Marburg_EqGuinea_linelist.csv",
-#'                    package = "episoap"))
-#' cfr_data <- prepare_cfr_data(
-#'   data               = data,
-#'   date_variable_name = "Onset_week",
-#'   cases_status       = "Status",
-#'   death_outcome      = "dead",
-#'   diagnosis_status   = "Type",
-#'   diagnosis_outcome  = "confirmed"
-#' )
-prepare_cfr_data <- function(data,
-                             date_variable_name = "Onset_week",
-                             cases_status       = "Status",
-                             death_outcome      = "dead",
-                             diagnosis_status   = "Type",
-                             diagnosis_outcome  = "confirmed") {
-  data[[date_variable_name]] <- as.factor(data[[date_variable_name]])
-  cfr_data_all_cases         <- data %>%
-    dplyr::group_by_at(date_variable_name) %>%
-    dplyr::summarise(cases = dplyr::n(),
-                     deaths = sum(.data[[cases_status]] == death_outcome,
-                                 na.rm = TRUE))
-    names(cfr_data_all_cases)[[1L]] <- "date"
-    cfr_data_all_cases[["date"]]    <- as.Date(
-      as.character(cfr_data_all_cases[["date"]])
-    )
-
-  if (!is.null(diagnosis_status) && !is.null(diagnosis_outcome)) {
-    cfr_data_confirmed_cases <- data %>%
-      dplyr::group_by_at(date_variable_name) %>%
-      dplyr::summarise(cases  = dplyr::n(),
-                       deaths = sum(.data[[diagnosis_status]] == diagnosis_outcome & # nolint: line_length_linter
-                                      .data[[cases_status]] == death_outcome,
-                                    na.rm = TRUE))
-    names(cfr_data_confirmed_cases)[[1L]] <- "date"
-    cfr_data_confirmed_cases[["date"]]    <- as.Date(
-      as.character(cfr_data_confirmed_cases[["date"]])
-    )
-  } else {
-    cfr_data_confirmed_cases <- NULL
-  }
-
-  list(
-    cfr_data_all_cases       = cfr_data_all_cases,
-    cfr_data_confirmed_cases = cfr_data_confirmed_cases
-  )
-}
-
-
 #' Calculate CFR from count data
 #'
 #' @param total_cases a `numeric` that represent the total number of cases in
@@ -165,7 +85,7 @@ calculate_cfr_from_linelist <- function(data, account_for_delay, epidist,
   res_cfr      <- list()
   output_names <- c("cfr", "cfr_in_confirmed_cases")
   j            <- 1L
-  for (i in c("cfr_data_all_cases", "cfr_data_confirmed_cases")) { #
+  for (i in c("all_cases_data", "confirmed_cases_data")) {
     tmp_data   <- data[[i]]
 
     # convert dates to sequential if necessary
@@ -285,7 +205,7 @@ calculate_cfr_from_incidence <- function(data, epidist, account_for_delay,
 #' @keywords internal
 #'
 #' @examples
-#' cfr_data <- prepare_cfr_data(
+#' cfr_data <- convert_to_incidence(
 #'   data               = data,
 #'   date_variable_name = "Onset_week",
 #'   cases_status       = "Status",
@@ -304,8 +224,8 @@ calculate_cfr <- function(data,
                           shape, scale,
                           meanlog, sdlog) {
 
-  if (is.list(data) && all(names(data) %in% c("cfr_data_all_cases",
-                                              "cfr_data_confirmed_cases"))) {
+  if (is.list(data) && all(names(data) %in% c("all_cases_data",
+                                              "confirmed_cases_data"))) {
     res_cfr <- calculate_cfr_from_linelist(data, account_for_delay, epidist,
                                            type, values, distribution, interval,
                                            shape, scale,
@@ -585,34 +505,6 @@ get_severity <- function(disease_name      = NULL,
     return(cfr_res)
   }
 
-  # aggregate the data if it does not contain the 'date', 'cases', and 'deaths'
-  # columns
-  date_variable_name <- args_list[["date_variable_name"]]
-  cases_status       <- args_list[["cases_status"]]
-  death_outcome      <- args_list[["death_outcome"]]
-  diagnosis_status   <- args_list[["diagnosis_status"]]
-  diagnosis_outcome  <- args_list[["diagnosis_outcome"]]
-  if (all(!is.null(date_variable_name) && !is.null(cases_status) &&
-          !is.null(death_outcome) && !is.null(diagnosis_status) &&
-          !is.null(diagnosis_outcome))) {
-    cfr_data <- prepare_cfr_data(
-      data               = data,
-      date_variable_name = date_variable_name,
-      cases_status       = cases_status,
-      death_outcome      = death_outcome,
-      diagnosis_status   = diagnosis_status,
-      diagnosis_outcome  = diagnosis_outcome
-    )
-    cfr_res <- calculate_cfr(
-      data    = cfr_data,
-      epidist = epidist, account_for_delay,
-      type, values, distribution, interval,
-      shape, scale,
-      meanlog, sdlog
-    )
-    return(cfr_res)
-  }
-
   if (all(c("date", "cases", "deaths") %in% names(data))) {
     data <- data %>%
       dplyr::select(c(date, cases, deaths))
@@ -644,16 +536,6 @@ get_severity_params <- function(parameters, severity_params) {
   if (!is.null(severity_params)) {
     parameters[["ACCOUNT_FOR_DELAY"]] <- severity_params[["account_for_delay"]]
     parameters[["EPIDIST"]]           <- severity_params[["epidist"]]
-
-    # get parameters needed to create the incidence data
-    if (all(c("date_variable_name", "cases_status", "death_outcome",
-              "diagnosis_status", "diagnosis_outcome") %in% names(severity_params))) { # nolint: line_length_linter
-      parameters[["DATE_VARIABLE_NAME"]] <- severity_params[["date_variable_name"]] # nolint: line_length_linter
-      parameters[["CASES_STATUS"]]       <- severity_params[["cases_status"]]
-      parameters[["DEATH_OUTCOME"]]      <- severity_params[["death_outcome"]]
-      parameters[["DIAGNOSIS_STATUS"]]   <- severity_params[["diagnosis_status"]] # nolint: line_length_linter
-      parameters[["DIAGNOSIS_OUTCOME"]]  <- severity_params[["diagnosis_outcome"]] # nolint: line_length_linter
-    }
 
     # get parameters needed to estimate CFR from count
     if (all(c("total_cases", "total_deaths") %in% names(severity_params))) {
@@ -752,16 +634,6 @@ run_pipeline <- function(disease_name,
     ACCOUNT_FOR_DELAY  = account_for_delay,
     EPIDIST            = epidist
   )
-
-  # get parameters needed to estimate CFR from a data frame
-  if (all(c("date_variable_name", "cases_status", "death_outcome",
-            "diagnosis_status", "diagnosis_outcome") %in% names(args_list))) {
-    parameters[["DATE_VARIABLE_NAME"]] <- args_list[["date_variable_name"]]
-    parameters[["CASES_STATUS"]]       <- args_list[["cases_status"]]
-    parameters[["DEATH_OUTCOME"]]      <- args_list[["death_outcome"]]
-    parameters[["DIAGNOSIS_STATUS"]]   <- args_list[["diagnosis_status"]]
-    parameters[["DIAGNOSIS_OUTCOME"]]  <- args_list[["diagnosis_outcome"]]
-  }
 
   # get parameters needed to estimate CFR from count
   if (all(c("total_cases", "total_deaths") %in% names(args_list))) {

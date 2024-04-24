@@ -7,16 +7,11 @@ severity_params <- list(account_for_delay  = FALSE,
                         interval           = NULL,
                         meanlog            = NULL,
                         sdlog              = NULL,
-                        date_variable_name = NULL,
-                        cases_status       = NULL,
-                        death_outcome      = NULL,
-                        diagnosis_status   = NULL,
-                        diagnosis_outcome  = NULL,
                         total_cases        = NULL,
                         total_deaths       = NULL,
                         death_in_confirmed = NULL)
 
-transmissibility_params <- list(pathogen_name = NULL,
+transmissibility_params <- list(use_epiparameter_database = TRUE,
                                 group_by      = NULL,
                                 interval      = "day",
                                 si            = NULL,
@@ -24,10 +19,31 @@ transmissibility_params <- list(pathogen_name = NULL,
                                 si_sd         = NULL,
                                 si_dist       = NULL)
 
+to_incidence_params <- list(date_variable_name = NULL,
+                            cases_status       = NULL,
+                            death_outcome      = NULL,
+                            diagnosis_status   = NULL,
+                            diagnosis_outcome  = NULL)
+
 run_pipeline <- function(disease_name,
                          data,
+                         to_incidence_params     = NULL,
                          severity_params         = NULL,
                          transmissibility_params = NULL) {
+
+  # convert to incidence data when needed
+  # WARNING!!!!! This chunk should go under severity
+  if (!is.null(to_incidence_params)) {
+    data <- convert_to_incidence(
+      data,
+      date_variable_name = to_incidence_params[["date_variable_name"]],
+      cases_status       = to_incidence_params[["cases_status"]],
+      death_outcome      = to_incidence_params[["death_outcome"]],
+      diagnosis_status   = to_incidence_params[["diagnosis_status"]],
+      diagnosis_outcome  = to_incidence_params[["diagnosis_outcome"]])
+  }
+
+  # establish the parameters for the pipeline
   parameters <- list(
     DISEASE_NAME = disease_name,
     DATA         = data
@@ -51,6 +67,8 @@ run_pipeline <- function(disease_name,
                     output_file   = tmp_output,
                     output_format = NULL)
 }
+
+
 
 # epidemic_phase = NULL,
 # infection_type = "close_contact",
