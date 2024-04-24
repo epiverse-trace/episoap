@@ -1,0 +1,4 @@
+name: Run pipeline Report
+description: >
+  A template for displaying the output of run pipeline.
+create_dir: TRUE

@@ -1,0 +1,198 @@
+---
+title: "`r params$report_title`"
+output: 
+  html_document:
+    df_print: paged
+params:
+  growth_rate: NULL
+  global_Rt_plot: NULL
+  global_Rt_table: NULL
+  group_Rt_plot: NULL
+  group_Rt_table: NULL
+  report_title: "pipeline_execution_report"
+  logo: NULL
+---
+
+
+```{r cleanepi-setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = NA, rownames.print = FALSE)
+```
+
+```{css daiquiri-styles, echo=FALSE}
+h1.title {
+	font-size: 28px;
+	}
+p.compact {
+	margin-bottom: 0px;
+	margin-top: 0px;
+	}
+```
+
+<script>
+   $(document).ready(function() {
+     $head = $('#header');
+     $head.prepend('<img src="`r params$logo`" style="float: right; width: 100px;"/>')
+   });
+</script>
+
+<p class="compact">
+    Report created on: `r Sys.time()` ; cleanepi version `r utils::packageVersion("cleanepi")` ; `r R.Version()$version.string`
+</p>
+
+# {.tabset .tabset-pills}
+
+## Transmissibility {.tabset}
+
+
+```{r pipeline-source-data, eval=TRUE, echo=FALSE}
+# EXTRACT THE REPORT SECTIONS
+growth_rate <- params[["growth_rate"]]
+is_growth_rate <- !is.null(growth_rate)
+global_Rt_plot <- params[["global_Rt_plot"]]
+are_global_Rt_plot   <- !is.null(global_Rt_plot)
+global_Rt_table           <- params[["global_Rt_table"]]
+are_global_Rt_table <- !is.null(global_Rt_table)
+group_Rt_plot      <- params[["group_Rt_plot"]]
+are_group_Rt_plot <- !is.null(group_Rt_plot)
+group_Rt_table           <- params[["group_Rt_table"]]
+are_group_Rt_table <- !is.null(group_Rt_table)
+```
+
+### Growth rate
+
+```{r growth_rate, eval=is_growth_rate}
+if (!("region" %in% names(growth_rate))) {
+  growth_rate <- cbind(group = "overall", growth_rate)
+}
+reactable::reactable( # nolint: cyclocomp_linter
+  growth_rate,
+  sortable   = TRUE,
+  filterable = FALSE,
+  searchable = FALSE,
+  rownames   = FALSE,
+  pagination = FALSE,
+  striped    = TRUE,
+  highlight  = TRUE,
+  columns    = list(
+    region = reactable::colDef(name  = "group",
+                               style = list(fontWeight = "bold",
+                                            fontSize = 15)),
+    `Daily growth rate` = reactable::colDef(
+      name  = "Daily growth rate",
+      align = "center",
+      style = function(value) {
+        color      <- "green"
+        fontWeight <- "normal"
+        if (value > 0) {
+          color      <- "red"
+          fontWeight <- "bold"
+        }
+        return(list(color = color,
+                    fontWeight = fontWeight))
+      }),
+    `Growth rate (95% CI)` = reactable::colDef(
+      name  = "Growth rate (95% CI)",
+      align = "center",
+      style = list(fontWeight = "normal")
+    ),
+    `period type` = reactable::colDef(
+      name  = "period type", align = "center",
+      style = list(fontWeight = "normal")
+    ),
+    `Duration (days)` = reactable::colDef(
+      name  = "character", align = "center",
+      style = list(fontWeight = "normal")
+    ),
+    `Duration (95% CI)` = reactable::colDef(
+      name  = "logical", align = "center",
+      style = list(fontWeight = "normal")
+    )
+  )
+)
+```
+
+
+### Global Rt
+
+```{r global_Rt, eval=are_global_Rt_table}
+reactable::reactable(
+  global_Rt_table,
+  sortable   = TRUE,
+  filterable = FALSE,
+  searchable = FALSE,
+  pagination = FALSE,
+  rownames   = FALSE,
+  compact    = TRUE,
+  fullWidth  = TRUE,
+  striped    = TRUE,
+  highlight  = TRUE,
+  columns    = list(
+    date = reactable::colDef(
+      name  = "date",
+      align = "center",
+      style = list(fontWeight = "normal")
+    ),
+    `mean $R$` = reactable::colDef(
+      name  = "mean $R$",
+      align = "center",
+      style = list(fontWeight = "normal")
+    ),
+    `median $R$` = reactable::colDef(
+      name  = "median $R$", align = "center",
+      style = list(fontWeight = "normal")
+    ),
+    `95% ci` = reactable::colDef(
+      name  = "95% ci", align = "center",
+      style = list(fontWeight = "normal")
+    )
+  )
+)
+
+print(global_Rt_plot)
+```
+
+### Per group Rt
+
+```{r group_Rt, eval=are_group_Rt_table}
+reactable::reactable(
+  group_Rt_table,
+  sortable   = TRUE,
+  filterable = FALSE,
+  searchable = FALSE,
+  pagination = FALSE,
+  rownames   = FALSE,
+  compact    = TRUE,
+  fullWidth  = TRUE,
+  striped    = TRUE,
+  highlight  = TRUE,
+  columns    = list(
+    region = reactable::colDef(name  = "group",
+                               style = list(fontWeight = "bold",
+                                            fontSize = 15)),
+    count_variable = reactable::colDef(
+      name  = "count variable",
+      align = "center",
+      style = list(fontWeight = "normal")
+    ),
+    start = reactable::colDef(
+      name  = "start",
+      align = "center",
+      style = list(fontWeight = "normal")
+    ),
+    end = reactable::colDef(
+      name  = "end", align = "center",
+      style = list(fontWeight = "normal")
+    ),
+    `mean $R$` = reactable::colDef(
+      name  = "character", align = "center",
+      style = list(fontWeight = "normal")
+    )
+  )
+)
+
+print(group_Rt_plot)
+```
+
+## Severity {.tabset}
+
+

@@ -33,7 +33,7 @@ print_report <- function(pipeline_report,
   withr::with_tempdir(
     {
       file.copy(
-        from      = system.file("rmarkdown", "templates", "printing-rmd",
+        from      = system.file("rmarkdown", "templates", "print_report",
                                 "skeleton", "skeleton.Rmd",
                                 package  = "episoap",
                                 mustWork = TRUE),
@@ -57,7 +57,7 @@ print_report <- function(pipeline_report,
     clean   = FALSE, # when TRUE, the folder is deleted and report is not
     # printed out
     fileext = "",
-    pattern = "cleanepi_report_"
+    pattern = "episoap_report_"
   )
 
   # print report if specified

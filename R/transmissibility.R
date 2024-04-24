@@ -1,26 +1,27 @@
-#' Extract the transmissibility parameters from the input arguments
-#'
-#' @param parameters a list of parameters to be populated with the severity
-#'    parameters
-#' @param transmissibility_params a list with the user-specified arguments to be
-#'    used for the CFR calculation
-#'
-#' @return the input list of parameters with extra arguments from the
-#'    'transmissibility_params' object
-#' @keywords internal
-#'
-get_transmissibility_params <- function(parameters, transmissibility_params) {
-  if (!is.null(transmissibility_params)) {
-    parameters[["INTERVAL"]] <- transmissibility_params[["interval"]]
-    parameters[["USE_EPIPARAMETER_DATABASE"]] <- transmissibility_params[["use_epiparameter_database"]] # nolint: line_length_linter
-    parameters[["GROUP_BY"]] <- transmissibility_params[["group_by"]]
-    parameters[["SI"]]       <- transmissibility_params[["si"]]
-    parameters[["SI_MEAN"]]  <- transmissibility_params[["si_mean"]]
-    parameters[["SI_SD"]]    <- transmissibility_params[["si_sd"]]
-    parameters[["SI_DIST"]]  <- transmissibility_params[["si_dist"]]
-  }
-  return(parameters)
-}
+#' #' Extract the transmissibility parameters from the input arguments
+#' #'
+#' #' @param parameters a list of parameters to be populated with the severity
+#' #'    parameters
+#' #' @param transmissibility_params a list with the user-specified arguments to be
+#' #'    used for the CFR calculation
+#' #'
+#' #' @return the input list of parameters with extra arguments from the
+#' #'    'transmissibility_params' object
+#' #' @keywords internal
+#' #'
+#' get_transmissibility_params <- function(transmissibility_params) {
+#'   parameters <- list()
+#'   if ("use_epiparameter_database" %in% names(transmissibility_params)) {
+#'     parameters[["use_epiparameter_database"]] <-
+#'   }
+#'   transmissibility_params[["use_epiparameter_database"]]
+#'   parameters[["GROUP_BY"]] <- transmissibility_params[["group_by"]]
+#'   parameters[["SI"]]       <- transmissibility_params[["si"]]
+#'   parameters[["SI_MEAN"]]  <- transmissibility_params[["si_mean"]]
+#'   parameters[["SI_SD"]]    <- transmissibility_params[["si_sd"]]
+#'   parameters[["SI_DIST"]]  <- transmissibility_params[["si_dist"]]
+#'   return(parameters)
+#' }
 
 
 #' Estimate the disease transmissibility
@@ -53,6 +54,20 @@ get_transmissibility_params <- function(parameters, transmissibility_params) {
 #' @export
 #'
 #' @examples
+#' test <- run_transmissibility(
+#'   data                      = rio::import(system.file("extdata",
+#'                                           "covid_hosp_uk_20201024.xlsx",
+#'                                           package = "episoap")),
+#'   disease_name              = "COVID-19",
+#'   date_var                  = "date",
+#'   count_var                 = "n",
+#'   group_var                 = "region",
+#'   incomplete_days           = 7,
+#'   use_epiparameter_database = TRUE,
+#'   si_mean                   = NULL,
+#'   si_sd                     = NULL,
+#'   si_dist                   = NULL
+#' )
 run_transmissibility <- function(data,
                                  disease_name,
                                  date_var                  = "date",
