@@ -563,9 +563,11 @@ get_severity_params <- function(parameters, severity_params) {
   return(parameters)
 }
 
+#' Run severity pipeline
+#'
 #' @examples
 #' estimate cfr using incidence data
-#' run_pipeline(
+#' run_severity(
 #'   disease_name      = "Marburg Virus Disease",
 #'   data              = readRDS(system.file("extdata",
 #'                                           "Marburg_EqGuinea_incidence.RDS",
@@ -576,7 +578,7 @@ get_severity_params <- function(parameters, severity_params) {
 #'
 #' estimate cfr using linelist data - the delay distribution parameters are
 #' taken from the user-supplied arguments
-#' run_pipeline(
+#' run_severity(
 #'   disease_name       = "Marburg Virus Disease",
 #'   data               = read.csv(system.file("extdata",
 #'                                             "Marburg_EqGuinea_linelist.csv",
@@ -594,7 +596,7 @@ get_severity_params <- function(parameters, severity_params) {
 #'   interval           = 1
 #' )
 #'
-#' run_pipeline(
+#' run_severity(
 #'   disease_name       = "Marburg Virus Disease",
 #'   data               = read.csv(system.file("extdata",
 #'                                             "Marburg_EqGuinea_linelist.csv",
@@ -612,7 +614,7 @@ get_severity_params <- function(parameters, severity_params) {
 #' )
 #'
 #' estimate cfr using count data
-#' run_pipeline(
+#' run_severity(
 #'   disease_name       = "Marburg Virus Disease",
 #'   data               = NULL,
 #'   account_for_delay  = FALSE,
@@ -621,8 +623,9 @@ get_severity_params <- function(parameters, severity_params) {
 #'   total_deaths       = 25,
 #'   death_in_confirmed = 12
 #' )
+#' @export
 #'
-run_pipeline <- function(disease_name,
+run_severity <- function(disease_name,
                          data,
                          account_for_delay = TRUE,
                          epidist = NULL,

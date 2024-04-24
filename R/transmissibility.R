@@ -53,7 +53,7 @@ get_transmissibility_params <- function(parameters, transmissibility_params) {
 #' @export
 #'
 #' @examples
-get_transmissibility <- function(data,
+run_transmissibility <- function(data,
                                  disease_name,
                                  date_var                  = "date",
                                  count_var                 = "n",
@@ -149,8 +149,8 @@ get_transmissibility <- function(data,
 
   # calculate the per-group Rt
   res_epiestim_group <- daily_incidence |>
-    tidyr::nest(data = c(incidence2::get_date_index_name(.),
-                         incidence2::get_count_value_name(.))) |>
+    tidyr::nest(data = c(incidence2::get_date_index_name(daily_incidence),
+                         incidence2::get_count_value_name(daily_incidence))) |>
     dplyr::mutate(
       res_epiestim = purrr::map(data, ~ wrap_res(
         EpiEstim::estimate_R(.x[["count"]], config = ee_config),
