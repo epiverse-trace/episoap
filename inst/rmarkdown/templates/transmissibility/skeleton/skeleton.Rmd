@@ -345,9 +345,10 @@ dat_i %>%
 ```
 
 ```{r fig.height = 5 / 3 * n_groups}
+#Plot to generate epicurves stratified by group_var
 dat_i %>%
   plot(alpha = 1, nrow = n_groups) +
-  labs(title = "Incidence of cases over time")
+  labs(x = "", y = "Incidence")
 ```
 
 ## Numbers of cases
