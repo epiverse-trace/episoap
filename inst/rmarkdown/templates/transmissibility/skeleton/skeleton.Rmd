@@ -304,9 +304,9 @@ Here we identify the key data needed in the analyses, including:
 ```{r}
 date_var <- "date"
 group_var <- "region"
-# Leave count_var as NULL if the data is really a linelist / patient-level data.
-# Update count_var to a character string with the name of the column if the data
-# is already aggregated.
+# Leave count_var as NULL if your data is really a linelist/patient-level data.
+# Update count_var to a character string with the name of the column that
+# contains case counts if your data is already aggregated.
 count_var <- NULL
 
 dat <- dat_raw %>%
