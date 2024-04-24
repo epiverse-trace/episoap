@@ -265,6 +265,8 @@ the *data/* folder.
 ```{r}
 # To adapt this report to another dataset, change the name of
 # the file in the `data_file` parameter at the top of this document.
+# Supported file types include .xlsx, .csv, and many others, please visit
+# https://gesistsa.github.io/rio/#supported-file-formats for more information.
 data_path <- params$data_file
 ```
 
