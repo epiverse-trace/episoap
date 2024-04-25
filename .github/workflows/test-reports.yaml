@@ -29,7 +29,8 @@ jobs:
           # it would be good to automatically identify system dependencies in the future
           extra-packages: |
             local::.
-            sodium 
+            sodium,
+            curl
       - name: Test report rendering
         run: |
           library(episoap)
