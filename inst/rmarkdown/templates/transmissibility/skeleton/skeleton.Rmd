@@ -178,7 +178,7 @@ renv::use(
 knitr::opts_chunk$set(
   fig.width = 9,
   fig.height = 5,
-  dpi = 90,
+  dpi = 180,
   collapse = TRUE,
   message = FALSE,
   warning = FALSE,
