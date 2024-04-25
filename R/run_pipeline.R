@@ -39,7 +39,7 @@ run_pipeline <- function(
 
   withr::local_dir(out_dir)
 
-  report <- match.arg(report)
+  report <- match.arg(report, several.ok = TRUE)
 
   rendered <- vapply(report, function(r) {
     rmarkdown::draft(
