@@ -41,6 +41,7 @@ download.file(
 run_pipeline(
   report = "transmissibility",
   out_dir = wd,
+  # this is passed as a rmarkdown parameter to the report
   data_file = "covid_linelist_england.rds"
 )
 }
