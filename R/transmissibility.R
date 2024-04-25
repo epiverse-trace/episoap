@@ -85,25 +85,25 @@ run_transmissibility <- function(data,
                                 as.Date))
 
   # generate descriptive stats
-  if (!inherits(data, "linelist")) {
-    # convert the input data into linelist
-    linelist_data <- data %>%
-      linelist::make_linelist(date_admission = date_var,
-                              location       = group_var,
-                              counts         = count_var,
-                              allow_extra    = TRUE)
-    total_cases   <- plot_cases_per_group(linelist_data)
-
-    # convert incidence into weekly incidence using incidence2
-    converted_data <- data %>%
-      incidence2::incidence(date_index = "date",
-                            interval   = "week",
-                            counts     = count_var,
-                            groups     = group_var)
-
-    small_counts      <- max(incidence2::get_count_value(converted_data)) < 20L
-    weekly_incidence_plot <- plot_weekly_incidence(converted_data)
-  }
+  # if (!inherits(data, "linelist")) {
+  #   # convert the input data into linelist
+  #   linelist_data <- data %>%
+  #     linelist::make_linelist(date_admission = date_var,
+  #                             location       = group_var,
+  #                             counts         = count_var,
+  #                             allow_extra    = TRUE)
+  #   total_cases   <- plot_cases_per_group(linelist_data)
+  #
+  #   # convert incidence into weekly incidence using incidence2
+  #   converted_data <- data %>%
+  #     incidence2::incidence(date_index = "date",
+  #                           interval   = "week",
+  #                           counts     = count_var,
+  #                           groups     = group_var)
+  #
+  #   small_counts      <- max(incidence2::get_count_value(converted_data)) < 20L
+  #   weekly_incidence_plot <- plot_weekly_incidence(converted_data)
+  # }
 
   # generate the daily incidence data
   daily_incidence <- data |>
@@ -119,7 +119,7 @@ run_transmissibility <- function(data,
   # the growth rate in presence of superspreading).
   growth_rate  <- estimate_growth_rate(daily_incidence,
                                        group_var = group_var,
-                                       alpha     = alpha)
+                                       alpha     = 0.95)
 
   # calculate the serial interval
   si_epidist <- get_si_distribution(
@@ -163,38 +163,41 @@ run_transmissibility <- function(data,
     )
 
   # calculate the per-group Rt
-  res_epiestim_group <- daily_incidence |>
-    tidyr::nest(data = c(incidence2::get_date_index_name(daily_incidence),
-                         incidence2::get_count_value_name(daily_incidence))) |>
-    dplyr::mutate(
-      res_epiestim = purrr::map(data, ~ wrap_res(
-        EpiEstim::estimate_R(.x[["count"]], config = ee_config),
-        daily_incidence)
-      )
-    ) |>
-    tidyr::unnest(res_epiestim) |>
-    dplyr::select(-data)
+  group_Rt_plot <- group_Rt_table <- NULL
+  if (!is.null(group_var)) {
+    res_epiestim_group <- daily_incidence |>
+      tidyr::nest(data = c(incidence2::get_date_index_name(daily_incidence),
+                           incidence2::get_count_value_name(daily_incidence))) |>
+      dplyr::mutate(
+        res_epiestim = purrr::map(data, ~ wrap_res(
+          EpiEstim::estimate_R(.x[["count"]], config = ee_config),
+          daily_incidence)
+        )
+      ) |>
+      tidyr::unnest(res_epiestim) |>
+      dplyr::select(-data)
 
-  # per group Rt plot
-  group_Rt_plot <- plot_Rt(res_epiestim_group, group_var = group_var)
+    # per group Rt plot
+    group_Rt_plot <- plot_Rt(res_epiestim_group, group_var = group_var)
 
-  # per group Rt table
-  group_Rt_table <- res_epiestim_group |>
-    dplyr::filter(end == max(end)) |>
-    dplyr::mutate(
-      mean     = round(mean, 2L),
-      median   = round(median, 2L),
-      `95% ci` = sprintf(
-        "[%1.2f ; %1.2f]",
-        lower,
-        upper
+    # per group Rt table
+    group_Rt_table <- res_epiestim_group |>
+      dplyr::filter(end == max(end)) |>
+      dplyr::mutate(
+        mean     = round(mean, 2L),
+        median   = round(median, 2L),
+        `95% ci` = sprintf(
+          "[%1.2f ; %1.2f]",
+          lower,
+          upper
+        )
+      ) |>
+      dplyr::select(-c(sd, lower, upper)) |>
+      dplyr::rename(
+        "mean $R$"   = mean,
+        "median $R$" = median
       )
-    ) |>
-    dplyr::select(-c(sd, lower, upper)) |>
-    dplyr::rename(
-      "mean $R$"   = mean,
-      "median $R$" = median
-    )
+  }
 
   return(list(
     growth_rate     = growth_rate,
@@ -357,7 +360,7 @@ estimate_growth_rate <- function(dat, group_var = NULL, alpha = 0.95) {
                              model = "poisson",
                              alpha = alpha)
   gr  <- i2extras::growth_rate(out) |>
-    dplyr::select(-c(1L, 3L)) |>
+    dplyr::select(-c("count_variable", "model")) |>
     dplyr::rename("period" = "growth_or_decay") |>
     dplyr::mutate("period type" = paste(period, "time"),
                   r = paste(round(r * 100, 1), "%"),

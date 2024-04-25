@@ -631,47 +631,24 @@ run_severity <- function(disease_name,
                          epidist = NULL,
                          ...) {
   args_list  <- list(...)
-  parameters <- list(
-    DISEASE_NAME       = disease_name,
-    DATA               = data,
-    ACCOUNT_FOR_DELAY  = account_for_delay,
-    EPIDIST            = epidist
+
+  cfr <- get_severity(
+    disease_name       = disease_name,
+    data               = data,
+    account_for_delay  = account_for_delay,
+    epidist            = epidist,
+    values             = args_list[["values"]],
+    type               = args_list[["type"]],
+    interval           = args_list[["interval"]],
+    distribution       = args_list[["distribution"]],
+    shape              = args_list[["shape"]],
+    scale              = args_list[["scale"]],
+    meanlog            = args_list[["meanlog"]],
+    sdlog              = args_list[["sdlog"]],
+    total_cases        = args_list[["total_cases"]],
+    total_deaths       = args_list[["total_deaths"]],
+    death_in_confirmed = args_list[["death_in_confirmed"]]
   )
-
-  # get parameters needed to estimate CFR from count
-  if (all(c("total_cases", "total_deaths") %in% names(args_list))) {
-    death_in_confirmed   <- NULL
-    if ("death_in_confirmed" %in% names(args_list)) {
-      death_in_confirmed <- args_list[["death_in_confirmed"]]
-    }
-    parameters[["TOTAL_CASES"]]  <- args_list[["total_cases"]]
-    parameters[["TOTAL_DEATHS"]] <- args_list[["total_deaths"]]
-  }
-
-  # get parameters needed to calculate the delay distribution
-  if (all(c("type", "values", "distribution") %in% names(args_list))) {
-    parameters[["TYPE"]]         <- args_list[["type"]]
-    parameters[["VALUES"]]       <- args_list[["values"]]
-    parameters[["DISTRIBUTION"]] <- args_list[["distribution"]]
-    parameters[["INTERVAL"]]     <- args_list[["interval"]]
-  }
-  if (all(c("meanlog", "sdlog", "distribution") %in% names(args_list))) {
-    parameters[["MEANLOG"]]      <- args_list[["meanlog"]]
-    parameters[["SDLOG"]]        <- args_list[["sdlog"]]
-    parameters[["DISTRIBUTION"]] <- args_list[["distribution"]]
-  }
-
-  # estimate CFR
-  tmp_output        = "/Users/karimmane/Documents/Karim/LSHTM/TRACE_dev/Packages/On_trace_github/episoap/inst/rmarkdown/templates/test.html"
-  tmp_input         = "/Users/karimmane/Documents/Karim/LSHTM/TRACE_dev/Packages/On_trace_github/episoap/inst/rmarkdown/templates/test_severity.Rmd"
-  # tmp_input = file.path(.libPaths(), "episoap",
-  #                       "rmarkdown", "templates",
-  #                       "test_severity.Rmd")
-  rmarkdown::render(input         = tmp_input,
-                    params        = parameters,
-                    output_dir    = getwd(),
-                    output_file   = tmp_output,
-                    output_format = NULL)
 }
 
 # cavits:

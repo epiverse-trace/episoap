@@ -2,7 +2,31 @@
 % Please edit documentation in R/transmissibility.R
 \name{run_transmissibility}
 \alias{run_transmissibility}
-\title{Estimate the disease transmissibility}
+\title{#' Extract the transmissibility parameters from the input arguments
+#'
+#' @param parameters a list of parameters to be populated with the severity
+#'    parameters
+#' @param transmissibility_params a list with the user-specified arguments to be
+#'    used for the CFR calculation
+#'
+#' @return the input list of parameters with extra arguments from the
+#'    'transmissibility_params' object
+#' @keywords internal
+#'
+get_transmissibility_params <- function(transmissibility_params) {
+parameters <- list()
+if ("use_epiparameter_database" \%in\% names(transmissibility_params)) {
+parameters[\link{"use_epiparameter_database"}] <-
+}
+transmissibility_params[\link{"use_epiparameter_database"}]
+parameters[\link{"GROUP_BY"}] <- transmissibility_params[\link[="GROUP_BY"]{"group_by"}]
+parameters[\link{"SI"}]       <- transmissibility_params[\link[="SI"]{"si"}]
+parameters[\link{"SI_MEAN"}]  <- transmissibility_params[\link[="SI_MEAN"]{"si_mean"}]
+parameters[\link{"SI_SD"}]    <- transmissibility_params[\link[="SI_SD"]{"si_sd"}]
+parameters[\link{"SI_DIST"}]  <- transmissibility_params[\link[="SI_DIST"]{"si_dist"}]
+return(parameters)
+}
+Estimate the disease transmissibility}
 \usage{
 run_transmissibility(
   data,
@@ -53,4 +77,20 @@ the reproduction number.
 \description{
 Here the transmissibility is expressed as the reproduction number i.e the
 number of people infected, on average, by a single infected person.
+}
+\examples{
+test <- run_transmissibility(
+  data                      = rio::import(system.file("extdata",
+                                          "covid_hosp_uk_20201024.xlsx",
+                                          package = "episoap")),
+  disease_name              = "COVID-19",
+  date_var                  = "date",
+  count_var                 = "n",
+  group_var                 = "region",
+  incomplete_days           = 7,
+  use_epiparameter_database = TRUE,
+  si_mean                   = NULL,
+  si_sd                     = NULL,
+  si_dist                   = NULL
+)
 }

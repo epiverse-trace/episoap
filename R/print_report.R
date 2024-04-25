@@ -12,7 +12,6 @@ print_report <- function(pipeline_report,
     subset.of = c("res_transmissibility", "res_severity")
   )
 
-
   # generate output file and directory
   timestamp_string   <- format(Sys.time(), "_%Y-%m-%d%_at_%H%M%S")
   if (is.null(output_file_name)) {
@@ -44,7 +43,7 @@ print_report <- function(pipeline_report,
       file_and_path  <- file.path(getwd(), paste0(output_file_name, ".html"))
       stopifnot("Invalid format: Only 'html' format is currently supported." =
                   format == "html")
-      message("Generating html report in ", getwd())
+      cat("Generating html report in:\n", getwd())
       rmarkdown::render(
         input       = file.path(getwd(), "skeleton.Rmd"),
         output_file = file_and_path,
@@ -64,5 +63,5 @@ print_report <- function(pipeline_report,
   if (print) {
     utils::browseURL(file_and_path)
   }
-  return(file_and_path)
+  return(invisible(file_and_path))
 }

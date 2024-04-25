@@ -2,7 +2,9 @@
 
 export(get_severity)
 export(list_templates)
+export(make_template)
 export(reformat_cfr)
+export(run_pipeline)
 export(run_severity)
 export(run_transmissibility)
 export(theme_episoap)

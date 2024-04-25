@@ -4,6 +4,7 @@ output:
   html_document:
     df_print: paged
 params:
+  cfr: NULL
   growth_rate: NULL
   global_Rt_plot: NULL
   global_Rt_table: NULL
@@ -56,6 +57,8 @@ group_Rt_plot      <- params[["group_Rt_plot"]]
 are_group_Rt_plot <- !is.null(group_Rt_plot)
 group_Rt_table           <- params[["group_Rt_table"]]
 are_group_Rt_table <- !is.null(group_Rt_table)
+cfr <- params[["cfr"]]
+is_cfr <- !is.null(cfr)
 ```
 
 ### Growth rate
@@ -64,7 +67,7 @@ are_group_Rt_table <- !is.null(group_Rt_table)
 if (!("region" %in% names(growth_rate))) {
   growth_rate <- cbind(group = "overall", growth_rate)
 }
-reactable::reactable( # nolint: cyclocomp_linter
+reactable::reactable(
   growth_rate,
   sortable   = TRUE,
   filterable = FALSE,
@@ -74,7 +77,7 @@ reactable::reactable( # nolint: cyclocomp_linter
   striped    = TRUE,
   highlight  = TRUE,
   columns    = list(
-    region = reactable::colDef(name  = "group",
+    group = reactable::colDef(name  = "group",
                                style = list(fontWeight = "bold",
                                             fontSize = 15)),
     `Daily growth rate` = reactable::colDef(
@@ -194,5 +197,15 @@ print(group_Rt_plot)
 ```
 
 ## Severity {.tabset}
+
+```{r print-cfr, eval=is_cfr, results='asis'}
+cfr <- cfr |>
+  dplyr::mutate(
+    `severity_mean` = formattable::color_tile("white", "#81A4CE")(`severity_mean`))
+knitr::kable(cfr, format = "pipe", escape = FALSE, booktabs = TRUE,
+             align = rep("c", ncol(cfr)),
+             caption = "Overall cfr",
+             digits = 5)
+```
 
 

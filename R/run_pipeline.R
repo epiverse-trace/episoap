@@ -1,30 +1,62 @@
-
-severity_params <- list(account_for_delay  = FALSE,
-                        epidist            = NULL,
-                        type               = NULL,
-                        values             = NULL,
-                        distribution       = NULL,
-                        interval           = NULL,
-                        meanlog            = NULL,
-                        sdlog              = NULL,
-                        total_cases        = NULL,
-                        total_deaths       = NULL,
-                        death_in_confirmed = NULL)
-
-transmissibility_params <- list(use_epiparameter_database = TRUE,
-                                group_by      = NULL,
-                                interval      = "day",
-                                si            = NULL,
-                                si_mean       = NULL,
-                                si_sd         = NULL,
-                                si_dist       = NULL)
-
-to_incidence_params <- list(date_variable_name = NULL,
-                            cases_status       = NULL,
-                            death_outcome      = NULL,
-                            diagnosis_status   = NULL,
-                            diagnosis_outcome  = NULL)
-
+#' Execute the user-defined tasks
+#'
+#' @param disease_name A string with the disease name
+#' @param data A data frame or linelist or incidence object
+#' @param to_incidence_params A list of parameters needed to convert the input
+#'    data into an incidence object. This arguments is only needed when the user
+#'    wants to include severity into the run and the data is a linelist or data
+#'    frame.
+#' @param severity_params A list with the parameters required calculate the
+#'    disease severity.
+#' @param transmissibility_params A list with the parameters needed to estimate
+#'    the disease transmissibility
+#'
+#' @return Generates a HTML file with the result from each element of the
+#'    pipeline
+#' @export
+#'
+#' @examples
+#' data <- outbreaks::ebola_kikwit_1995 |>
+#'   dplyr::rename("cases" = "onset", "deaths" = "death")
+#' disease_name <- "ebola"
+#'
+#' # define the transmissibility arguments
+#' define the arguments for transmissibility
+#' transmissibility_params <- list(
+#'   date_var = "date",
+#'   group_var  = NULL,
+#'   count_var = "cases",
+#'   incomplete_days = 7,
+#'   use_epiparameter_database = TRUE,
+#'   si_mean       = NULL,
+#'   si_sd         = NULL,
+#'   si_dist       = NULL
+#' )
+#'
+#' # define the severity arguments
+#' to_incidence_params <- NULL
+#' severity_params <- list(
+#'   account_for_delay  = FALSE,
+#'   epidist            = NULL,
+#'   type               = "range",
+#'   values             = c(8, 2, 16),
+#'   distribution       = "gamma",
+#'   interval           = 1,
+#'   meanlog            = NULL,
+#'   sdlog              = NULL,
+#'   total_cases        = NULL,
+#'   total_deaths       = NULL,
+#'   death_in_confirmed = NULL
+#' )
+#'
+#' # run the pipeline
+#' run_pipeline(
+#'   disease_name = disease_name,
+#'   data = data,
+#'   to_incidence_params = to_incidence_params,
+#'   severity_params = severity_params,
+#'   transmissibility_params = transmissibility_params
+#' )
 run_pipeline <- function(disease_name,
                          data,
                          to_incidence_params     = NULL,
@@ -63,7 +95,7 @@ run_pipeline <- function(disease_name,
       death_in_confirmed = severity_params[["death_in_confirmed"]])
 
     # add results to the final output
-    final_results <- c(final_results, res_severity)
+    final_results[["cfr"]] <- res_severity[["cfr"]]
   }
 
   # Run the transmissibility pipeline if needed
