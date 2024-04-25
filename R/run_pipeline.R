@@ -6,6 +6,7 @@
 #'   `episoap_report` in the current directory
 #' @param preview A logical (default `TRUE`) indicating whether the rendered
 #'   report should be opened in the default browser
+#' @param ... Arguments passed as parameters to the report template(s)
 #'
 #' @returns (invisibly) a character vector of paths to the rendered reports
 #'

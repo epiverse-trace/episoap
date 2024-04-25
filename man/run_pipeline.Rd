@@ -20,6 +20,8 @@ templates)}
 
 \item{preview}{A logical (default \code{TRUE}) indicating whether the rendered
 report should be opened in the default browser}
+
+\item{...}{Arguments passed as parameters to the report template(s)}
 }
 \value{
 (invisibly) a character vector of paths to the rendered reports
