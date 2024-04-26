@@ -127,10 +127,6 @@ res_epinow2_group <- dat_i_day %>%
 res_epinow2_group$summary$plots$R
 ```
 
-```{r rt-plot-estimates-group}
-# Missing for now
-```
-
 ```{r rt-table-group}
 # This code generates a table with an overall estimate of Rt per group_var
 res_epinow2_group$summary$summarised_results$data %>%
