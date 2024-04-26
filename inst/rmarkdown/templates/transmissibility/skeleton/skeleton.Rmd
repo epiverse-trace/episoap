@@ -407,8 +407,7 @@ one transmission pair to another, this report characterises this variation using
 probability distribution. This distribution is a key input to methods used for
 estimating the reproduction number ($R$). 
 
-In this report, the mean and standard deviation of the $si$ have been [provided as an input by the author/
-obtained from a library of epidemiological parameters from the {epiparameter} R package]
+In this report, the mean and standard deviation of the $si$ have been `r ifelse(params$use_epiparameter_database, "obtained from a library of epidemiological parameters from the {epiparameter} R package", "provided as an input by the author")`.
 
 ## Results
 
