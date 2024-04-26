@@ -267,10 +267,13 @@ the *data/* folder.
 # the file in the `data_file` parameter at the top of this document.
 # Supported file types include .xlsx, .csv, and many others, please visit
 # https://gesistsa.github.io/rio/#supported-file-formats for more information.
+# The following code is used to rename your input data set as `dat_raw`.
 data_path <- params$data_file
 ```
 
 ```{r}
+# This code imports the input dataset from the data path specified by the user
+# (params$data_path)
 dat_raw <- data_path %>%
   import() %>%
   tibble() %>%
@@ -288,6 +291,7 @@ Once imported into __R__, the dataset called `dat_raw` includes:
 * `n`: number of new cases of [enter description]
 
 ```{r}
+# This is what the data looks like:
 head(dat_raw)
 ```
 
@@ -304,6 +308,9 @@ Here we identify the key data needed in the analyses, including:
   not already aggregated counts
 
 ```{r}
+# This code identifies key variables for analysis in the input dataset and,
+# when working with a linelist, uses the package {linelist} to tag columns in
+# the dataset that correspond to these key variables.
 date_var <- "date"
 group_var <- "region"
 # Leave count_var as NULL if your data is really a linelist/patient-level data.
@@ -325,7 +332,7 @@ dat <- dat_raw %>%
 This section creates epidemic curves ("_epicurves_"), with and without stratification by [name of chosen grouping variable].
 
 ```{r}
-# convert daily incidence into weekly incidence using incidence2
+# This code converts daily incidence into weekly incidence using {incidence2}
 dat_i <- dat_raw %>%
   incidence("date",
     interval = params$epicurve_unit,
@@ -333,13 +340,13 @@ dat_i <- dat_raw %>%
     groups = group_var
   )
 
-# general variables for automatic customisation of plots
+# This code creates general variables for automatic customisation of plots
 n_groups <- dplyr::n_distinct(get_groups(dat_i)[[1]])
 small_counts <- max(get_count_value(dat_i)) < 20
 ```
 
 ```{r}
-#Plot to visualise an epicurve with total cases of disease over time
+# Plot to visualise an epicurve with total cases of disease over time
 dat_i %>%
   plot(fill = group_var, angle = 45, colour_palette = muted) +
   labs(
@@ -347,7 +354,7 @@ dat_i %>%
 ```
 
 ```{r fig.height = 5 / 3 * n_groups}
-#Plot to generate epicurves stratified by group_var
+# Plot to generate epicurves stratified by group_var
 dat_i %>%
   plot(alpha = 1, nrow = n_groups) +
   labs(x = "", y = "Incidence")
@@ -358,6 +365,9 @@ dat_i %>%
 This graph shows the total number of cases per group:
 
 ```{r }
+# This code selects relevant variables in the weekly incidence dataset (dat_i),
+# group the incidence by variable specified by "group_var", and generate a plot
+# that shows the total number of cases, stratified by "group_var".
 total_cases <- dat_i %>%
   select(any_of(c(group_var, "count"))) %>%
   group_by(.data[[group_var]]) %>%
@@ -371,6 +381,9 @@ ggplot(total_cases, aes(x = cases, y = group_var)) +
   geom_col(fill = green_grey) +
   labs(x = "Total number of cases", y = NULL)
 
+# This code generates a table where total cases are shown, stratified by
+# "group_var", as well as the proportion of cases corresponding to each level
+# of "group_var".
 total_cases %>%
   mutate(
     percentage = sprintf("%.2f%%", cases / sum(cases) * 100)
@@ -399,6 +412,9 @@ obtained from a library of epidemiological parameters from the {epiparameter} R 
 ## Results
 
 ```{r, eval = params$use_epiparameter_database}
+# If params$use_epiparameter_database=TRUE, this code accesses the
+# {epiparameter} package library of epidemiological parameters to obtain a si
+# distribution for params$disease_name, and creates an `epidist` object.
 si_epidist <- epidist_db(
   disease =  params$disease_name,
   epi_dist =  "serial_interval",
@@ -413,6 +429,8 @@ si_sd <- si_params["sd"]
 ```
 
 ```{r, eval = !params$use_epiparameter_database}
+# If params$use_epiparameter_database=FALSE, this code takes the mean and sd for
+# the si provided by the user and creates an epidist object
 si_mean <- params$si_mean
 si_sd <- params$si_sd
 si_dist <- params$si_dist
@@ -429,11 +447,15 @@ si_epidist <- epidist(
 ```
 
 ```{r}
+# This code ensures that the si distribution is discretised, and formats the
+# si for plotting
 si <- discretise(si_epidist)
 si_x <- seq(quantile(si, 0.01), to = quantile(si, 0.999), by = 1L)
 ```
 
 ```{r}
+# Plot to visualise the si distribution for the disease of interest
+# (params$disease_name)
 ggplot(
   data.frame(delay = si_x, prob = si$prob_dist$d(si_x)),
   aes(x = delay, y = prob)
@@ -469,6 +491,8 @@ i_recent <- dat_raw %>%
 ```
 
 ```{r}
+# This code creates a dataset with daily incidence data, which is needed for
+# Rt estimation
 dat_i_day <- dat_raw %>%
   incidence("date",
     interval = 1L,
