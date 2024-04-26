@@ -332,7 +332,7 @@ Key variables included in this dataset that are used in this report's analyses i
 
 ## Epidemic curves
 
-This section creates epidemic curves ("_epicurves_"), with and without stratification by [name of chosen grouping variable].
+This section creates epidemic curves ("_epicurves_"), with and without stratification by `r group_var`.
 
 ```{r}
 # This code converts daily incidence into weekly incidence using {incidence2}
