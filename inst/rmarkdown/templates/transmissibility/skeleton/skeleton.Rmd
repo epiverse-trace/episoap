@@ -252,14 +252,6 @@ apt install libsodium-dev cmake
 
 ##  Importing the data
 
-To illustrate the different analyses, we use data reporting daily numbers of 
-[enter disease name] in [enter location] during [enter timeframe], 
-and is stratified by [enter region level]. 
-The data is available from [enter data source].
-
-The data file is named "*file_name.rds*" and is located in
-the *data/* folder.
-
 ```{r}
 # To adapt this report to another dataset, change the name of
 # the file in the `data_file` parameter at the top of this document.
