@@ -365,7 +365,7 @@ dat_i %>%
 
 ## Numbers of cases
 
-This graph shows the total number of cases per group:
+This section shows the total number of cases per `r group_var`, as a bar chart and as a table.
 
 ```{r }
 # This code selects relevant variables in the weekly incidence dataset (dat_i),
