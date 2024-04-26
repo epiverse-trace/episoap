@@ -282,7 +282,7 @@ dat_raw <- data_path %>%
   mutate(across(where(\(x) inherits(x, "POSIXct")), as.Date))
 ```
 
-Once imported into __R__, the dataset used in this report is named `dat_raw`, and contains the following variables:
+Data used in this report _are available to the reader at https://doi.org/10.1038/s41597-020-0448-0 _, and contains the following variables:
 
 ```{r}
 # This is what the data used in this report, `dat_raw`, looks like:
