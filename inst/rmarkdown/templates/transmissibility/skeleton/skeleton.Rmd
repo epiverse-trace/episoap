@@ -282,28 +282,19 @@ dat_raw <- data_path %>%
   mutate(across(where(\(x) inherits(x, "POSIXct")), as.Date))
 ```
 
-Once imported into __R__, the dataset called `dat_raw` includes:
-
-* `date`: the date of [enter description]
-* `group`: [enter description of grouping variable, e.g., region, age, gender]
-* `n`: number of new cases of [enter description]
+Once imported into __R__, the dataset used in this report is named `dat_raw`, and contains the following variables:
 
 ```{r}
-# This is what the data looks like:
-head(dat_raw)
+# This is what the data used in this report, `dat_raw`, looks like:
+knitr::kable(head(dat_raw),
+             align = "lccc"
+)
 ```
 
 ## Identifying key data
 
 __Note__: this is not used for now, as there is no integration of linelist with
 other existing tools.
-
-Here we identify the key data needed in the analyses, including:
-
-* the dates to be used, here, dates of hospital admission
-* the strata of the population, here, coarse geographic locations (NHS regions)
-* the case counts; this would not be needed if the data was a raw linelist, and
-  not already aggregated counts
 
 ```{r}
 # This code identifies key variables for analysis in the input dataset and,
@@ -315,6 +306,8 @@ group_var <- "region"
 # Update count_var to a character string with the name of the column that
 # contains case counts if your data is already aggregated.
 count_var <- NULL
+# Enter the geographical location where cases in your data took place
+country <- "the UK"
 
 dat <- dat_raw %>%
   make_linelist(
@@ -322,6 +315,18 @@ dat <- dat_raw %>%
     location = group_var
   )
 ```
+```{r, include=FALSE}
+min_date <- min(dat_raw$date)
+max_date <- max(dat_raw$date)
+```
+
+The data used in this report contains cases of `r params$disease_name` in `r country`, during a time period from `r min_date` to `r max_date`. Cases are stratified by `r group_var`.
+
+Key variables included in this dataset that are used in this report's analyses include:
+
+* the dates to be used, here, _dates of hospital admission._
+* the strata of the population, here _coarse geographic locations (NHS regions)._
+* the case data, here `r if (is.null(count_var)){"each case constitutes a row of the dataset."} else {"rows contain the number of cases on each date."}`
 
 # Descriptive analyses
 
