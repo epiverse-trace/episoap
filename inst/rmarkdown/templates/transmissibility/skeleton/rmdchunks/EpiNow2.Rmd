@@ -20,6 +20,8 @@ For more information on *Rt* and its interpretation, see [this paper by the Roya
 ### Results
 
 ```{r rt-wrappers-prep}
+# This code takes the serial interval distribution of params$disease_name and
+# uses it to approximate the disease's generation time
 generation_time <-  generation_time_opts(
   dist_spec(pmf = density(si, at = si_x))
 )
@@ -37,6 +39,8 @@ associated 95% credibility intervals
 after excluding the most recent time points in the dataset.
 
 ```{r rt-estim-global}
+# This code uses {EpiNow2}'s function `epinow()` to estimate Rt over time
+# from daily incidence data
 # Warning, this step will take 2 cores of your computer and may be running
 # for a long time!
 res_epinow2_global <- dat_i_day %>%
@@ -59,6 +63,7 @@ res_epinow2_global <- dat_i_day %>%
 ```
 
 ```{r rt-plot-global}
+# Plot of Rt values over time for global incidence data (without stratification)
 plot(res_epinow2_global, "R") +
   scale_x_date(breaks = scales::pretty_breaks(n = 8), date_label = "%d %b %Y") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
@@ -70,10 +75,8 @@ plot(res_epinow2_global, "R") +
 ```
 
 ```{r rt-table-global}
-#This code generates a table that contains Rt estimates for days in the
-#dataset (dat_i_day) with complete data, i.e., defined by the parameter
-#"params$r_estim_window"
-
+# This code generates a table that contains Rt estimates for the last
+# params$r_estim_window
 res_epinow2_global$estimates$summarised %>%
   dplyr::filter(variable == "R") %>%
   tail(params$r_estim_window) %>%
@@ -95,6 +98,10 @@ res_epinow2_global$estimates$summarised %>%
 #### Transmissibility by group
 
 ```{r rt-estim-group, message = FALSE}
+# This code uses {EpiNow2}'s function `epinow()` to estimate Rt over time
+# from daily incidence data, stratified by group_var
+# Warning, this step will take 2 cores of your computer and may be running
+# for a long time!
 res_epinow2_group <- dat_i_day %>%
   select("date_index", "region", "count") %>%
   dplyr::rename(
@@ -116,6 +123,7 @@ res_epinow2_group <- dat_i_day %>%
 ```
 
 ```{r rt-plot-group}
+# Plot of Rt estimates over time, stratified by group_var
 res_epinow2_group$summary$plots$R
 ```
 
@@ -124,6 +132,7 @@ res_epinow2_group$summary$plots$R
 ```
 
 ```{r rt-table-group}
+# This code generates a table with an overall estimate of Rt per group_var
 res_epinow2_group$summary$summarised_results$data %>%
   dplyr::filter(metric == "Effective reproduction no.") %>%
   dplyr::select(region, mean, median, lower_95, upper_95) %>%
