@@ -69,6 +69,8 @@ associated 95% credibility intervals
 * a table summarising these results for the last `r params$r_estim_window` days
 
 ```{r rt-estim-global}
+# This code uses the {EpiEstim} function `estimate_R` to generate an estimate of
+# the global Rt over time
 res_epiestim_global <- dat_i_day %>%
   regroup() %>%
   get_count_value() %>%
@@ -77,7 +79,7 @@ res_epiestim_global <- dat_i_day %>%
 ```
 
 ```{r rt-plot-global}
-# Graph of all values over time
+# Plot to visualise the global Rt over time
 ggplot(res_epiestim_global, aes(x = end)) +
   geom_ribbon(aes(ymin = lower, ymax = upper), fill = pale_green) +
   geom_line(aes(y = median), color = dark_green) +
@@ -91,7 +93,7 @@ ggplot(res_epiestim_global, aes(x = end)) +
 ```
 
 ```{r rt-table-global}
-# Table
+# This code generates a table with Rt values on the last params$r_estim_window
 res_epiestim_global %>%
   tail(params$r_estim_window) %>%
   mutate(
@@ -126,7 +128,7 @@ associated 95% credibility intervals
 * a table with the latest $R_t$ estimates per group, with associated 95% credibility intervals
 
 ```{r rt-estim-group}
-# Get results by group, keeping only the last 14 days of data
+# This code estimates Rt by group_var, keeping only the last 14 days of data
 res_epiestim_group <- dat_i_day %>%
   nest(data = c(get_date_index_name(.), get_count_value_name(.))) %>%
   mutate(
@@ -140,7 +142,7 @@ res_epiestim_group <- dat_i_day %>%
 ```
 
 ```{r rt-plot-group, fig.height = 5 / 3 * n_groups}
-# Graph of all values over time
+# Plot of Rt estimates for each group_var over time
 ggplot(res_epiestim_group, aes(x = end)) +
   geom_ribbon(aes(ymin = lower, ymax = upper), fill = pale_green) +
   geom_line(aes(y = median), color = dark_green) +
@@ -155,7 +157,7 @@ ggplot(res_epiestim_group, aes(x = end)) +
 ```
 
 ```{r rt-plot-estimates-group}
-# Plot of latest estimates
+# Plot of latest estimates of Rt for each group_var
 res_epiestim_group %>%
   filter(end == max(end)) %>%
   ggplot(aes(y = .data[[group_var]]), fill = custom_grey) +
@@ -174,6 +176,7 @@ res_epiestim_group %>%
 ```
 
 ```{r rt-table-group}
+# This code generates a table with the latest Rt estimates for each group_var
 res_epiestim_group %>%
   filter(end == max(end)) %>%
   mutate(
