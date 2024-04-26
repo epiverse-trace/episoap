@@ -1,6 +1,6 @@
 ---
 title: "Estimating transmissibility with population stratification"
-author: Thibaut Jombart, Hugo Gruson
+author: Thibaut Jombart, Hugo Gruson, Carmen Tamayo
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_document:
