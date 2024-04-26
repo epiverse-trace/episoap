@@ -185,7 +185,7 @@ res_epiestim_group %>%
       upper
     )
   ) %>%
-  dplyr::select(-c(sd, lower, upper)) %>%
+  dplyr::select(-c(sd, lower, upper, count_variable)) %>%
   rename(
     "mean $R$" = mean,
     "median $R$" = median
