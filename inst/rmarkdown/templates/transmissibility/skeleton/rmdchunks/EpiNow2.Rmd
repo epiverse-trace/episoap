@@ -97,6 +97,12 @@ res_epinow2_global$estimates$summarised %>%
 
 #### Transmissibility by group
 
+These analyses present results for stratified incidence, i.e., by `r group_var`. Results include:
+ 
+* a graph of the estimates of $R_t$ of the observed data over time, with associated 95% credibility intervals, stratified by `r group_var`
+
+* a table with $Rt$ estimates for each `r group_var`, excluding the most recent `r params$incomplete_days` days from the available data 
+
 ```{r rt-estim-group, message = FALSE}
 # This code uses {EpiNow2}'s function `epinow()` to estimate Rt over time
 # from daily incidence data, stratified by group_var
