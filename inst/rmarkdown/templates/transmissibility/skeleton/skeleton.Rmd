@@ -389,6 +389,7 @@ total_cases %>%
     percentage = sprintf("%.2f%%", cases / sum(cases) * 100)
   ) %>%
   adorn_totals() %>%
+  select(-group_var) %>%
   mutate(cases = format(cases, scientific = FALSE, big.mark = " ")) %>%
   set_names(toupper) %>%
   kbl() %>%
