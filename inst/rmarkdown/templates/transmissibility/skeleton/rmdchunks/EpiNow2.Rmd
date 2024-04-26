@@ -10,6 +10,13 @@ library(EpiNow2)
 
 ### Explanations
 
+The package *EpiNow2* is used to estimate the time-varying reproduction number, $Rt$, using a Bayesian inference method that requires data on observed infections, and an estimate of the generation time, which is approximated using the disease's serial interval distribution. $Rt$ estimates can be biased by reporting delays. For this reason, this report excludes the last `r params$incomplete_days` days included in the incidence data as incomplete,
+and retains a total of `r params$r_estim_window` days to estimate the time varying reproduction number.
+
+$Rt$ is defined as the average number of secondary cases that an infected individual would infect if
+conditions remained as they were at time _t_. It represents the transmission potential of a disease at a specified timepoint. Observing changes in $Rt$ provides valuable information about variations in transmissibility during an epidemic, and can be used to assess the effectiveness of control interventions aimed at reducing virus transmission. 
+For more information on *Rt* and its interpretation, see [this paper by the Royal Society](https://royalsociety.org/-/media/policy/projects/set-c/set-covid-19-R-estimates.pdf).
+
 ### Results
 
 ```{r rt-wrappers-prep}
