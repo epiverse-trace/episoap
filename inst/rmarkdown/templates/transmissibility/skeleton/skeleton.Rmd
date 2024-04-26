@@ -207,8 +207,6 @@ steps of the report include:
 knitr::include_graphics("transmissibility_pipeline.svg")
 ```
 
-# Data preparation
-
 ```{r, include=FALSE}
 #The following code loads required packages; missing packages will be installed
 #automatically, but will require a working internet connection for the
