@@ -285,9 +285,6 @@ knitr::kable(head(dat_raw),
 
 ## Identifying key data
 
-__Note__: this is not used for now, as there is no integration of linelist with
-other existing tools.
-
 ```{r}
 # This code identifies key variables for analysis in the input dataset and,
 # when working with a linelist, uses the package {linelist} to tag columns in
