@@ -102,6 +102,7 @@ last_trends %>%
     )
   ) %>%
   dplyr::select(
+    group_var,
     "Daily growth rate" = r,
     "Growth rate (95% CI)" = r_ci,
     "period type",
