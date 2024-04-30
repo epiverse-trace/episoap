@@ -37,13 +37,13 @@ For more information on growth rates, see this [blog post by Pr Julia Gog](https
 
 This section contains:
 
-* graphs showing the models fitted to epidemic curves, with their associated 95% confidence
+* graphs showing the models fitted to epidemic curves by `r group_var`, with their associated 95% confidence
 intervals (CI)
 
-* graphs showing the estimates of the growth rates ($r$) with their 95% CI
+* graphs showing the estimates of the growth rates ($r$) with their 95% CI for each `r group_var`
 
 * a table summarizing estimates of $r$ and the associated period (doubling or
-  halving time); all results show point estimates and their 95% CI
+  halving time) for each `r group_var`; all results show point estimates and their 95% CI
 
 ```{r fig.height = 5 / 3 * n_groups}
 # This code uses the {i2extras} function `fit_curve()` to fit a poisson model to
@@ -146,12 +146,12 @@ with the provided serial interval.
 This section contains:
 
 * a graph showing the distribution of $R$ values estimated from the daily growth
-  rates; each violin shows the density of values based on a sample of 500 from
+  rates by `r group_var`; each violin shows the density of values based on a sample of 500 from
   the Student distribution associated with the estimate of $r$; the line range
   represents the 95% confidence interval (horizontal segment) and the median
   (dot)
   
-* a table summarizing the estimated distributions of $R$ values 
+* a table summarizing the estimated distributions of $R$ values for each `r group_var`
 
 ```{r }
 # This code generates a violin plot that displays R values per group_var for the
