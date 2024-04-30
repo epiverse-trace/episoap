@@ -99,7 +99,7 @@ res_r0_global %>%
     "median $R$" = median
   ) %>%
   set_names(toupper) %>%
-  kbl() %>%
+  kbl(row.names = FALSE) %>%
   kable_paper("striped", font_size = 18, full_width = FALSE)
 ```
 
