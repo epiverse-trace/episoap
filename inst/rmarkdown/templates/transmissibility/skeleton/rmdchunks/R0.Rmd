@@ -141,7 +141,7 @@ res_r0_group %>%
 ```
 
 ```{r rt-plot-estimates-group}
-# Plot of latest estimates of Rt, defined by params$incompolete_days
+# Plot of latest estimates of Rt by group_var
 res_r0_group %>%
   na.omit() %>%
   filter(date_index == max(date_index)) %>%
@@ -161,8 +161,7 @@ res_r0_group %>%
 ```
 
 ```{r rt-table-group}
-# This code generates a table with latest estimates of Rt, defined by
-# params$incomplete_days
+# This code generates a table with latest estimates of Rt by group_var
 res_r0_group %>%
   na.omit() %>%
   filter(date_index == max(date_index)) %>%
