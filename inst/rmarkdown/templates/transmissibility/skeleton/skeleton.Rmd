@@ -467,22 +467,6 @@ ggplot(
 # Growth rate ($r$) and reproduction number ($R$)
 
 ```{r}
-last_date <- dat %>%
-  pull(date) %>%
-  max()
-
-# version using keep_first and keep_last from i2extras
-days_to_keep <- params$incomplete_days + params$r_estim_window
-i_recent <- dat_raw %>%
-  incidence("date",
-    counts = count_var,
-    groups = group_var
-  ) %>%
-  keep_last(days_to_keep) %>% # keep data for fitting
-  keep_first(params$r_estim_window) # remove incomplete data
-```
-
-```{r}
 # This code creates a dataset with daily incidence data, which is needed for
 # Rt estimation
 dat_i_day <- dat_raw %>%
