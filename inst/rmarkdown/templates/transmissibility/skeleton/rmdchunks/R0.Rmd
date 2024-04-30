@@ -10,6 +10,13 @@ library(R0)
 
 ### Explanations
 
+The package *R0* is used to estimate the effective, time-varying reproduction number, $Rt$, implementing a time-dependent method, described by [Wallinga and Teunis](https://academic.oup.com/aje/article/160/6/509/79472?login=false). This method requires incidence data and an estimate of the generation time, which here is approximated using the disease's serial interval distribution.
+$Rt$ estimates can be biased by reporting delays. For this reason, this report excludes the last `r params$incomplete_days` days included in the incidence data as incomplete.
+
+$Rt$ is defined as the average number of secondary cases that an infected individual would infect if
+conditions remained as they were at time _t_. It represents the transmission potential of a disease at a specified timepoint. Observing changes in $Rt$ provides valuable information about variations in transmissibility during an epidemic, and can be used to assess the effectiveness of control interventions aimed at reducing virus transmission. 
+For more information on *Rt* and its interpretation, see [this paper by the Royal Society](https://royalsociety.org/-/media/policy/projects/set-c/set-covid-19-R-estimates.pdf).
+
 ### Results
 
 ```{r rt-wrappers-prep}
