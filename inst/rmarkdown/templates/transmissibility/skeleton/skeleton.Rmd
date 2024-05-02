@@ -278,9 +278,9 @@ Data used in this report _are available to the reader at https://doi.org/10.1038
 
 ```{r}
 # This is what the data used in this report, `dat_raw`, looks like:
-knitr::kable(head(dat_raw),
-             align = "lccc"
-)
+head(dat_raw) %>%
+  kbl() %>%
+  kable_styling()
 ```
 
 ## Identifying key data
