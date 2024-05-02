@@ -305,8 +305,8 @@ dat <- dat_raw %>%
   )
 ```
 ```{r, include=FALSE}
-min_date <- min(dat_raw$date)
-max_date <- max(dat_raw$date)
+min_date <- min(dat_raw[[date_var]])
+max_date <- max(dat_raw[[date_var]])
 ```
 
 The data used in this report contains cases of `r params$disease_name` in `r country`, during a time period from `r min_date` to `r max_date`. Cases are stratified by `r group_var`.
