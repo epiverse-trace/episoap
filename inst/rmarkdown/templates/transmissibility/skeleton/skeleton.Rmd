@@ -203,11 +203,11 @@ steps of the report include:
 * estimating the growth rate and doubling time from epidemic curves
 * estimating the instantaneous reproduction number from epidemic curves
 
-```{r, include=FALSE}
+```{r}
 knitr::include_graphics("transmissibility_pipeline.svg")
 ```
 
-```{r, include=FALSE}
+```{r}
 #The following code loads required packages; missing packages will be installed
 #automatically, but will require a working internet connection for the
 #installation to be successful.
@@ -226,7 +226,7 @@ library(epiparameter)
 library(incidence2)
 ```
 
-```{r, include=FALSE}
+```{r}
 custom_grey <- "#505B5B"
 green_grey <- "#5E7E80"
 pale_green <- "#B2D1CC"
