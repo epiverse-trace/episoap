@@ -132,7 +132,7 @@ res_r0_group <- dat_i_day %>%
   )
 ```
 
-```{r rt-plot-group}
+```{r rt-plot-group, fig.height=15}
 # Plot of Rt estimates over time by group_var
 res_r0_group %>%
   na.omit() %>%
