@@ -50,9 +50,10 @@ run_pipeline <- function(
       package = "episoap",
       edit = FALSE
     )
-    rmarkdown::render(
-      paste0(r, ".Rmd"),
-      params = list(...)
+    # We run in a new session the prevent renv to leak in the user's environment
+    xfun::Rscript_call(
+      rmarkdown::render,
+      list(input = paste0(r, ".Rmd"), params = list(...))
     )
   }, character(1))
 

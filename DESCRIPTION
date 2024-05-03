@@ -18,7 +18,8 @@ BugReports: https://github.com/epiverse-trace/episoap/issues
 Imports: 
     renv (>= 0.13.0),
     rmarkdown,
-    withr
+    withr,
+    xfun
 Suggests: 
     knitr,
     spelling,
