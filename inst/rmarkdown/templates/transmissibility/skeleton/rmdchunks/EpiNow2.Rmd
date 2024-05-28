@@ -110,7 +110,7 @@ These analyses present results for stratified incidence, i.e., by `r group_var`.
 res_epinow2_group <- dat_i_day %>%
   select("date_index", "region", "count") %>%
   dplyr::rename(
-    confirm = .data[["count"]],
+    confirm = count,
     date    = date_index,
     region  = .data[[group_var]]
   ) %>%
