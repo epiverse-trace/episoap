@@ -203,11 +203,11 @@ steps of the report include:
 * estimating the growth rate and doubling time from epidemic curves
 * estimating the instantaneous reproduction number from epidemic curves
 
-```{r}
+```{r diplay-pipeline}
 knitr::include_graphics("transmissibility_pipeline.svg")
 ```
 
-```{r}
+```{r load-packages}
 #The following code loads required packages; missing packages will be installed
 #automatically, but will require a working internet connection for the
 #installation to be successful.
@@ -226,7 +226,7 @@ library(epiparameter)
 library(incidence2)
 ```
 
-```{r}
+```{r define-theme}
 custom_grey <- "#505B5B"
 green_grey <- "#5E7E80"
 pale_green <- "#B2D1CC"
@@ -252,7 +252,7 @@ apt install libsodium-dev cmake
 
 ##  Importing the data
 
-```{r}
+```{r define-data-path}
 # To adapt this report to another dataset, change the name of
 # the file in the `data_file` parameter at the top of this document.
 # Supported file types include .xlsx, .csv, and many others, please visit
@@ -261,7 +261,7 @@ apt install libsodium-dev cmake
 data_path <- params$data_file
 ```
 
-```{r}
+```{r import-data}
 # This code imports the input dataset from the data path specified by the user
 # (params$data_path)
 dat_raw <- data_path %>%
@@ -276,7 +276,7 @@ dat_raw <- data_path %>%
 
 Data used in this report _are available to the reader at https://doi.org/10.1038/s41597-020-0448-0 _, and contains the following variables:
 
-```{r}
+```{r preview-data}
 # This is what the data used in this report, `dat_raw`, looks like:
 head(dat_raw) %>%
   kbl() %>%
@@ -285,7 +285,7 @@ head(dat_raw) %>%
 
 ## Identifying key data
 
-```{r}
+```{r define-key-variables}
 # This code identifies key variables for analysis in the input dataset and,
 # when working with a linelist, uses the package {linelist} to tag columns in
 # the dataset that correspond to these key variables.
@@ -304,7 +304,8 @@ dat <- dat_raw %>%
     location = group_var
   )
 ```
-```{r, include=FALSE}
+
+```{r compute-date-range, include=FALSE}
 min_date <- min(dat_raw[[date_var]])
 max_date <- max(dat_raw[[date_var]])
 ```
@@ -323,7 +324,7 @@ Key variables included in this dataset that are used in this report's analyses i
 
 This section creates epidemic curves ("_epicurves_"), with and without stratification by `r group_var`.
 
-```{r}
+```{r convert-incidence}
 # This code converts daily incidence into weekly incidence using {incidence2}
 dat_i <- dat_raw %>%
   incidence("date",
@@ -337,7 +338,7 @@ n_groups <- dplyr::n_distinct(get_groups(dat_i)[[1]])
 small_counts <- max(get_count_value(dat_i)) < 20
 ```
 
-```{r}
+```{r display-epicurves}
 # Plot to visualise an epicurve with total cases of disease over time
 dat_i %>%
   plot(fill = group_var, angle = 45, colour_palette = muted) +
@@ -345,7 +346,7 @@ dat_i %>%
     title = "Weekly incidence of disease cases", x = "", y = "Incidence")
 ```
 
-```{r fig.height = 5 / 3 * n_groups}
+```{r display-stratified-epicurves, fig.height = 5 / 3 * n_groups}
 # Plot to generate epicurves stratified by group_var
 dat_i %>%
   plot(alpha = 1, nrow = n_groups) +
@@ -356,7 +357,7 @@ dat_i %>%
 
 This section shows the total number of cases per `r group_var`, as a bar chart and as a table.
 
-```{r }
+```{r display-total-cases}
 # This code selects relevant variables in the weekly incidence dataset (dat_i),
 # group the incidence by variable specified by "group_var", and generate a plot
 # that shows the total number of cases, stratified by "group_var".
@@ -403,7 +404,7 @@ In this report, the mean and standard deviation of the $si$ have been `r ifelse(
 
 ## Results
 
-```{r, eval = params$use_epiparameter_database}
+```{r define-si-epiparameter, eval = params$use_epiparameter_database}
 # If params$use_epiparameter_database=TRUE, this code accesses the
 # {epiparameter} package library of epidemiological parameters to obtain a si
 # distribution for params$disease_name, and creates an `epidist` object.
@@ -420,7 +421,7 @@ si_mean <- si_params["mean"]
 si_sd <- si_params["sd"]
 ```
 
-```{r, eval = !params$use_epiparameter_database}
+```{r define-si, eval = !params$use_epiparameter_database}
 # If params$use_epiparameter_database=FALSE, this code takes the mean and sd for
 # the si provided by the user and creates an epidist object
 si_mean <- params$si_mean
@@ -438,14 +439,14 @@ si_epidist <- epidist(
 )
 ```
 
-```{r}
+```{r discretise-si}
 # This code ensures that the si distribution is discretised, and formats the
 # si for plotting
 si <- discretise(si_epidist)
 si_x <- seq(quantile(si, 0.01), to = quantile(si, 0.999), by = 1L)
 ```
 
-```{r}
+```{r display-si}
 # Plot to visualise the si distribution for the disease of interest
 # (params$disease_name)
 ggplot(
@@ -466,7 +467,7 @@ ggplot(
 
 # Growth rate ($r$) and reproduction number ($R$)
 
-```{r}
+```{r truncate-incidence}
 # This code creates a dataset with daily incidence data, which is needed for
 # Rt estimation
 dat_i_day <- dat_raw %>%
@@ -478,10 +479,10 @@ dat_i_day <- dat_raw %>%
   keep_first(n_distinct(.$date_index) - params$incomplete_days)
 ```
 
-```{r, child=paste0("rmdchunks/", params$rt_estimator, ".Rmd")}
+```{r estimate-rt, child=paste0("rmdchunks/", params$rt_estimator, ".Rmd")}
 ```
 
-```{r}
+```{r cite-packages}
 cite_packages(output = "paragraph", out.dir = ".", pkgs = "Session")
 ```
 
