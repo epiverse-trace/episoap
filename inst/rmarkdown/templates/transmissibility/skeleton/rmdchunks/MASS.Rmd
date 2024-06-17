@@ -1,5 +1,3 @@
-## _i2extras_
-
 ```{r lockfile-rt, include = FALSE, message = FALSE}
 renv::use(
   "epitrix@0.4.0",

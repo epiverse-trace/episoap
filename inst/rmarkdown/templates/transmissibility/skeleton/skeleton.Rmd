@@ -41,7 +41,7 @@ params:
   rt_estimator: 
     label: "Which R package to use for Rt estimation"
     value: "EpiEstim"
-    choices: ["EpiEstim", "EpiNow2", "i2extras", "R0"]
+    choices: ["EpiEstim", "EpiNow2", "MASS", "R0"]
 bibliography: 
   - grateful-refs.bib
 ---
@@ -468,6 +468,8 @@ dat_i_day <- dat_raw %>%
   ) %>%
   keep_first(n_distinct(.$date_index) - params$incomplete_days)
 ```
+
+## _`r params$rt_estimator`_
 
 ```{r estimate-rt, child=paste0("rmdchunks/", params$rt_estimator, ".Rmd")}
 ```
