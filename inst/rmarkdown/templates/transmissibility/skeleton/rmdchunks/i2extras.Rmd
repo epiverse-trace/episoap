@@ -2,23 +2,18 @@
 
 ```{r lockfile-rt, include = FALSE, message = FALSE}
 renv::use(
-  "i2extras@0.2.1",
   "epitrix@0.4.0",
-  "sodium@1.3.1" # requires the libsodium system dependency
+  "sodium@1.3.1", # requires the libsodium system dependency
+  "ciTools@0.6.1"
 )
-```
-
-```{r rt-load-pkg}
-library(i2extras)
 ```
 
 ### Explanations
 
-The package *i2extras* is used to estimate daily growth rates '_r_', using Poisson
-GLMs fitted to epidemic curves. These estimates can be biased by reporting
-delays. Here, we exclude the last `r params$incomplete_days` days as incomplete,
-and retain a total of `r params$r_estim_window` days to estimate the growth
-rate.
+We fit negative binomials GLMs to epidemic curves to estimate daily growth rates
+'_r_'. These estimates can be biased by reporting delays. Here, we exclude the
+last `r params$incomplete_days` days as incomplete, and retain a total of 
+`r params$r_estim_window` days to estimate the growth rate.
 
 Growth rates can be interpreted as the percent change in daily
 incidence. Positive numbers indicate growth, while negative numbers indicate a
@@ -46,32 +41,62 @@ intervals (CI)
   halving time) for each `r group_var`; all results show point estimates and their 95% CI
 
 ```{r fig.height = 5 / 3 * n_groups}
-# This code uses the {i2extras} function `fit_curve()` to fit a poisson model to
-# the epicurves by group_var that represent incidence data for cases included in
-# params$data_file
 last_counts <- dat_i_day %>%
   keep_last(params$r_estim_window + params$incomplete_days)
 
 last_trends <- last_counts  %>%
-  fit_curve(model = "poisson")
-# version with negbin model needs more iterations to converge
-# fit_curve(model = "negbin", control = glm.control(maxit = 1e3))
-plot(last_trends,
-  angle = 45,
-  date_format = "%d %b %y",
-  alpha = 0.8,
-  n_breaks = 12,
-  nrow = n_groups,
-  show_cases = small_counts
-)
+  nest(.key = "data") %>%
+  mutate(model = lapply(data, function(d) {
+    MASS::glm.nb(count ~ date_index, d, control = glm.control(maxit = 1e3))
+  })) 
+
+intervals <- last_trends %>%
+  mutate(result = Map(
+    function(data, model) {
+      data %>%
+        ciTools::add_ci(model, alpha = 0.05, names = c("lower_ci", "upper_ci")) %>%
+        ciTools::add_pi(model, alpha = 0.05, names = c("lower_pi", "upper_pi")) %>%
+        as_tibble()
+    },
+    data,
+    model
+  )) %>%
+  dplyr::select(any_of(c(group_var, "result"))) %>%
+  unnest(result)
+
+plot(last_counts, angle = 45) + 
+  geom_line(
+    aes(date_index, y = pred),
+    data = intervals,
+    inherit.aes = FALSE
+  ) +
+  geom_ribbon(
+    aes(date_index, ymin = lower_pi, ymax = upper_pi),
+    alpha = 0.2,
+    data = intervals,
+    inherit.aes = FALSE,
+    fill = "#BBB67E"
+  )
 ```
 
 ```{r}
-# This code uses the {i2extras} function `growth_rate()` to estimate and plot
-# growth rates for the last params$r_estim_window + params$incomplete_days days
-# included in params$data_file
-last_trends %>%
-  growth_rate() %>%
+growth_rates <- last_trends %>%
+  mutate(
+    growth = bind_rows(lapply(
+      model,
+      function(m) {
+        ci <- confint(m, 2L, level = 0.95)
+        tibble(r_lower = ci[1L], r = coef(m)[2L], r_upper = ci[2L])
+      }
+    ))
+  ) %>%
+  unpack(growth)
+
+message(colnames(growth_rates))
+growth_rates <- growth_rates %>% 
+  dplyr::select(all_of(c(group_var, "r", "r_lower", "r_upper")))
+
+growth_rates %>%
   ggplot(aes(y = .data[[group_var]]), fill = custom_grey) +
   geom_point(aes(x = r), color = dark_green) +
   geom_errorbar(aes(xmin = r_lower, xmax = r_upper), color = dark_green) +
@@ -91,32 +116,19 @@ last_trends %>%
 # This code generates a table where estimated growth rates and doubling/halving
 # times are displayed per group_var over the last params$r_estim_window +
 # params$incomplete_days days included in params$data_file
-last_trends %>%
-  growth_rate() %>%
-  dplyr::select(-c(1, 3)) %>%
-  rename(period = growth_or_decay) %>%
+growth_rates %>%
   mutate(
-    "period type" = paste(period, "time"),
     r = paste(round(r * 100, 1), "%"),
     r_ci = sprintf(
       "[%1.1f %% ; %1.1f %% ]",
       r_lower * 100,
       r_upper * 100
-    ),
-    time = round(time, 1),
-    time_ci = sprintf(
-      "[%.1f ; %.1f]",
-      time_lower,
-      time_upper
     )
   ) %>%
   dplyr::select(
     group_var,
     "Daily growth rate" = r,
-    "Growth rate (95% CI)" = r_ci,
-    "period type",
-    "Duration (days)" = time,
-    "Duration (95% CI)" = time_ci
+    "Growth rate (95% CI)" = r_ci
   ) %>%
   set_names(toupper) %>%
   kbl() %>%
