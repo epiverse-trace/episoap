@@ -46,14 +46,14 @@ last_trends <- last_counts  %>%
   nest(.key = "data") %>%
   mutate(model = lapply(data, function(d) {
     MASS::glm.nb(count ~ date_index, d, control = glm.control(maxit = 1e3))
-  })) 
+  }))
 
 intervals <- last_trends %>%
   mutate(result = Map(
     function(data, model) {
       data %>%
-        ciTools::add_ci(model, alpha = 0.05, names = c("lower_ci", "upper_ci")) %>%
-        ciTools::add_pi(model, alpha = 0.05, names = c("lower_pi", "upper_pi")) %>%
+        ciTools::add_ci(model, names = c("lower_ci", "upper_ci")) %>%
+        ciTools::add_pi(model, names = c("lower_pi", "upper_pi")) %>%
         as_tibble()
     },
     data,
@@ -62,7 +62,7 @@ intervals <- last_trends %>%
   dplyr::select(any_of(c(group_var, "result"))) %>%
   unnest(result)
 
-plot(last_counts, angle = 45) + 
+plot(last_counts, angle = 45) +
   geom_line(
     aes(date_index, y = pred),
     data = intervals,
@@ -91,7 +91,7 @@ growth_rates <- last_trends %>%
   unpack(growth)
 
 message(colnames(growth_rates))
-growth_rates <- growth_rates %>% 
+growth_rates <- growth_rates %>%
   dplyr::select(all_of(c(group_var, "r", "r_lower", "r_upper")))
 
 growth_rates %>%
