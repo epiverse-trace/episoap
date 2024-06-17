@@ -1,5 +1,3 @@
-## _EpiNow2_ 
-
 ```{r lockfile-rt, include = FALSE, message = FALSE}
 renv::use("EpiNow2@1.4.0")
 ```

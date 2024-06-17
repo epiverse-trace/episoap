@@ -1,5 +1,3 @@
-## _R0_
-
 ```{r lockfile-rt, include = FALSE, message = FALSE}
 renv::use("R0@1.3-1")
 ```
