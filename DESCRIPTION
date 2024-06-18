@@ -6,6 +6,7 @@ Authors@R: c(
            comment = c(ORCID = "0000-0002-4094-1476")),
     person("Thibaut", "Jombart", role = "aut"),
     person("Carmen", "Tamayo", role = "aut", comment = c(ORCID = "0000-0003-4184-2864")),
+    person("Karim", "Mané", role = "aut", comment = c(ORCID = "0000-0002-9892-2999")),
     person("data.org", role = "fnd")
   )
 Description: A store of outbreak analytics pipelines using different
@@ -16,7 +17,9 @@ URL: https://epiverse-trace.github.io/episoap,
 BugReports: https://github.com/epiverse-trace/episoap/issues
 Imports: 
     renv (>= 0.13.0),
-    rmarkdown
+    rmarkdown,
+    withr,
+    xfun
 Suggests: 
     knitr,
     spelling,

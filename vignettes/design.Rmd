@@ -16,6 +16,15 @@ knitr::opts_chunk$set(
 
 As always during software development, we were faced with tough design choices while developing this package. We want to clearly document which choices were made, and what are the reasons behind them.
 
+## Report parameters
+
+### Names
+
+As much as possible, parameter names should be re-used across reports. This allows us to:
+
+- provide a consistent user experience
+- pass a common set of arguments in a potential wrapper function that would render multiple reports at once
+
 ## Package and version management
 
 Breaking changes during R package updates in one of the major sources of non-[reproducibility](https://cran.r-project.org/web/views/ReproducibleResearch.html) and of headaches for R users of all levels. To guard users against this, but also to ensure that the provided templates work out of the box, throughout the time a given `{episoap}` version is on CRAN, we [pin specific versions for our dependencies](https://cloud.google.com/blog/topics/developers-practitioners/best-practices-dependency-management), via `{renv}`.
