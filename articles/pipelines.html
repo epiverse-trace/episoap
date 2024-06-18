@@ -147,29 +147,19 @@ params:
   rt_estimator: 
     label: "Which R package to use for Rt estimation"
     value: "EpiEstim"
-    choices: ["EpiEstim", "EpiNow2", "i2extras", "R0"]
+    choices: ["EpiEstim", "EpiNow2", "MASS", "R0"]
 bibliography: 
   - grateful-refs.bib
 ---
 
 ```{r lockfile, include = FALSE, message = FALSE}
 renv::use(
-  "MASS@7.3-59",
-  "Matrix@1.6-3",
-  "R.methodsS3@1.8.2",
-  "R.oo@1.25.0",
-  "R.utils@2.12.3",
-  "R6@2.5.1",
-  "RColorBrewer@1.1-3",
-  "Rcpp@1.0.12",
-  "askpass@1.2.0",
-  "backports@1.4.1",
+  "backports@1.5.0",
   "base64enc@0.1-3",
-  "bit64@4.0.5",
   "bit@4.0.5",
-  "bslib@0.6.1",
-  "cachem@1.0.8",
-  "callr@3.7.5",
+  "bit64@4.0.5",
+  "bslib@0.7.0",
+  "cachem@1.1.0",
   "cellranger@1.1.0",
   "checkmate@2.3.1",
   "cli@3.6.2",
@@ -179,101 +169,101 @@ renv::use(
   "cpp11@0.4.7",
   "crayon@1.5.2",
   "curl@5.2.1",
-  "data.table@1.14.8",
+  "data.table@1.15.4",
   "digest@0.6.35",
   "distcrete@1.0.3",
-  "distributional@0.3.2",
+  "distributional@0.4.0",
   "dplyr@1.1.4",
-  "ellipsis@0.3.2",
   "epiverse-trace/epiparameter@328706e", # nolint 
-  "evaluate@0.23",
+  "evaluate@0.24.0",
   "fansi@1.0.6",
-  "farver@2.1.1",
-  "fastmap@1.1.1",
+  "farver@2.1.2",
+  "fastmap@1.2.0",
   "fontawesome@0.5.2",
   "forcats@1.0.0",
   "foreign@0.8-86",
-  "fs@1.6.3",
+  "fs@1.6.4",
   "generics@0.1.3",
-  "ggplot2@3.5.0",
+  "ggplot2@3.5.1",
   "glue@1.7.0",
   "grateful@0.2.4",
-  "grates@1.1.0",
-  "gtable@0.3.4",
+  "grates@1.2.1",
+  "gtable@0.3.5",
   "haven@2.5.4",
-  "highr@0.10",
+  "highr@0.11",
   "hms@1.1.3",
-  "htmltools@0.5.7",
-  "httpuv@1.6.14",
-  "httr@1.4.7",
-  "incidence2@2.2.3",
+  "htmltools@0.5.8.1",
+  "httpuv@1.6.15",
+  "incidence2@2.3.1",
   "isoband@0.2.7",
   "janitor@2.2.0",
   "jquerylib@0.1.4",
   "jsonlite@1.8.8",
-  "kableExtra@1.3.4",
-  "knitr@1.45",
+  "kableExtra@1.4.0",
+  "knitr@1.47",
   "labeling@0.4.3",
   "later@1.3.2",
-  "lattice@0.21-8",
+  "lattice@0.22-6",
   "lifecycle@1.0.4",
-  "linelist@1.1.0",
+  "linelist@1.1.3",
   "lubridate@1.9.3",
   "magrittr@2.0.3",
+  "MASS@7.3-61",
+  "Matrix@1.7-0",
   "memoise@2.0.1",
   "mgcv@1.9-1",
   "mime@0.12",
-  "munsell@0.5.0",
-  "nlme@3.1-163",
+  "munsell@0.5.1",
+  "nlme@3.1-164",
   "numDeriv@2016.8-1.1",
-  "openssl@2.1.1",
   "pillar@1.9.0",
   "pkgconfig@2.0.3",
   "prettyunits@1.2.0",
-  "processx@3.8.4",
   "progress@1.2.3",
-  "promises@1.2.1",
-  "ps@1.7.6",
+  "promises@1.3.0",
   "purrr@1.0.2",
+  "R.methodsS3@1.8.2",
+  "R.oo@1.26.0",
+  "R.utils@2.12.3",
+  "R6@2.5.1",
   "rappdirs@0.3.3",
-  "readr@2.1.4",
+  "RColorBrewer@1.1-3",
+  "Rcpp@1.0.12",
+  "readr@2.1.5",
   "readxl@1.4.3",
   "rematch@2.0.0",
-  "remotes@2.4.2.1",
-  "renv@1.0.3",
-  "rio@1.0.1",
-  "rlang@1.1.3",
-  "rmarkdown@2.26",
-  "rstudioapi@0.15.0",
-  "rvest@1.0.4",
+  "remotes@2.5.0",
+  "renv@1.0.7",
+  "rio@1.1.1",
+  "rlang@1.1.4",
+  "rmarkdown@2.27",
+  "rstudioapi@0.16.0",
   "sass@0.4.9",
   "scales@1.3.0",
-  "selectr@0.4-2",
-  "shiny@1.8.0",
+  "shiny@1.8.1.1",
   "showtext@0.9-7",
+  "showtextdb@3.0",
   "snakecase@0.11.1",
   "sourcetools@0.1.7-1",
-  "stringi@1.8.3",
+  "stringi@1.8.4",
   "stringr@1.5.1",
   "svglite@2.1.3",
-  "sys@3.4.2",
   "sysfonts@0.8.9",
-  "systemfonts@1.0.6",
+  "systemfonts@1.1.0",
   "tibble@3.2.1",
-  "tidyr@1.3.0",
-  "tidyselect@1.2.0",
-  "timechange@0.2.0",
-  "tinytex@0.50",
+  "tidyr@1.3.1",
+  "tidyselect@1.2.1",
+  "timechange@0.3.0",
+  "tinytex@0.51",
   "epiverse-trace/tracetheme@v0.1.0", # nolint
   "tzdb@0.4.0",
   "utf8@1.2.4",
   "vctrs@0.6.5",
   "viridisLite@0.4.2",
   "vroom@1.6.5",
-  "webshot@0.5.5",
   "withr@3.0.0",
-  "writexl@1.4.2",
-  "xfun@0.42",
+  "writexl@1.5.0",
+  "xfun@0.44",
   "xml2@1.3.6",
   "xtable@1.8-4",
   "yaml@2.3.8"
@@ -309,11 +299,11 @@ steps of the report include:
 * estimating the growth rate and doubling time from epidemic curves
 * estimating the instantaneous reproduction number from epidemic curves
 
-```{r}
+```{r diplay-pipeline}
 knitr::include_graphics("transmissibility_pipeline.svg")
 ```
 
-```{r}
+```{r load-packages}
 #The following code loads required packages; missing packages will be installed
 #automatically, but will require a working internet connection for the
 #installation to be successful.
@@ -332,7 +322,7 @@ library(epiparameter)
 library(incidence2)
 ```
 
-```{r}
+```{r define-theme}
 custom_grey &lt;- "#505B5B"
 green_grey &lt;- "#5E7E80"
 pale_green &lt;- "#B2D1CC"
@@ -358,7 +348,7 @@ apt install libsodium-dev cmake
 
 ##  Importing the data
 
-```{r}
+```{r define-data-path}
 # To adapt this report to another dataset, change the name of
 # the file in the `data_file` parameter at the top of this document.
 # Supported file types include .xlsx, .csv, and many others, please visit
@@ -367,7 +357,7 @@ apt install libsodium-dev cmake
 data_path &lt;- params$data_file
 ```
 
-```{r}
+```{r import-data}
 # This code imports the input dataset from the data path specified by the user
 # (params$data_path)
 dat_raw &lt;- data_path %&gt;%
@@ -382,7 +372,7 @@ dat_raw &lt;- data_path %&gt;%
 
 Data used in this report _are available to the reader at https://doi.org/10.1038/s41597-020-0448-0 _, and contains the following variables:
 
-```{r}
+```{r preview-data}
 # This is what the data used in this report, `dat_raw`, looks like:
 head(dat_raw) %&gt;%
   kbl() %&gt;%
@@ -391,7 +381,7 @@ head(dat_raw) %&gt;%
 
 ## Identifying key data
 
-```{r}
+```{r define-key-variables}
 # This code identifies key variables for analysis in the input dataset and,
 # when working with a linelist, uses the package {linelist} to tag columns in
 # the dataset that correspond to these key variables.
@@ -410,7 +400,8 @@ dat &lt;- dat_raw %&gt;%
     location = group_var
   )
 ```
-```{r, include=FALSE}
+
+```{r compute-date-range, include=FALSE}
 min_date &lt;- min(dat_raw[[date_var]])
 max_date &lt;- max(dat_raw[[date_var]])
 ```
@@ -429,7 +420,7 @@ Key variables included in this dataset that are used in this report's analyses i
 
 This section creates epidemic curves ("_epicurves_"), with and without stratification by `r group_var`.
 
-```{r}
+```{r convert-incidence}
 # This code converts daily incidence into weekly incidence using {incidence2}
 dat_i &lt;- dat_raw %&gt;%
   incidence("date",
@@ -443,7 +434,7 @@ n_groups &lt;- dplyr::n_distinct(get_groups(dat_i)[[1]])
 small_counts &lt;- max(get_count_value(dat_i)) &lt; 20
 ```
 
-```{r}
+```{r display-epicurves}
 # Plot to visualise an epicurve with total cases of disease over time
 dat_i %&gt;%
   plot(fill = group_var, angle = 45, colour_palette = muted) +
@@ -451,7 +442,7 @@ dat_i %&gt;%
     title = "Weekly incidence of disease cases", x = "", y = "Incidence")
 ```
 
-```{r fig.height = 5 / 3 * n_groups}
+```{r display-stratified-epicurves, fig.height = 5 / 3 * n_groups}
 # Plot to generate epicurves stratified by group_var
 dat_i %&gt;%
   plot(alpha = 1, nrow = n_groups) +
@@ -462,7 +453,7 @@ dat_i %&gt;%
 
 This section shows the total number of cases per `r group_var`, as a bar chart and as a table.
 
-```{r }
+```{r display-total-cases}
 # This code selects relevant variables in the weekly incidence dataset (dat_i),
 # group the incidence by variable specified by "group_var", and generate a plot
 # that shows the total number of cases, stratified by "group_var".
@@ -509,7 +500,7 @@ In this report, the mean and standard deviation of the $si$ have been `r ifelse(
 
 ## Results
 
-```{r, eval = params$use_epiparameter_database}
+```{r define-si-epiparameter, eval = params$use_epiparameter_database}
 # If params$use_epiparameter_database=TRUE, this code accesses the
 # {epiparameter} package library of epidemiological parameters to obtain a si
 # distribution for params$disease_name, and creates an `epidist` object.
@@ -526,7 +517,7 @@ si_mean &lt;- si_params["mean"]
 si_sd &lt;- si_params["sd"]
 ```
 
-```{r, eval = !params$use_epiparameter_database}
+```{r define-si, eval = !params$use_epiparameter_database}
 # If params$use_epiparameter_database=FALSE, this code takes the mean and sd for
 # the si provided by the user and creates an epidist object
 si_mean &lt;- params$si_mean
@@ -544,14 +535,14 @@ si_epidist &lt;- epidist(
 )
 ```
 
-```{r}
+```{r discretise-si}
 # This code ensures that the si distribution is discretised, and formats the
 # si for plotting
 si &lt;- discretise(si_epidist)
 si_x &lt;- seq(quantile(si, 0.01), to = quantile(si, 0.999), by = 1L)
 ```
 
-```{r}
+```{r display-si}
 # Plot to visualise the si distribution for the disease of interest
 # (params$disease_name)
 ggplot(
@@ -572,7 +563,7 @@ ggplot(
 
 # Growth rate ($r$) and reproduction number ($R$)
 
-```{r}
+```{r truncate-incidence}
 # This code creates a dataset with daily incidence data, which is needed for
 # Rt estimation
 dat_i_day &lt;- dat_raw %&gt;%
@@ -584,10 +575,12 @@ dat_i_day &lt;- dat_raw %&gt;%
   keep_first(n_distinct(.$date_index) - params$incomplete_days)
 ```
 
-```{r, child=paste0("rmdchunks/", params$rt_estimator, ".Rmd")}
+## _`r params$rt_estimator`_
+
+```{r estimate-rt, child=paste0("rmdchunks/", params$rt_estimator, ".Rmd")}
 ```
 
-```{r}
+```{r cite-packages}
 cite_packages(output = "paragraph", out.dir = ".", pkgs = "Session")
 ```</code></pre>
 </div>
