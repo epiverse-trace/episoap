@@ -20,10 +20,6 @@ decline of the epidemic. For instance:
 * $r = 0.02$ means that the number of new cases increases on average by 2% each day
 * $r = -0.13$ means that the number of new cases decreases on average by 13% each day
 
-Growth rates can also be converted to _doubling times_ (when $r > 0$) or
-_halving times_ (when $r < 0$), defined as the time it takes for the daily
-incidence to double (respectively, halve).
-
 For more information on growth rates, see this [blog post by Pr Julia Gog](https://plus.maths.org/content/epidemic-growth-rate).
 
 ### Results
