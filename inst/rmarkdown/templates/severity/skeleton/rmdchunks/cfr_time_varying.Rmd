@@ -1,0 +1,25 @@
+
+```{r, eval=params$data_columns != "Dates of onset and total deaths only"}
+cfr_rolling <- cfr_rolling(
+  data = data_for_cfr
+)
+
+ggplot(cfr_rolling) +
+  geom_ribbon(
+    aes(
+      x = date, ymin = severity_low, ymax = severity_high,
+    ),
+    alpha = 0.5,
+    fill = pale_green
+  ) +
+  geom_line(
+    aes(
+      x = date, y = severity_estimate
+    ),
+    color = dark_green
+  ) +
+  labs(
+    x = "Date", y = "CFR"
+  ) +
+  theme_classic()
+```
