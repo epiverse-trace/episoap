@@ -1,0 +1,65 @@
+## Identifying key data
+
+```{r define-key-variables, eval= params$data_columns == "Dates of onset and total deaths only", echo= params$data_columns == "Dates of onset and total deaths only"}
+# This code identifies key variables for analysis in the input dataset.
+group_var <- "Occupation"
+# Leave count_var as NULL if your data is really a linelist/patient-level data.
+# Update count_var to a character string with the name of the column that
+# contains case counts if your data is already aggregated.
+count_var <- NULL
+# Enter the geographical location where cases in your data took place
+country <- "Equatorial Guinea"
+cases <- "Onset_week"
+# Leave the parameter deaths below as it is if your data does not contain death dates
+deaths <- "deaths"
+# How many deaths in total are there in your data?
+total_fatalities <- 20
+```
+
+```{r define-key-variables2, eval= params$data_columns == "Dates of onset and death", echo= params$data_columns == "Dates of onset and death"}
+# This code identifies key variables for analysis in the input dataset.
+group_var <- "Occupation"
+# Leave count_var as NULL if your data is really a linelist/patient-level data.
+# Update count_var to a character string with the name of the column that
+# contains case counts if your data is already aggregated.
+count_var <- NULL
+# Enter the geographical location where cases in your data took place
+country <- "Equatorial Guinea"
+cases <- "Onset_week"
+deaths <- "Death_week"
+```
+
+
+```{r define-key-variables3, eval= params$data_columns == "Dates of onset and whether case died", echo= params$data_columns == "Dates of onset and whether case died"}
+# This code identifies key variables for analysis in the input dataset.
+group_var <- "transmission"
+# Leave count_var as NULL if your data is really a linelist/patient-level data.
+# Update count_var to a character string with the name of the column that
+# contains case counts if your data is already aggregated.
+count_var <- NULL
+# Enter the geographical location where cases in your data took place
+country <- "Equatorial Guinea"
+cases <- "disease_onset"
+# Indicate which column provides the date of outcome of the case
+outcome_date <- "disease_ended"
+# Indicate the column containing the case's outcome, e.g., "died" or "recovered"
+outcome_type <- "status"
+
+dat_raw <- dat_raw %>%
+  mutate(deaths = if_else(dat_raw[[outcome_type]] == "died", dat_raw[[outcome_date]], NA))
+
+deaths <- "deaths"
+```
+
+```{r compute-date-range, include=FALSE}
+min_date <- min(dat_raw[[cases]], na.rm = TRUE)
+max_date <- max(dat_raw[[cases]], na.rm = TRUE)
+```
+
+The data used in this report contains cases of `r params$disease_name` in `r country`, during a time period from `r min_date` to `r max_date`. Cases are stratified by `r group_var`.
+
+Key variables included in this dataset that are used in this report's analyses include:
+
+* the dates to be used, here, `r if (params$data_columns == "Dates of onset and total deaths only") {"dates of disease onset."} else {"dates of disease onset and death."}`
+* the strata of the population, here by `r group_var`.
+* the case data, here `r if (is.null(count_var)){"each case constitutes a row of the dataset."} else {"rows contain the number of cases on each date."}`
