@@ -11,7 +11,7 @@ count_var <- NULL
 country <- "Equatorial Guinea"
 cases <- "Onset_week"
 # Leave the parameter deaths below as it is if your data does not contain death dates
-deaths <- "deaths"
+deaths <- NULL
 # How many deaths in total are there in your data?
 total_fatalities <- 20
 ```
