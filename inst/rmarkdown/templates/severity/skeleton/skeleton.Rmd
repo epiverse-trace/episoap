@@ -290,7 +290,9 @@ knitr::kable(cfr_table, caption = "Case Fatality Risk (CFR) with Confidence Inte
 ```{r, eval=params$data_columns != "Dates of onset and total deaths only", child=paste0("rmdchunks/cfr_time_varying.Rmd")}
 ```
 
- 
+```{r}
+grateful::cite_packages(output = "paragraph", out.dir = ".", pkgs = "Session")
+```
 
 
 
