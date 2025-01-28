@@ -210,9 +210,6 @@ plot(onset_death_epiparameter)
 ```{r define-onset-death, eval = !params$use_epiparameter_database}
 # If params$use_epiparameter_database=FALSE, this code takes the mean and sd for
 # the onset to death delay provided by the user and creates an epiparameter object
-o_d_mean <- params$onset_death_mean
-o_d_sd <- params$onset_death_sd
-o_d_dist <- params$onset_death_dist
 onset_death_epiparameter <- epiparameter(
   disease = params$disease_name,
   epi_dist = "onset to death",
