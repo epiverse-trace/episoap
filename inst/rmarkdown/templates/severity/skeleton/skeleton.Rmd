@@ -11,10 +11,6 @@ params:
     label: "Name of file containing cases and deaths over time"
     value: "data/Marburg_EqGuinea_linelist.csv"
     input: file
-  data_type:
-    label: "Indicate the type of data to be used in this report"
-    value: "Linelist"
-    choices: ["Linelist", "Aggregated"]
   disease_name: 
     label: "Name of the disease of interest, also used to select diseases in the epiparameter database if `use_parameter_database = TRUE`."
     value: "Ebola"
@@ -35,10 +31,6 @@ params:
     label: "Choice of probability distribution for the delay from onset to death if not using value from epiparameter. Ignored if `use_epiparameter_database = TRUE`."
     value: "gamma"
     choices: ["beta", "binom", "cauchy", "chisq", "exp", "f", "gamma", "geom", "hyper", "lnorm", "logis", "nbinom", "norm", "pois", "smirnov", "t", "tukey", "unif", "weibull", "wilcox"]
-  cfr_estimator: 
-    label: "Which method to use for CFR estimation"
-    value: "cfr"
-    choices: ["cfr", "manual", "EpiNow2"]
 bibliography: 
   - grateful-refs.bib
 ---
