@@ -158,21 +158,11 @@ head(dat_raw) %>%
 
 In this section, the progression of cases and deaths over time is visualised, with and without stratification by `r group_var`.
 
-```{r process-dates-onset-death, eval = params$data_columns != "Dates of onset and total deaths only", echo=params$data_columns != "Dates of onset and total deaths only"}
+```{r process-dates-onset-death}
 # This code converts daily incidence into weekly incidence using {incidence2}
 dat_i <- dat_raw %>%
     incidence(date_index = c(cases, deaths),
     interval = 1L,
-    counts = count_var,
-    groups = group_var
-  )
-```
-
-```{r process-dates-onset-only, eval = params$data_columns == "Dates of onset and total deaths only", echo=params$data_columns == "Dates of onset and total deaths only"}
-# This code converts daily incidence into weekly incidence using {incidence2} for cases only
-dat_i <- dat_raw %>%
-    incidence(date_index = cases,
-    interval = 1L,  
     counts = count_var,
     groups = group_var
   )
