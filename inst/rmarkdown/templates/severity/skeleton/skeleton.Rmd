@@ -203,8 +203,6 @@ onset_death_epiparameter <- epiparameter_db(
   single_epiparameter = TRUE,
   subset = is_parameterised
 )
-o_d_params <- get_parameters(onset_death_epiparameter)
-plot(onset_death_epiparameter)
 ```
 
 ```{r define-onset-death, eval = !params$use_epiparameter_database}
@@ -220,6 +218,9 @@ onset_death_epiparameter <- epiparameter(
   ),
   auto_calc_params = TRUE
 )
+```
+
+```{r plot epiparameter}
 o_d_params <- get_parameters(onset_death_epiparameter)
 plot(onset_death_epiparameter)
 ```
