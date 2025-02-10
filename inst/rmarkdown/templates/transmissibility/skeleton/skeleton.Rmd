@@ -400,10 +400,10 @@ In this report, the mean and standard deviation of the $si$ have been `r ifelse(
 # If params$use_epiparameter_database=TRUE, this code accesses the
 # {epiparameter} package library of epidemiological parameters to obtain a si
 # distribution for params$disease_name, and creates an `epidist` object.
-si_epidist <- epidist_db(
+si_epidist <- epiparameter_db(
   disease =  params$disease_name,
-  epi_dist =  "serial_interval",
-  single_epidist = TRUE,
+  epi_name =  "serial_interval",
+  single_epiparameter = TRUE,
   subset = is_parameterised
 )
 
@@ -419,11 +419,11 @@ si_sd <- si_params["sd"]
 si_mean <- params$si_mean
 si_sd <- params$si_sd
 si_dist <- params$si_dist
-si_epidist <- epidist(
+si_epidist <- epiparameter(
   disease = params$disease_name,
-  epi_dist = "serial_interval",
+  epi_name = "serial_interval",
   prob_distribution = params$si_dist,
-  summary_stats = create_epidist_summary_stats(
+  summary_stats = create_summary_stats(
     mean = params$si_mean,
     sd = params$si_sd
   ),
