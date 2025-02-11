@@ -21,7 +21,7 @@ For more information on *Rt* and its interpretation, see [this paper by the Roya
 # This code takes the serial interval distribution of params$disease_name and
 # uses it to approximate the disease's generation time
 generation_time <-  generation_time_opts(
-  dist_spec(pmf = density(si, at = si_x))
+  NonParametric(pmf = density(si, at = si_x))
 )
 ```
 
