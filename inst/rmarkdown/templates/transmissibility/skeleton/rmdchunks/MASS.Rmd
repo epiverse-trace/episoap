@@ -1,7 +1,7 @@
 ```{r lockfile-rt, include = FALSE, message = FALSE}
 renv::use(
   "epitrix@0.4.0",
-  "sodium@1.3.1", # requires the libsodium system dependency
+  "sodium@1.4.0", # requires the libsodium system dependency
   "ciTools@0.6.1"
 )
 ```
