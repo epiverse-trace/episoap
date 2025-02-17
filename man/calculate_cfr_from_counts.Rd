@@ -7,17 +7,18 @@
 calculate_cfr_from_counts(total_cases, total_deaths, death_in_confirmed)
 }
 \arguments{
-\item{total_cases}{a \code{numeric} that represent the total number of cases in
-the data}
+\item{total_cases}{A \code{<numeric>} that represents the total number of
+known cases}
 
-\item{total_deaths}{a \code{numeric} that represents the total number of deaths in
-the data}
+\item{total_deaths}{A \code{<numeric>} that represents the total number of
+known deaths}
 
-\item{death_in_confirmed}{a \code{numeric} that represents the number of death in
-among the confirmed cases.}
+\item{death_in_confirmed}{A \code{<numeric>} that represents the number of
+death among the confirmed cases.}
 }
 \value{
-an object of type \code{list} with 2 elements of type \verb{data frame}.
+A \code{<tibble>} with one or two rows containing respectively the
+overall CFR and CFR in confirmed cases.
 }
 \description{
 Calculate CFR from count data

@@ -2,54 +2,58 @@
 % Please edit documentation in R/utils.R
 \name{convert_to_incidence}
 \alias{convert_to_incidence}
-\title{Get the input data for {cfr} functions}
+\title{Convert linelist data in the form of an incidence data required by the {cfr}
+package used to estimate CFR.}
 \usage{
 convert_to_incidence(
   data,
-  date_variable_name,
-  cases_status,
+  date_var_name,
+  cases_status_var_name,
   death_outcome,
-  diagnosis_status = NULL,
+  diagnosis_status_var_name = NULL,
   diagnosis_outcome = NULL
 )
 }
 \arguments{
-\item{data}{the input data}
+\item{date_var_name}{A \code{<character>} with the name of the column
+containing the dates when cases were registered}
 
-\item{date_variable_name}{the name of the column with the dates when cases
-were registered}
+\item{cases_status_var_name}{A \code{<character>} with the name of the column
+that contains the information about whether a case was dead or
+had recovered}
 
-\item{cases_status}{the name of the column with the information about whether
-a case was dead or recovered}
+\item{death_outcome}{A \code{<character>} with the value, in the
+\code{cases_status_var_name} column, that is used to specify whether the case
+was dead}
 
-\item{death_outcome}{a character with the value, in the cases_status column,
-that is used to specify whether the case was dead}
+\item{diagnosis_status_var_name}{A \code{<character>} with the name of the
+column that has the information about whether a case is confirmed,
+suspected, etc}
 
-\item{diagnosis_status}{the name of the column with the cases diagnosis
-outcome.}
-
-\item{diagnosis_outcome}{the value, in the column with the cases diagnosis
-outcome, used to represent the confirmed cases.}
+\item{diagnosis_outcome}{A \code{<character>} with the value, in the
+\code{diagnosis_status_var_name} column, that is used to specify if a case
+was confirmed}
 }
 \value{
-a \code{list} of 2 elements of type data frame. These are the aggregated
-data to calculate CFR across all cases and the one for CFR among the
-confirmed cases only. Note that the later will be \code{NULL} if the
-\code{diagnosis_status} and \code{diagnosis_outcome} are not provided.
+A \code{<data.frame>} with the three columns required to estimate
+CFR. When the values for \code{diagnosis_status_var_name} and
+\code{diagnosis_outcome} are not \code{NULL}, this data frame will have an
+attribute, \code{confirmed_cases_data}, that contains the data to be used to
+estimate CFR within confirmed cases only.
 }
 \description{
-Get the input data for {cfr} functions
+Convert linelist data in the form of an incidence data required by the {cfr}
+package used to estimate CFR.
 }
 \examples{
-data = read.csv(system.file("extdata", "Marburg_EqGuinea_linelist.csv",
-                   package = "episoap"))
+data <- read.csv(system.file("extdata", "Marburg_EqGuinea_linelist.csv",
+                             package = "episoap"))
 cfr_data <- convert_to_incidence(
-  data               = data,
-  date_variable_name = "Onset_week",
-  cases_status       = "Status",
-  death_outcome      = "dead",
-  diagnosis_status   = "Type",
-  diagnosis_outcome  = "confirmed"
+  data = data,
+  date_var_name = "Onset_week",
+  cases_status_var_name = "Status",
+  death_outcome = "dead",
+  diagnosis_status_var_name = "Type",
+  diagnosis_outcome = "confirmed"
 )
 }
-\keyword{internal}

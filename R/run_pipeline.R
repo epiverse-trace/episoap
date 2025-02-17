@@ -59,8 +59,8 @@
 #' )
 run_pipeline <- function(disease_name,
                          data,
-                         to_incidence_params     = NULL,
-                         severity_params         = NULL,
+                         to_incidence_params = NULL,
+                         severity_params = NULL,
                          transmissibility_params = NULL) {
 
   # define the list of the final results

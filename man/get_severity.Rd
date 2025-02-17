@@ -32,13 +32,16 @@ a list of data frames that contains the severity estimates.
 Estimate severity based on the user-provided arguments
 }
 \examples{
+data <- readRDS(
+  system.file(
+    "extdata", "Marburg_EqGuinea_incidence.RDS", package = "episoap"
+  )
+)
 cfr <- get_severity(
   disease_name = "Marburg Virus Disease",
-  data         = readRDS(system.file("extdata",
-                                      "Marburg_EqGuinea_incidence.RDS",
-                                      package = "episoap")),
+  data = data,
   account_for_delay = FALSE,
-  epidist           = NULL
+  epidist = NULL
 )
 
 }

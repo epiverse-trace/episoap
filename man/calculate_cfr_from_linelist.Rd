@@ -4,28 +4,19 @@
 \alias{calculate_cfr_from_linelist}
 \title{Estimate disease severity from linelist object}
 \usage{
-calculate_cfr_from_linelist(
-  data,
-  account_for_delay,
-  epidist,
-  type,
-  values,
-  distribution,
-  interval,
-  shape,
-  scale,
-  meanlog,
-  sdlog
-)
+calculate_cfr_from_linelist(data, epidist = NULL, epidist_params = NULL)
 }
 \arguments{
 \item{data}{the input data}
 
-\item{account_for_delay}{a \code{logical} used to specify whether to account for
-the delay distribution or not.}
-
 \item{epidist}{an object of class \code{epidist} with the delay distribution
 parameters}
+
+\item{epidist_params}{A list with the parameters to be used to get the delay
+distribution. Possible values are:
+\describe{
+type, values, distribution, interval, shape, scale, meanlog, sdlog
+}}
 }
 \value{
 an object of type \code{list} with 1 or 2 data frames that contains the

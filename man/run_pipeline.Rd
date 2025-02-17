@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_pipeline.R
 \name{run_pipeline}
 \alias{run_pipeline}
-\title{Run pipeline}
+\title{Execute the user-defined tasks}
 \usage{
 run_pipeline(
   disease_name,
@@ -67,5 +67,14 @@ severity_params <- list(
   total_cases        = NULL,
   total_deaths       = NULL,
   death_in_confirmed = NULL
+)
+
+# run the pipeline
+run_pipeline(
+  disease_name = disease_name,
+  data = data,
+  to_incidence_params = to_incidence_params,
+  severity_params = severity_params,
+  transmissibility_params = transmissibility_params
 )
 }

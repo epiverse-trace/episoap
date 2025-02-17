@@ -4,47 +4,39 @@
 \alias{calculate_cfr}
 \title{Calculate CFR from incidence or linelist data}
 \usage{
-calculate_cfr(
-  data,
-  epidist = NULL,
-  account_for_delay = FALSE,
-  type,
-  values,
-  distribution,
-  interval,
-  shape,
-  scale,
-  meanlog,
-  sdlog
-)
+calculate_cfr(data, epidist = NULL, epidist_params = NULL)
 }
 \arguments{
-\item{data}{the input data}
+\item{data}{The input data in the form of a linelist or incidence.}
 
 \item{epidist}{an \code{epidist} object that contains the distribution parameters}
+
+\item{epidist_params}{A list with the parameters to be used to get the delay
+distribution. Possible values are:
+\describe{
+type, values, distribution, interval, shape, scale, meanlog, sdlog
+}}
 }
 \value{
-a \code{list} of the following 2 elements:
-\enumerate{
-\item cfr: the CFR among the total cases
-\item cfr_in_confirmed_cases: the CFR among the confirmed cases only
-}
+A \code{<data.frame>} with two rows containing respectively the CFR
+across all and confirmed cases.
 }
 \description{
 Calculate CFR from incidence or linelist data
 }
 \examples{
-cfr_data <- convert_to_incidence(
-  data               = data,
-  date_variable_name = "Onset_week",
-  cases_status       = "Status",
-  death_outcome      = "dead",
-  diagnosis_status   = "Type",
-  diagnosis_outcome  = "confirmed"
+data <- read.csv(system.file("extdata", "Marburg_EqGuinea_linelist.csv",
+                             package = "episoap"))
+incidence_data <- convert_to_incidence(
+  data = data,
+  date_var_name = "Onset_week",
+  cases_status_var_name = "Status",
+  death_outcome = "dead",
+  diagnosis_status_var_name = "Type",
+  diagnosis_outcome = "confirmed"
 )
-cfr <- calculate_cfr_from_incidence(
-  data              = cfr_data,
-  epidist           = NULL
+cfr <- calculate_cfr(
+  data = incidence_data,
+  epidist = NULL
 )
 }
-\keyword{internal}

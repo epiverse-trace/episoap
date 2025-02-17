@@ -1,47 +1,259 @@
 #' Calculate CFR from count data
 #'
-#' @param total_cases a `numeric` that represent the total number of cases in
-#'    the data
-#' @param total_deaths a `numeric` that represents the total number of deaths in
-#'    the data
-#' @param death_in_confirmed a `numeric` that represents the number of death in
-#'    among the confirmed cases.
+#' @param total_cases A \code{<numeric>} that represents the total number of
+#'    known cases
+#' @param total_deaths A \code{<numeric>} that represents the total number of
+#'    known deaths
+#' @param death_in_confirmed A \code{<numeric>} that represents the number of
+#'    death among the confirmed cases.
 #'
-#' @return an object of type `list` with 2 elements of type `data frame`.
-#' @keywords internal
+#' @return A \code{<tibble>} with one or two rows containing respectively the
+#'    overall CFR and CFR in confirmed cases.
+#' @export
+#' @examples
+#' cfr <- calculate_cfr_from_counts(
+#'   total_cases = 1150,
+#'   total_deaths = 12,
+#'   death_in_confirmed = 2
+#' )
 #'
 calculate_cfr_from_counts <- function(total_cases,
                                       total_deaths,
                                       death_in_confirmed) {
 
-  # if the data does not contain the date, cases, and deaths columns, use the
-  # user-provided total_cases, total_death, death_in_confirmed
-  # could try a data frame
+  # if the user does not have a data frame that contains the date, cases, and
+  # deaths columns, but provided the number of total_cases, total_death,
+  # death_in_confirmed, this function can be used to estimate CFR.
 
-  res_cfr          <- list()
-  total_cases      <- as.numeric(total_cases)
-  total_deaths     <- as.numeric(total_deaths)
-  severity_mean    <- total_deaths / total_cases
-  severity_conf    <- stats::binom.test(round(total_deaths), total_cases,
-                                        p = 1L)
-  severity_lims    <- severity_conf[["conf.int"]]
-  res_cfr[["cfr"]] <- data.frame(severity_mean = severity_mean,
-                                 severity_low  = severity_lims[[1L]],
-                                 severity_high = severity_lims[[2L]])
+  # make sure that the parameters are converted into numeric
+  total_cases <- as.numeric(total_cases)
+  total_deaths <- as.numeric(total_deaths)
+
+  # calculate the overall CFR
+  cfr <- rstatix::binom_test(
+    x = round(total_deaths),
+    n = total_cases,
+    p = 0.999
+  )
+  names(cfr)[2:4] <- c("severity_mean", "severity_low", "severity_high")
+  cfr[["type"]] <- "CFR"
+
+  # calculate the CFR among confirmed cases only
   if (!is.null(death_in_confirmed)) {
-    severity_mean  <- death_in_confirmed / total_cases
-    severity_conf  <- stats::binom.test(round(death_in_confirmed),
-                                        total_cases, p = 1L)
-    severity_lims  <- severity_conf[["conf.int"]]
-    res_cfr[["cfr_in_confirmed_cases"]] <- data.frame(
-      severity_mean = severity_mean,
-      severity_low  = severity_lims[[1L]],
-      severity_high = severity_lims[[2L]]
+    death_in_confirmed <- as.numeric(death_in_confirmed)
+    cfr_in_confirmed_cases <- rstatix::binom_test(
+      x = round(death_in_confirmed),
+      n = total_cases,
+      p = 0.999
     )
+    names(cfr_in_confirmed_cases)[2:4] <- c(
+      "severity_mean", "severity_low", "severity_high"
+    )
+    cfr_in_confirmed_cases[["type"]] <- "CFR in confirmed cases"
+    cfr <- rbind(cfr, cfr_in_confirmed_cases)
   }
 
-  res_cfr
+  cfr <- cfr %>%
+    dplyr::select(severity_mean, severity_low, severity_high, type)
+  return(cfr)
 }
+
+#' Estimate disease severity from incidence object
+#'
+#' @inheritParams get_severity
+#'
+#' @return an object of type `list` with 2 data frames that contains the
+#'    CFR values in all cases and in confirmed cases only.
+#' @keywords internal
+#'
+calculate_cfr_from_incidence <- function(data,
+                                         epidist,
+                                         epidist_params) {
+
+  # convert dates to sequential if necessary
+  if (!(unique(diff(data[["date"]])) == 1L)) {
+    data  <- get_sequential_dates(data)
+  }
+
+  # when the user did not provide epidist and epidist_params, then
+  # the static CFR is returned without accounting for delay
+  if (is.null(epidist) && is.null(epidist_params)) {
+    cfr <- cfr::cfr_static(
+      data = data,
+      delay_density = NULL
+    )
+    return(cfr)
+  }
+
+  # when the user did has provided epidist, then
+  # the static CFR is calculated by accounting for the provided delay
+  # distribution
+  if (!is.null(epidist)) {
+    cfr <- cfr::cfr_static(
+      data = data,
+      delay_density = epidist
+    )
+    return(cfr)
+  }
+
+  # when the user did has provided epidist_params, then
+  # the static CFR is calculated by accounting for the delay distribution that
+  # is calculated from its parameters
+  if (!is.null(epidist_params)) {
+    params <- get_delay_distro_params(
+      data,
+      type = epidist_params[["type"]],
+      values = epidist_params[["values"]],
+      distribution = epidist_params[["distribution"]],
+      shape = epidist_params[["shape"]],
+      scale = epidist_params[["scale"]],
+      meanlog = epidist_params[["meanlog"]],
+      sdlog = epidist_params[["sdlog"]]
+    )
+    if (epidist_params[["distribution"]] %in% c("gamma", "weibull")) {
+      onset_to_death_distribution <- distcrete::distcrete(
+        name = "gamma",
+        shape = params[["shape"]],
+        scale = params[["scale"]],
+        interval = epidist_params[["interval"]]
+      )
+      cfr <- cfr::cfr_static(
+        data = data,
+        delay_density = onset_to_death_distribution$d
+      )
+    } else {
+      onset_to_death_distribution <- distributional::dist_lognormal(
+        mu = params[["meanlog"]],
+        sigma = params[["sdlog"]]
+      )
+      cfr <- cfr::cfr_static(
+        data = data,
+        delay_density = function(x) unlist(
+          density(onset_to_death_distribution, x)
+        )
+      )
+    }
+  }
+
+  return(cfr)
+}
+
+#' Calculate CFR from incidence or linelist data
+#'
+#' @param data The input data in the form of a linelist or incidence.
+#' @param epidist an `epidist` object that contains the distribution parameters
+#' @param epidist_params A list with the parameters to be used to get the delay
+#'    distribution. Possible values are:
+#'    \describe{
+#'        type, values, distribution, interval, shape, scale, meanlog, sdlog
+#'    }
+#' @return A \code{<data.frame>} with two rows containing respectively the CFR
+#'    across all and confirmed cases.
+#' @export
+#'
+#' @examples
+#' data <- read.csv(system.file("extdata", "Marburg_EqGuinea_linelist.csv",
+#'                              package = "episoap"))
+#' incidence_data <- convert_to_incidence(
+#'   data = data,
+#'   date_var_name = "Onset_week",
+#'   cases_status_var_name = "Status",
+#'   death_outcome = "dead",
+#'   diagnosis_status_var_name = "Type",
+#'   diagnosis_outcome = "confirmed"
+#' )
+#' cfr <- calculate_cfr(
+#'   data = incidence_data,
+#'   epidist = NULL
+#' )
+calculate_cfr <- function(data,
+                          epidist = NULL,
+                          epidist_params = NULL) {
+
+  # when the input data is obtained from the transformation of a linelist into
+  # incidence via the 'convert_to_incidence()' function, there is a chance that
+  # it contains an attribute 'confirmed_cases_data'.
+  # If this is the case, then we will calculate CFR for the overall cases then
+  # for confirmed cases only using the same function.
+
+  # calculate the overall CFR
+  cfr <- calculate_cfr_from_incidence(data, epidist, epidist_params)
+  cfr[["type"]] <- "overall CFR"
+
+  # calculate CFR in confirmed cases only if needed
+  confirmed_cases_data <- attr(data, "confirmed_cases_data")
+  if (!is.null(confirmed_cases_data)) {
+    cfr_in_confirmed_cases <- calculate_cfr_from_incidence(
+      data = confirmed_cases_data,
+      epidist,
+      epidist_params
+    )
+    cfr_in_confirmed_cases[["type"]] <- "CFR in confirmed cases"
+    cfr <- rbind(cfr, cfr_in_confirmed_cases)
+  }
+
+  return(cfr)
+}
+
+
+#' Convert non-daily incidence data into daily incidence data
+#'
+#' @param data A \code{<data.frame>} with at least two columns named as `cases`
+#'    and the `date`
+#'
+#' @return A \code{<data.frame>} with three columns named as 'date', 'cases',
+#'    'deaths'. This is the format required by the \code{cfr::cfr_static()}
+#'    function.
+#' @export
+#' @examples
+#' weekly_incidence <- readRDS(
+#'   system.file("extdata", "weekly_incidence.RDS", package = "episoap")
+#' )
+#' daily_incidence <- get_sequential_dates(weekly_incidence)
+#'
+get_sequential_dates <- function(data) {
+  # convert the date column into Date
+  data[["date"]] <- as.Date(as.character(data[["date"]]))
+
+  # get the column number with the date information
+  idx <- match("date", names(data))
+
+  # generate the daily sequence of date between the first and last date and
+  # convert it into a data frame
+  date <- seq.Date(
+    as.Date(data[["date"]][[1L]]),
+    as.Date(data[["date"]][nrow(data)]),
+    1
+  )
+  seq_date <- as.data.frame(date)
+
+  # create the remaining columns of the input data within the new daily
+  # incidence data frame
+  for (nms in names(data)[-idx]) {
+    seq_date[[nms]] <- NA
+  }
+
+  # get the indices of the dates present in the input data
+  row_idx <- match(data[["date"]], seq_date[["date"]])
+
+  # get the names of the columns other than the date column from the input data,
+  # and their indices
+  other_column_names <- names(data)[-idx]
+  idx_other_columns <- match(other_column_names, names(data))
+
+  # fill in the other columns in the new daily incidence data with their
+  # corresponding values from the input data.
+  tmp <- data %>% dplyr::select(-c(date))
+  seq_date[row_idx, idx_other_columns] <- tmp
+  seq_date <- seq_date %>%
+    dplyr::select(c(date, cases, deaths))
+  seq_date[is.na(seq_date[["cases"]]), ][["cases"]] <- 0
+  seq_date[is.na(seq_date[["deaths"]]), ][["deaths"]] <- 0
+
+  return(seq_date)
+}
+
+
 
 #' Get the delay distribution parameters
 #'
@@ -69,219 +281,7 @@ get_delay_distro_params <- function(tmp_data,
   return(param)
 }
 
-#' Estimate disease severity from linelist object
-#'
-#' @inheritParams get_severity
-#'
-#' @return an object of type `list` with 1 or 2 data frames that contains the
-#'    CFR values in all cases and in confirmed cases only.
-#' @keywords internal
-#'
-calculate_cfr_from_linelist <- function(data, account_for_delay, epidist,
-                                        type, values, distribution, interval,
-                                        shape, scale,
-                                        meanlog, sdlog) {
-  # initialize the output object
-  res_cfr      <- list()
-  output_names <- c("cfr", "cfr_in_confirmed_cases")
-  j            <- 1L
-  for (i in c("all_cases_data", "confirmed_cases_data")) {
-    tmp_data   <- data[[i]]
 
-    # convert dates to sequential if necessary
-    if (!identical(unique(diff(tmp_data[["date"]])), 1L)) {
-      tmp_data <- get_sequential_dates(tmp_data)
-    }
-
-    # calculate CFR using the provided delay distribution
-    if (account_for_delay && !is.null(epidist)) {
-      res_cfr[[output_names[j]]] <- cfr::cfr_static(
-        data          = tmp_data,
-        delay_density = epidist
-      )
-      j <- j + 1L
-    } else if (account_for_delay && is.null(epidist)) {
-      # calculate CFR using the delay distribution parameters
-      param <- get_delay_distro_params(tmp_data,
-                                       type, values, distribution,
-                                       shape, scale,
-                                       meanlog, sdlog)
-
-      if (distribution %in% c("gamma", "weibull")) {
-        onset_to_death_distribution <- distcrete::distcrete(
-          name     = "gamma",
-          shape    = param[["shape"]],
-          scale    = param[["scale"]],
-          interval = interval
-        )
-        res_cfr[[output_names[j]]] <- cfr::cfr_static(
-          data          = tmp_data,
-          delay_density = onset_to_death_distribution$d
-        )
-      } else {
-        onset_to_death_distribution <- distributional::dist_lognormal(
-          mu    = param[["meanlog"]],
-          sigma = param[["sdlog"]]
-        )
-        res_cfr[[output_names[j]]] <- cfr::cfr_static(
-          data          = tmp_data,
-          delay_density = function(x) unlist(density(onset_to_death_distribution, x)) # nolint: line_length_linter
-        )
-      }
-      j <- j + 1L
-    }
-  }
-
-  return(res_cfr)
-}
-
-#' Estimate disease severity from incidence object
-#'
-#' @inheritParams get_severity
-#'
-#' @return an object of type `list` with 2 data frames that contains the
-#'    CFR values in all cases and in confirmed cases only.
-#' @keywords internal
-#'
-calculate_cfr_from_incidence <- function(data, epidist, account_for_delay,
-                                         type, values, distribution, interval,
-                                         shape, scale,
-                                         meanlog, sdlog) {
-  res_cfr <- list()
-  if (account_for_delay && !is.null(epidist)) {
-    res_cfr[["cfr"]] <- cfr::cfr_static(
-      data          = data,
-      delay_density = epidist
-    )
-  } else if (account_for_delay && is.null(epidist)) {
-    param <- get_delay_distro_params(data,
-                                     type, values, distribution,
-                                     shape, scale,
-                                     meanlog, sdlog)
-    if (distribution %in% c("gamma", "weibull")) {
-      onset_to_death_distribution <- distcrete::distcrete(
-        name     = "gamma",
-        shape    = param[["shape"]],
-        scale    = param[["scale"]],
-        interval = interval
-      )
-      res_cfr[["cfr"]] <- cfr::cfr_static(
-        data          = data,
-        delay_density = onset_to_death_distribution$d
-      )
-    } else {
-      onset_to_death_distribution <- distributional::dist_lognormal(
-        mu    = param[["meanlog"]],
-        sigma = param[["sdlog"]]
-      )
-      res_cfr[["cfr"]] <- cfr::cfr_static(
-        data          = data,
-        delay_density = function(x) unlist(density(onset_to_death_distribution,
-                                                   x))
-      )
-    }
-  } else {
-    res_cfr[["cfr"]] <- cfr::cfr_static(
-      data          = data,
-      delay_density = NULL
-    )
-  }
-
-  res_cfr[["cfr_in_confirmed_cases"]] <- NULL
-
-  return(res_cfr)
-}
-
-#' Calculate CFR from incidence or linelist data
-#'
-#' @param data the input data
-#' @param epidist an `epidist` object that contains the distribution parameters
-#'
-#' @return a `list` of the following 2 elements:
-#' \enumerate{
-#'   \item cfr: the CFR among the total cases
-#'   \item cfr_in_confirmed_cases: the CFR among the confirmed cases only
-#' }
-#' @keywords internal
-#'
-#' @examples
-#' cfr_data <- convert_to_incidence(
-#'   data               = data,
-#'   date_variable_name = "Onset_week",
-#'   cases_status       = "Status",
-#'   death_outcome      = "dead",
-#'   diagnosis_status   = "Type",
-#'   diagnosis_outcome  = "confirmed"
-#' )
-#' cfr <- calculate_cfr_from_incidence(
-#'   data              = cfr_data,
-#'   epidist           = NULL
-#' )
-calculate_cfr <- function(data,
-                          epidist           = NULL,
-                          account_for_delay = FALSE,
-                          type, values, distribution, interval,
-                          shape, scale,
-                          meanlog, sdlog) {
-
-  if (is.list(data) && all(names(data) %in% c("all_cases_data",
-                                              "confirmed_cases_data"))) {
-    res_cfr <- calculate_cfr_from_linelist(data, account_for_delay, epidist,
-                                           type, values, distribution, interval,
-                                           shape, scale,
-                                           meanlog, sdlog)
-  } else if (is.data.frame(data) && all(c("date", "cases", "deaths") %in%
-                                        names(data))) {
-    # convert dates to sequential if necessary
-    if (!(unique(diff(data[["date"]])) == 1L)) {
-      data  <- get_sequential_dates(data)
-    }
-    res_cfr <- calculate_cfr_from_incidence(
-      data, epidist, account_for_delay,
-      type, values, distribution, interval,
-       shape, scale,
-       meanlog, sdlog
-    )
-  } else {
-    stop("Incorrect input data format...\n",
-         "'data' should be a data frame with 3 columns named as 'date',",
-         "'cases' and 'deaths'.\n Alternatively, use the 'prepare_cfr_data'",
-         "function to create the input object.")
-  }
-
-  res_cfr
-}
-
-
-#' Convert date in input data for CFR calculation into sequential dates
-#'
-#' @param data a data frame with at least 2 columns: the `cases` and the `date`
-#'    they were recorded.
-#'
-#' @return a data frame with 3 columns named as 'date', 'cases', 'deaths'. This
-#'    is the format required by the `cfr::cfr_static()` function
-#' @keywords internal
-#'
-get_sequential_dates <- function(data) {
-  idx  <- match("date", names(data))
-  date <- seq.Date(as.Date(data[["date"]][[1L]]),
-                   as.Date(data[["date"]][nrow(data)]),
-                   1)
-  seq_date <- as.data.frame(date)
-  for (nms in names(data)[-idx]) {
-    seq_date[[nms]] <- NA
-  }
-  row_idx  <- match(data[["date"]], seq_date[["date"]])
-  nms      <- names(data)[-idx]
-  col_idx  <- match(nms, names(data))
-  tmp <- data %>% dplyr::select(-c(date))
-  seq_date[row_idx, col_idx] <- tmp
-  seq_date <- seq_date %>%
-    dplyr::select(c(date, cases, deaths))
-  seq_date[which(is.na(seq_date[["cases"]])),][["cases"]] = 0L
-  seq_date[which(is.na(seq_date[["deaths"]])),][["deaths"]] = 0L
-  seq_date
-}
 
 #' Create the delay distribution object
 #'
@@ -462,19 +462,22 @@ print_cfr <- function(out) {
 #' @returns a list of data frames that contains the severity estimates.
 #'
 #' @examples
+#' data <- readRDS(
+#'   system.file(
+#'     "extdata", "Marburg_EqGuinea_incidence.RDS", package = "episoap"
+#'   )
+#' )
 #' cfr <- get_severity(
 #'   disease_name = "Marburg Virus Disease",
-#'   data         = readRDS(system.file("extdata",
-#'                                       "Marburg_EqGuinea_incidence.RDS",
-#'                                       package = "episoap")),
+#'   data = data,
 #'   account_for_delay = FALSE,
-#'   epidist           = NULL
+#'   epidist = NULL
 #' )
 #'
-get_severity <- function(disease_name      = NULL,
-                         data              = NULL,
+get_severity <- function(disease_name = NULL,
+                         data = NULL,
                          account_for_delay = FALSE,
-                         epidist           = NULL,
+                         epidist = NULL,
                          ...) {
 
   # get the additional arguments
@@ -482,24 +485,24 @@ get_severity <- function(disease_name      = NULL,
 
   # get the delay distribution parameters if the delay distribution is
   # not provided
-  type         <- args_list[["type"]]
-  values       <- args_list[["values"]]
+  type <- args_list[["type"]]
+  values <- args_list[["values"]]
   distribution <- args_list[["distribution"]]
-  interval     <- args_list[["interval"]]
-  meanlog      <- args_list[["meanlog"]]
-  sdlog        <- args_list[["sdlog"]]
-  shape        <- args_list[["shape"]]
-  scale        <- args_list[["scale"]]
+  interval <- args_list[["interval"]]
+  meanlog <- args_list[["meanlog"]]
+  sdlog <- args_list[["sdlog"]]
+  shape <- args_list[["shape"]]
+  scale <- args_list[["scale"]]
 
   # estimate CFR from count data , "death_in_confirmed"
-  total_cases        <- args_list[["total_cases"]]
-  total_deaths       <- args_list[["total_deaths"]]
+  total_cases <- args_list[["total_cases"]]
+  total_deaths <- args_list[["total_deaths"]]
   death_in_confirmed <- args_list[["death_in_confirmed"]]
   if (all(!is.null(total_cases) && !is.null(total_deaths))) {
     message("Estimating severity from count data...")
-    cfr_res          <- calculate_cfr_from_counts(
-      total_cases        = total_cases,
-      total_deaths       = total_deaths,
+    cfr_res <- calculate_cfr_from_counts(
+      total_cases = total_cases,
+      total_deaths = total_deaths,
       death_in_confirmed = death_in_confirmed
     )
     return(cfr_res)
@@ -509,8 +512,8 @@ get_severity <- function(disease_name      = NULL,
     data <- data %>%
       dplyr::select(c(date, cases, deaths))
     cfr_res <- calculate_cfr(
-      data              = data,
-      epidist           = epidist,
+      data = data,
+      epidist = epidist,
       account_for_delay = account_for_delay,
       type, values, distribution, interval,
       shape, scale,

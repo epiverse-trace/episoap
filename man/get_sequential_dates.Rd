@@ -2,19 +2,26 @@
 % Please edit documentation in R/severity.R
 \name{get_sequential_dates}
 \alias{get_sequential_dates}
-\title{Convert date in input data for CFR calculation into sequential dates}
+\title{Convert non-daily incidence data into daily incidence data}
 \usage{
 get_sequential_dates(data)
 }
 \arguments{
-\item{data}{a data frame with at least 2 columns: the \code{cases} and the \code{date}
-they were recorded.}
+\item{data}{A \code{<data.frame>} with at least two columns named as \code{cases}
+and the \code{date}}
 }
 \value{
-a data frame with 3 columns named as 'date', 'cases', 'deaths'. This
-is the format required by the \code{cfr::cfr_static()} function
+A \code{<data.frame>} with three columns named as 'date', 'cases',
+'deaths'. This is the format required by the \code{cfr::cfr_static()}
+function.
 }
 \description{
-Convert date in input data for CFR calculation into sequential dates
+Convert non-daily incidence data into daily incidence data
 }
-\keyword{internal}
+\examples{
+weekly_incidence <- readRDS(
+  system.file("extdata", "weekly_incidence.RDS", package = "episoap")
+)
+daily_incidence <- get_sequential_dates(weekly_incidence)
+
+}

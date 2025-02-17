@@ -4,28 +4,13 @@
 \alias{calculate_cfr_from_incidence}
 \title{Estimate disease severity from incidence object}
 \usage{
-calculate_cfr_from_incidence(
-  data,
-  epidist,
-  account_for_delay,
-  type,
-  values,
-  distribution,
-  interval,
-  shape,
-  scale,
-  meanlog,
-  sdlog
-)
+calculate_cfr_from_incidence(data, epidist, epidist_params)
 }
 \arguments{
 \item{data}{the input data}
 
 \item{epidist}{an object of class \code{epidist} with the delay distribution
 parameters}
-
-\item{account_for_delay}{a \code{logical} used to specify whether to account for
-the delay distribution or not.}
 }
 \value{
 an object of type \code{list} with 2 data frames that contains the
