@@ -1,0 +1,79 @@
+---
+title: "black box design principles"
+format: 
+  html:
+    toc: true
+    html-math-method: mathjax
+    theme: none
+    minimal: true
+    embed-resources: true
+vignette: >
+  %\VignetteIndexEntry{black box design principles}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(episoap)
+```
+
+# Introduction
+
+More and more public health services and agencies are encouraging the use of health information systems (HIS) to store data of various kinds. Thus, the exploitation of this data through statistical analysis tools and methods can promote the rapid implementation of epidemic response strategies. We therefore intend to dedicate this vignette to the development of pipelines that will make it possible to link the different steps necessary to estimate vital parameters to understand the dynamics of an infectious disease. In the following sections, we will show how to establish and execute a pipeline to prepare and analyze data to derive information on the severity and transmissibility of a disease.
+
+## Defining the severity workflow
+
+
+### Determining the data type
+
+The first rule for the severity pipeline is `get_data_type`. It is intended to about the type of data provided by the user. This determines how CFR is calculated. The current version of the pipeline accounts for three types of data: count data, linelist data, and incidence data.
+The rule will look like below.
+
+* rule get_data_type:
+    * input:
+        * "user-provided arguments: data, total_count, total_death",
+    * output:
+        * "one of: count_data, linelist, incidence"
+    * function:
+        * get_data_type()
+        
+::: {.callout-note collapse="true"}
+## `get_data_type()`
+
+This function does not exist for now. Atta to create it. 
+:::
+
+### Estimate severity from count data
+
+When the output of the `get_data_type()` function is `count_data` i.e. the count of total cases, deaths, and (optionally) the count of deaths among confirmed cases are provided, CFR is estimated using the `calculate_cfr_from_counts()` function.
+
+The function takes these three arguments and returns a data frame with one or two (when the count of deaths among confirmed cases is provided) rows. This data frame store the values of the estimated disease severity and its associated confidence interval.
+
+### Estimate severity from linelist data
+
+When the output of the `get_data_type()` function is `linelist` i.e. the input data is linelist where the count of cases is stored over time, CFR is estimated using the `calculate_cfr()` function.
+When cases are not recorded on a daily basis, the data is first converted into a  daily incidence using the `convert_to_incidence()` function.
+When users provide the parameters to account for the delay distribution, then this is accounted for in the `calculate_cfr()` function.
+
+### Estimate severity from incidence data
+
+When the output of the `get_data_type()` function is `incidence` i.e. the input data is an incidence-type object (with at least the date, cases, and deaths columns), then CFR is estimated using the `calculate_cfr()` function.
+When cases are not recorded on a daily basis, the data is first converted into a  daily incidence using the `convert_to_incidence()` function.
+When users provide the parameters to account for the delay distribution, then this is accounted for in the `calculate_cfr()` function.
+
+
+
+
+
+
+
+
+
+

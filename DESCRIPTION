@@ -14,17 +14,17 @@ URL: https://epiverse-trace.github.io/episoap,
     https://github.com/epiverse-trace/episoap
 BugReports: https://github.com/epiverse-trace/episoap/issues
 Imports: 
+    cfr,
+    epiparameter (>= 0.4.0),
     ggplot2,
     renv (>= 0.13.0),
-    rmarkdown
+    rmarkdown,
+    rstatix
 Suggests: 
     knitr,
     testthat (>= 3.0.0)
-Remotes:
-    epiverse-trace/cfr
-    epiverse-trace/epiparameter
 VignetteBuilder: 
-    knitr
+    quarto
 Config/testthat/edition: 3
 Config/testthat/parallel: true
 Config/Needs/website:
@@ -32,4 +32,4 @@ Config/Needs/website:
 Encoding: UTF-8
 Language: en-GB
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2.9000

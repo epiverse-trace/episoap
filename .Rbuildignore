@@ -12,3 +12,6 @@
 ^vignettes/articles$
 ^inst/rmarkdown/templates/.*\.html$
 ^\.lintr
+^vignettes/*_files$
+^doc$
+^Meta$
