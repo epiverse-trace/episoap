@@ -30,6 +30,7 @@ More and more public health services and agencies are encouraging the use of hea
 
 ## Defining the severity workflow
 
+![The severity workflow](../man/figures/severity_diagram.drawio.png){align="center"}
 
 ### Determining the data type
 
@@ -38,35 +39,55 @@ The rule will look like below.
 
 * rule get_data_type:
     * input:
-        * "user-provided arguments: data, total_count, total_death",
+        * "user-provided arguments: data, total_cases, total_deaths",
     * output:
-        * "one of: count_data, linelist, incidence"
+        * "A character with one of: count_data, linelist, incidence"
     * function:
         * get_data_type()
-        
+
+
 ::: {.callout-note collapse="true"}
 ## `get_data_type()`
 
 This function does not exist for now. Atta to create it. 
 :::
 
+
 ### Estimate severity from count data
 
 When the output of the `get_data_type()` function is `count_data` i.e. the count of total cases, deaths, and (optionally) the count of deaths among confirmed cases are provided, CFR is estimated using the `calculate_cfr_from_counts()` function.
 
-The function takes these three arguments and returns a data frame with one or two (when the count of deaths among confirmed cases is provided) rows. This data frame store the values of the estimated disease severity and its associated confidence interval.
+The function takes these three arguments and returns a data frame with one or two rows (when the count of deaths among confirmed cases is provided). This data frame stores the values of the estimated disease severity and their associated confidence interval.
 
-### Estimate severity from linelist data
+* rule calculate_cfr_from_counts:
+    * input:
+        * "total_cases, total_deaths, death_in_confirmed",
+    * output:
+        * "A data.frame with one or two rows"
+    * function:
+        * calculate_cfr_from_counts()
 
-When the output of the `get_data_type()` function is `linelist` i.e. the input data is linelist where the count of cases is stored over time, CFR is estimated using the `calculate_cfr()` function.
-When cases are not recorded on a daily basis, the data is first converted into a  daily incidence using the `convert_to_incidence()` function.
-When users provide the parameters to account for the delay distribution, then this is accounted for in the `calculate_cfr()` function.
+### Estimate severity from linelist or incidence data
 
-### Estimate severity from incidence data
+When the output of the `get_data_type()` function is `linelist` i.e. the input data is linelist where the count of cases is stored over time, CFR is estimated using the `calculate_cfr()` function, makes internally calls the `calculate_cfr_from_incidence()`. The function works as following:
+    *   When cases are not recorded in a linelist on a daily basis, the data is first
+    converted into a daily incidence using the `convert_to_incidence()` function.
+    *   When cases are provided in the form of a weekly, monthly or any other frequency than
+    daily incidence, the data will be converted into daily incidence using the
+    `get_sequential_dates()` function.
+    *   When the delay distribution is not provided, but the parameters to estimate it are
+    provided, then the `get_onset_to_death_distro()` function is used to get the delay
+    distribution
 
-When the output of the `get_data_type()` function is `incidence` i.e. the input data is an incidence-type object (with at least the date, cases, and deaths columns), then CFR is estimated using the `calculate_cfr()` function.
-When cases are not recorded on a daily basis, the data is first converted into a  daily incidence using the `convert_to_incidence()` function.
-When users provide the parameters to account for the delay distribution, then this is accounted for in the `calculate_cfr()` function.
+* rule calculate_cfr:
+    * input:
+        * "data, epidist, epidist_params",
+    * output:
+        * "A data.frame with one or two rows"
+    * function:
+        * calculate_cfr()
+
+### The internal functions
 
 
 
