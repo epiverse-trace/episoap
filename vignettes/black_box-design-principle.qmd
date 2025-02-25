@@ -32,9 +32,22 @@ More and more public health services and agencies are encouraging the use of hea
 
 ![The severity workflow](../man/figures/severity_diagram.drawio.png){align="center"}
 
+### Creation of a configuration file
+
+The first rule of the severity pipeline is to create a template configuration file. This is a YAML file where users specify the input parameters.
+We expect that this YAML file does not exist at the beginning, and is created in the user's current working directory using the `cfr()` function.
+
+* rule create_config:
+    * input:
+        * "none",
+    * output:
+        * "A character with the path to the YAML file"
+    * function:
+        * cfr()
+
 ### Determining the data type
 
-The first rule for the severity pipeline is `get_data_type`. It is intended to about the type of data provided by the user. This determines how CFR is calculated. The current version of the pipeline accounts for three types of data: count data, linelist data, and incidence data.
+The second rule for the severity pipeline is `get_data_type`. It is intended to about the type of data provided by the user. This determines how CFR is calculated. The current version of the pipeline accounts for three types of data: count data, linelist data, and incidence data.
 The rule will look like below.
 
 * rule get_data_type:
