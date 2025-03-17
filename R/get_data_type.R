@@ -15,6 +15,12 @@
 #'
 get_data_type <- function( data = NULL, total_count = NULL, total_death = NULL ){
 
+  checkmate::assert(
+      check_data_frame(data, null.ok = TRUE),
+      combine = "or"
+    )
+
+
   # Check for count data
   if ( !is.null(total_count) && !is.null(total_death)){
     return("count_data")
