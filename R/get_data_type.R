@@ -15,10 +15,13 @@
 #'
 get_data_type <- function( data = NULL, total_count = NULL, total_death = NULL ){
 
+  # Check if 'data' is a data frame or NULL
   checkmate::assert(
       check_data_frame(data, null.ok = TRUE),
       combine = "or"
     )
+
+  # Check if 'total_count'  and total_death' are a single numeric value or NULL
   checkmate::assert(
     check_number(total_count, null.ok = TRUE),
     combine = "or"
@@ -27,7 +30,7 @@ get_data_type <- function( data = NULL, total_count = NULL, total_death = NULL )
     check_number(total_death, null.ok = TRUE),
     combine = "or"
   )
-
+# check  'total_count' and 'total_death' are non-negative
   if (!is.null(total_count)) {
     assert_number(total_count, lower = 0)
   }
@@ -36,11 +39,12 @@ get_data_type <- function( data = NULL, total_count = NULL, total_death = NULL )
   }
 
 
-
-
   # Check for count data
   if ( !is.null(total_count) && !is.null(total_death)){
+    count_data <- c(total_count, total_death)
+    if (length(count_data) == 2){
     return("count_data")
+  }
   }
 
   # 2. Check for incidence objects
