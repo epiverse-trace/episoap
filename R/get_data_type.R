@@ -28,6 +28,13 @@ get_data_type <- function( data = NULL, total_count = NULL, total_death = NULL )
     combine = "or"
   )
 
+  if (!is.null(total_count)) {
+    assert_number(total_count, lower = 0)
+  }
+  if (!is.null(total_death)) {
+    assert_number(total_death, lower = 0)
+  }
+
 
 
 
