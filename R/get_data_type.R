@@ -19,6 +19,11 @@ get_data_type <- function( data = NULL, total_count = NULL, total_death = NULL )
       check_data_frame(data, null.ok = TRUE),
       combine = "or"
     )
+  checkmate::assert(
+    check_number(total_count, null.ok = TRUE),
+    combine = "or"
+  )
+
 
 
   # Check for count data
