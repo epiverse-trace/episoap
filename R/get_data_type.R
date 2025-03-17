@@ -1,15 +1,18 @@
 
 
-#' Determine Input Data Type for Severity Pipelinele
+#' Determine input data type for the severity pipeline
 #'
-#' @param data A dataframe, incidence object, or NULL.
-#' @param total_count Numeric total cases (optional).
-#' @param total_death Numeric total deaths (optional).
+#' @param data A dataframe-like object that can be either data.frame, linelist or incidence. Default is NULL.
+#' @param total_count A numeric with the total number of cases. Default is NULL.
+#' @param total_death A numeric with the total number of deaths. Default is NULL.
 #'
-#' @returns One of "count_data", "linelist", "incidence".
+#' @returns  A character with one of the following values: "count_data", "linelist" or "incidence".
 #' @export
 #'
 #' @examples
+#'
+#'
+#'
 get_data_type <- function( data = NULL, total_count = NULL, total_death = NULL ){
 
   # Check for count data
@@ -58,3 +61,10 @@ get_data_type <- function( data = NULL, total_count = NULL, total_death = NULL )
   # Default/error case
   stop("unknown_data_type Provide count args, linelist, or incidence.")
 }
+
+
+
+
+
+
+
