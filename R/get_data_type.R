@@ -41,11 +41,9 @@ get_data_type <- function( data = NULL, total_count = NULL, total_death = NULL )
 
   # Check for count data
   if ( !is.null(total_count) && !is.null(total_death)){
-    count_data <- c(total_count, total_death)
-    if (length(count_data) == 2){
     return("count_data")
   }
-  }
+
 
   # 2. Check for incidence objects
   if (inherits(data, "incidence")) {
@@ -86,7 +84,7 @@ get_data_type <- function( data = NULL, total_count = NULL, total_death = NULL )
   }
 
   # Default/error case
-  stop("unknown_data_type Provide count args, linelist, or incidence.")
+  stop("unknown_data_type! Either provide a non-negative value for  total_count and total_death arguements or only a dataframe-like object that can be either data.frame, linelist or incidencelinelist, or incidence. in the data arguement")
 }
 
 
