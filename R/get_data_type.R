@@ -49,10 +49,8 @@ get_data_type <- function( data = NULL, total_count = NULL, total_death = NULL )
 
   # validate inputs with checkmate
   checkmate::assert(
-      checkmate::check_data_frame(data, null.ok = TRUE),
-      checkmate::check_class(data, classes = c("linelist", "incidence"), null.ok = TRUE),
-      combine = "or"
-    )
+    checkmate::check_class(data, classes = c("data.frame", "linelist", "incidence"), null.ok = TRUE)
+  )
 
   # Check if 'total_count'  and total_death' are a single numeric value or NULL
   checkmate::assert_number(total_count, null.ok = TRUE)
@@ -113,7 +111,8 @@ get_data_type <- function( data = NULL, total_count = NULL, total_death = NULL )
 }
 
 
-
+dummy_inc <- structure(list(date = Sys.Date(), cases = 100, dead = 5),
+                       class = "incidence")
 
 
 
