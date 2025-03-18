@@ -37,7 +37,7 @@
 #' inc_df <- data.frame(
 #'   Date = seq.Date(Sys.Date(), by = "day", length.out = 10),
 #'   Cases = sample(10:50, 10),
-#'   Dead = sample(0:5, 10)
+#'   Dead = sample(20:100, 10),
 #' )
 #' get_data_type(data = inc_df)  # Returns "incidence"
 #'
@@ -47,9 +47,13 @@
 
 get_data_type <- function( data = NULL, total_count = NULL, total_death = NULL ){
 
-  # validate inputs with checkmate
+  # validate inputs
   checkmate::assert(
-    checkmate::check_class(data, classes = c("data.frame", "linelist", "incidence"), null.ok = TRUE)
+    checkmate::check_null(data),
+    checkmate::check_data_frame(data),
+    checkmate::check_class(data, classes = "linelist"),
+    checkmate::check_class(data, classes = "incidence"),
+    combine = "or"
   )
 
   # Check if 'total_count'  and total_death' are a single numeric value or NULL
@@ -109,10 +113,6 @@ get_data_type <- function( data = NULL, total_count = NULL, total_death = NULL )
   # Default/error case
   stop("unknown_data_type! Either provide a non-negative value for  total_count and total_death arguements or  a dataframe-like object (data.frame, linelist or incidence),in the data arguement")
 }
-
-
-dummy_inc <- structure(list(date = Sys.Date(), cases = 100, dead = 5),
-                       class = "incidence")
 
 
 
