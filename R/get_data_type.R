@@ -11,45 +11,70 @@
 #'
 #' @examples
 #'
+#' # 1. COUNT DATA EXAMPLE
+#' # When totals are provided directly
+#' get_data_type(total_count = 1500, total_death = 75)  # Returns "count_data"
 #'
+#' # 2. INCIDENCE OBJECT EXAMPLE
+#' # When using the incidence package's format
+#' dummy_inc <- structure(list(date = Sys.Date(), cases = 100, dead = 5),
+#'                        class = "incidence")
+#' get_data_type(data = dummy_inc)  # Returns "incidence"
 #'
+#' # 3. LINELIST EXAMPLE
+#' # Detailed case-based data with key identifiers
+#' linelist_df <- data.frame(
+#'   ID = 1:100,
+#'   ONSET_DATE = Sys.Date() - 1:100,
+#'   REPORT_DATE = Sys.Date(),
+#'   AGE = sample(5:80, 100, replace = TRUE),
+#'   OUTCOME = sample(c("Fatal", "Recovered"), 100, replace = TRUE)
+#' )
+#' get_data_type(data = linelist_df)  # Returns "linelist"
+#'
+#' # 4. SIMPLE INCIDENCE DATA FRAME
+#' # Minimal time-based case counts
+#' inc_df <- data.frame(
+#'   Date = seq.Date(Sys.Date(), by = "day", length.out = 10),
+#'   Cases = sample(10:50, 10),
+#'   Dead = sample(0:5, 10)
+#' )
+#' get_data_type(data = inc_df)  # Returns "incidence"
+#'
+#' # 5. ERROR CASE
+#' # Missing both data and counts
+#' try(get_data_type())  # Throws  error message
+
 get_data_type <- function( data = NULL, total_count = NULL, total_death = NULL ){
 
-  # Check if 'data' is a data frame or NULL
+  # validate inputs with checkmate
   checkmate::assert(
-      check_data_frame(data, null.ok = TRUE),
+      checkmate::check_data_frame(data, null.ok = TRUE),
+      checkmate::check_class(data, classes = c("linelist", "incidence"), null.ok = TRUE),
       combine = "or"
     )
 
   # Check if 'total_count'  and total_death' are a single numeric value or NULL
-  checkmate::assert(
-    check_number(total_count, null.ok = TRUE),
-    combine = "or"
-  )
-  checkmate:: assert(
-    check_number(total_death, null.ok = TRUE),
-    combine = "or"
-  )
-# check  'total_count' and 'total_death' are non-negative
-  if (!is.null(total_count)) {
-    assert_number(total_count, lower = 0)
-  }
-  if (!is.null(total_death)) {
-    assert_number(total_death, lower = 0)
-  }
+  checkmate::assert_number(total_count, null.ok = TRUE)
+  checkmate::assert_number(total_death, null.ok = TRUE)
 
+
+# check  'total_count' and 'total_death' are non-negative
+  if (!is.null(total_count)) checkmate::assert_number(total_count, lower = 0)
+  if (!is.null(total_death)) checkmate::assert_number(total_death, lower = 0)
 
   # Check for count data
-  if ( !is.null(total_count) && !is.null(total_death)){
+  if ( !is.null(total_count) && !is.null(total_death)) {
     return("count_data")
   }
 
 
-  # 2. Check for incidence objects
+  #  Check for incidence objects
   if (inherits(data, "incidence")) {
     return("incidence")
   }
 
+  # check for data.frame/linelist
   if (inherits(data, "data.frame")) {
     # Convert column names to lowercase for consistent checks
     actual_cols <- tolower(names(data))
@@ -59,7 +84,7 @@ get_data_type <- function( data = NULL, total_count = NULL, total_death = NULL )
                            "age", "sex", "gender", "outcome", "symptom", "hospital")
 
 
-    # 3a. Incident data check
+    #  Incident data check
     if (all(required_incidence %in% actual_cols)) {
       # Check if pure incident or has extras
       if (length(actual_cols) == 3) {
@@ -84,7 +109,7 @@ get_data_type <- function( data = NULL, total_count = NULL, total_death = NULL )
   }
 
   # Default/error case
-  stop("unknown_data_type! Either provide a non-negative value for  total_count and total_death arguements or only a dataframe-like object that can be either data.frame, linelist or incidencelinelist, or incidence. in the data arguement")
+  stop("unknown_data_type! Either provide a non-negative value for  total_count and total_death arguements or  a dataframe-like object (data.frame, linelist or incidence),in the data arguement")
 }
 
 
