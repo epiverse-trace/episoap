@@ -2,20 +2,56 @@
 % Please edit documentation in R/get_data_type.R
 \name{get_data_type}
 \alias{get_data_type}
-\title{Determine Input Data Type for Severity Pipelinele}
+\title{Determine input data type for the severity pipeline}
 \usage{
 get_data_type(data = NULL, total_count = NULL, total_death = NULL)
 }
 \arguments{
-\item{data}{A dataframe, incidence object, or NULL.}
+\item{data}{A dataframe-like object that can be either data.frame, linelist or incidence. Default is NULL.}
 
-\item{total_count}{Numeric total cases (optional).}
+\item{total_count}{A numeric with the total number of cases. Default is NULL.}
 
-\item{total_death}{Numeric total deaths (optional).}
+\item{total_death}{A numeric with the total number of deaths. Default is NULL.}
 }
 \value{
-One of "count_data", "linelist", "incidence".
+A character with one of the following values: "count_data", "linelist" or "incidence".
 }
 \description{
-Determine Input Data Type for Severity Pipelinele
+Determine input data type for the severity pipeline
+}
+\examples{
+
+# 1. COUNT DATA EXAMPLE
+# When totals are provided directly
+get_data_type(total_count = 1500, total_death = 75)  # Returns "count_data"
+
+# 2. INCIDENCE OBJECT EXAMPLE
+# When using the incidence package's format
+dummy_inc <- structure(list(date = Sys.Date(), cases = 100, dead = 5),
+                       class = "incidence")
+get_data_type(data = dummy_inc)  # Returns "incidence"
+
+# 3. LINELIST EXAMPLE
+# Detailed case-based data with key identifiers
+linelist_df <- data.frame(
+  ID = 1:100,
+  ONSET_DATE = Sys.Date() - 1:100,
+  REPORT_DATE = Sys.Date(),
+  AGE = sample(5:80, 100, replace = TRUE),
+  OUTCOME = sample(c("Fatal", "Recovered"), 100, replace = TRUE)
+)
+get_data_type(data = linelist_df)  # Returns "linelist"
+
+# 4. SIMPLE INCIDENCE DATA FRAME
+# Minimal time-based case counts
+inc_df <- data.frame(
+  Date = seq.Date(Sys.Date(), by = "day", length.out = 10),
+  Cases = sample(10:50, 10),
+  Dead = sample(20:100, 10),
+)
+get_data_type(data = inc_df)  # Returns "incidence"
+
+# 5. ERROR CASE
+# Missing both data and counts
+try(get_data_type())  # Throws  error message
 }
