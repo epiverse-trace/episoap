@@ -60,3 +60,45 @@ test_that("get_data_type correctly identifies linelist data", {
   )
   expect_equal(get_data_type(data = hybrid_df), "linelist")
 })
+
+test_that("get_data_type handles error conditions ", {
+  # Missing all arguments
+  expect_error(get_data_type(), "unknown_data_type")
+
+  # Invalid count values
+  expect_error(get_data_type(total_count = -5, total_death = 10))
+  expect_error(get_data_type(total_count = 100, total_death = -1))
+  expect_error(get_data_type(total_count = -10, total_death = -15))
+
+  # Invalid data types
+  expect_error(get_data_type(data = "not a dataframe-like object, linelist or incidence"))
+  expect_error(get_data_type(total_count = "100"))
+
+  # Ambiguous data frame
+  ambiguous_df <- data.frame(
+    random_col1 = 1:5,
+    random_col2 = letters[1:5]
+  )
+  expect_error(get_data_type(data = ambiguous_df), "unknown_data_type")
+})
+
+test_that("get_data_type handles column name edge cases", {
+  # Case-insensitive column matching
+  weird_case_df <- data.frame(
+    DaTe = Sys.Date(),
+    cAsEs = 10,
+    dEaD = 2,
+    sEx = "M"
+  )
+  expect_equal(get_data_type(data = weird_case_df), "linelist")
+
+  # Partial column name matches
+  partial_match_df <- data.frame(
+    start_date = Sys.Date(),
+    total_cases = 15,
+    deceased = 3,
+    patient_id = 1:5
+  )
+  expect_equal(get_data_type(data = partial_match_df), "linelist")
+})
+
