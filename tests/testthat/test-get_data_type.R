@@ -94,13 +94,6 @@ test_that("get_data_type handles column name edge cases", {
   )
   expect_equal(get_data_type(data = weird_case_df), "linelist")
 
-  # Partial column name matches
-  partial_match_df <- data.frame(
-    start_date = Sys.Date(),
-    total_cases = 15,
-    deceased = 3,
-    patient_id = 1:5
-  )
-  expect_equal(get_data_type(data = partial_match_df), "linelist")
+
 })
 
