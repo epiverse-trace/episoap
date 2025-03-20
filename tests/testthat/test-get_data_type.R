@@ -27,7 +27,18 @@ test_that("get_data_type correctly handles incidence objects", {
   # Incidence data with extra non-linelist columns
   inc_extra <- cbind(inc_df, notes = c("a", "b", "c", "d", "e"))
   expect_equal(get_data_type(data = inc_extra), "incidence")
+
+  # Hybrid data with incidence columns + linelist features
+  hybrid_df <- data.frame(
+    date = Sys.Date(),
+    cases = 10,
+    dead = 2,
+    patient_age = 35,
+    facility = "Hospital X"
+  )
+  expect_equal(get_data_type(data = hybrid_df), "incidence")
 })
+
 
 test_that("get_data_type correctly identifies linelist data", {
   # Full linelist structure
@@ -49,17 +60,8 @@ test_that("get_data_type correctly identifies linelist data", {
     OUTCOME = rep("fatal", 5)
   )
   expect_equal(get_data_type(data = minimal_linelist), "linelist")
-
-  # Hybrid data with incidence columns + linelist features
-  hybrid_df <- data.frame(
-    date = Sys.Date(),
-    cases = 10,
-    dead = 2,
-    patient_age = 35,
-    facility = "Hospital X"
-  )
-  expect_equal(get_data_type(data = hybrid_df), "linelist")
 })
+
 
 test_that("get_data_type handles error conditions ", {
   # Missing all arguments
