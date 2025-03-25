@@ -55,15 +55,9 @@ get_data_type <- function( data = NULL, total_count = NULL, total_death = NULL )
     checkmate::check_class(data, classes = "incidence"),
     combine = "or"
   )
-
-  # Check if 'total_count'  and total_death' are a single numeric value or NULL
-  checkmate::assert_number(total_count, null.ok = TRUE)
-  checkmate::assert_number(total_death, null.ok = TRUE)
-
-
-# check  'total_count' and 'total_death' are non-negative
-  if (!is.null(total_count)) checkmate::assert_number(total_count, lower = 0)
-  if (!is.null(total_death)) checkmate::assert_number(total_death, lower = 0)
+  # Check if 'total_count'  and total_death' are a single numeric value or NULL and are non-negative
+  checkmate::assert_number(total_count, null.ok = TRUE, lower = 0)
+  checkmate::assert_number(total_death, null.ok = TRUE, lower = 0)
 
   # Check for count data
   if ( !is.null(total_count) && !is.null(total_death)) {
