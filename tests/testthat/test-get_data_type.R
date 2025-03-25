@@ -33,7 +33,7 @@ test_that("get_data_type correctly handles incidence objects", {
     date = Sys.Date(),
     cases = 10,
     dead = 2,
-    patient_age = 35,
+    age = 35,
     facility = "Hospital X"
   )
   expect_equal(get_data_type(data = hybrid_df), "incidence")
