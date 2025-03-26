@@ -26,7 +26,42 @@ library(episoap)
 
 # Introduction
 
-More and more public health services and agencies are encouraging the use of health information systems (HIS) to store data of various kinds. Thus, the exploitation of this data through statistical analysis tools and methods can promote the rapid implementation of epidemic response strategies. We therefore intend to dedicate this vignette to the development of pipelines that will make it possible to link the different steps necessary to estimate vital parameters to understand the dynamics of an infectious disease. In the following sections, we will show how to establish and execute a pipeline to prepare and analyze data to derive information on the severity and transmissibility of a disease.
+More and more public health services and agencies are encouraging the use of
+health information systems (HIS) to store data of various kinds. Thus, the
+exploitation of this data through statistical analysis tools and methods can
+promote the rapid implementation of epidemic response strategies. We therefore
+intend to dedicate this vignette to the development of pipelines that will make
+it possible to link the different steps necessary to estimate vital parameters
+to understand the dynamics of an infectious disease. In the following sections,
+we will show how to establish and execute a pipeline to prepare and analyze data
+to derive information on the severity and transmissibility of a disease.
+
+## The idea
+
+*   use the `create_config()` function to create a template configuration in a
+YAML format. This will be created in the user's current directory (or in the
+temporary R directory if this becomes a package), and should contain all the
+parameters for the estimation of severity, transmissibility, intervention
+effectiveness, etc.
+
+NOTE: @Atta, let `create_config()` create the configuration file with parameters
+for severity calculation only for now. We will add other sections in the
+configuration file to create the parameters for the specific estimates as we
+progress in the development. At the end of the pipeline conception, the function
+should create a YAML file with all the arguments required to estimate the
+different epidemiological parameters that are accounted for with the pipeline.
+
+*   After updating the values of the necessary fields in the configuration file,
+users will call the `run_pipeline()` function to perform the calculation based
+on the values provided to the parameters in each section of the configuration
+file. For example, if the user only provided parameters for severity and
+interventions, then the pipeline will only generate outputs for the chosen
+estimates.
+The rest of the functions will be called within the `run_pipeline()` function,
+such that all the steps in the workflow will be covered.
+
+
+
 
 ## Defining the severity workflow
 
@@ -34,8 +69,14 @@ More and more public health services and agencies are encouraging the use of hea
 
 ### Creation of a configuration file
 
-The first rule of the severity pipeline is to create a template configuration file. This is a YAML file where users specify the input parameters.
-We expect that this YAML file does not exist at the beginning, and is created in the user's current working directory using the `cfr()` function.
+The first rule of the workflow is intended to create a template configuration
+file. The `create_config()` function will be used to create this is a YAML file
+filled in with the input parameters for calculating severity, transmissibility,
+intervention, etc.
+We expect that this YAML file does not exist at the beginning, and is created in
+the user's current working directory using the `create_config()` function. If it
+already exists, send a message to let the user know that the file will be opened
+and he/she can update the current values in necessary.
 
 * rule create_config:
     * input:
@@ -43,7 +84,7 @@ We expect that this YAML file does not exist at the beginning, and is created in
     * output:
         * "A character with the path to the YAML file"
     * function:
-        * cfr()
+        * create_config()
 
 ### Determining the data type
 
