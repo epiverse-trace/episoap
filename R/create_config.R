@@ -22,6 +22,11 @@ create_config <- function(path = "config.yaml"){
     "  epidist:",
     "    type: null            # Distribution type (e.g., 'incubation')",
     "    distribution: null    # Statistical distribution (e.g., 'gamma')",
+    "    parameters:",
+    "      meanlog: null       # Log-mean for lognormal distributions",
+    "      sdlog: null         # Log-sd for lognormal distributions",
+    "      shape: null         # Shape parameter for weibull/gamma",
+    "      scale: null         # Scale parameter for weibull/gamma",
   )
 
 }
