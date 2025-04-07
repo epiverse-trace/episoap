@@ -1,4 +1,4 @@
-create_config <- function(path = "config.yaml"){
+create_config <- function(path = "config.yaml", open_file = interactive()){
 
   if (file.exists(path)) {
     message("Configuration file already exists at:\n", normalizePath(path))
@@ -40,6 +40,8 @@ create_config <- function(path = "config.yaml"){
       stop("Failed to create config file:\n", e$message)
     }
   )
+
+
 
   invisible(path)
 }
