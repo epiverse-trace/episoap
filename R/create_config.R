@@ -28,7 +28,7 @@ create_config <- function(path = "config.yaml"){
     "      shape: null         # Shape parameter for weibull/gamma",
     "      scale: null         # Scale parameter for weibull/gamma",
     "  interval: null          # Time interval for estimates",
-    "",
+    ""
   )
 # file error handling
   tryCatch(
@@ -45,4 +45,4 @@ create_config <- function(path = "config.yaml"){
 }
 
 
-}
+
