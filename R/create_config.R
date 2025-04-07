@@ -30,5 +30,19 @@ create_config <- function(path = "config.yaml"){
     "  interval: null          # Time interval for estimates",
     "",
   )
+# file error handling
+  tryCatch(
+    {
+      writeLines(yaml_template, path)
+      message("Configuration template created at:\n", normalizePath(path))
+    },
+    error = function(e) {
+      stop("Failed to create config file:\n", e$message)
+    }
+  )
+
+  invisible(path)
+}
+
 
 }
