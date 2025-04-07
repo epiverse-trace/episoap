@@ -27,6 +27,8 @@ create_config <- function(path = "config.yaml"){
     "      sdlog: null         # Log-sd for lognormal distributions",
     "      shape: null         # Shape parameter for weibull/gamma",
     "      scale: null         # Scale parameter for weibull/gamma",
+    "  interval: null          # Time interval for estimates",
+    "",
   )
 
 }
