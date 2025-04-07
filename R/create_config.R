@@ -18,7 +18,10 @@ create_config <- function(path = "config.yaml"){
     "  total_cases: null       # [REQUIRED] Total confirmed cases (numeric)",
     "  total_deaths: null      # [REQUIRED] Total confirmed deaths (numeric)",
     "  death_in_confirmed: null # Probability of death in confirmed cases (0-1)",
-    "  account_for_delay: null # TRUE/FALSE for delay correction"
+    "  account_for_delay: null # TRUE/FALSE for delay correction",
+    "  epidist:",
+    "    type: null            # Distribution type (e.g., 'incubation')",
+    "    distribution: null    # Statistical distribution (e.g., 'gamma')",
   )
 
 }
