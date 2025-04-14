@@ -3,6 +3,7 @@ create_config <- function(path = "config.yaml"){
   if (file.exists(path)) {
     config_template <- list(
       severity = list(
+
         data = NA_character_,
         disease_name = NA_character_,
         total_cases = NA_real_,
@@ -12,6 +13,13 @@ create_config <- function(path = "config.yaml"){
         epidist = list(
           type = NA_character_,
           distribution = NA_character_,
+        parameters = list(
+          meanlog = NA_real_,
+          sdlog = NA_real_,
+          shape = NA_real_,
+          scale = NA_real_
+
+
 
 
 
