@@ -18,16 +18,16 @@ create_config <- function(path = "config.yaml"){
           sdlog = NA_real_,
           shape = NA_real_,
           scale = NA_real_
+        )
 
-
-
+      ),
+        interval = NA_character_
 
 
 
       )
 
     )
-
 
   }
 
