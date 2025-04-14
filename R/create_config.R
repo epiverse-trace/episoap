@@ -9,6 +9,9 @@ create_config <- function(path = "config.yaml"){
         total_deaths = NA_real_,
         death_in_confirmed = NA_real_,
         account_for_delay = TRUE,
+        epidist = list(
+          type = NA_character_,
+          distribution = NA_character_,
 
 
 
