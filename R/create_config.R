@@ -5,6 +5,10 @@ create_config <- function(path = "config.yaml"){
       severity = list(
         data = NA_character_,
         disease_name = NA_character_,
+        total_cases = NA_real_,
+        total_deaths = NA_real_,
+
+
 
 
       )
