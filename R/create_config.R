@@ -4,6 +4,7 @@ create_config <- function(path = "config.yaml"){
     config_template <- list(
       severity = list(
         data = NA_character_,
+        disease_name = NA_character_,
 
 
       )
