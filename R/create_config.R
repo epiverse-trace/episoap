@@ -3,6 +3,7 @@ create_config <- function(path = "config.yaml"){
   if (file.exists(path)) {
     config_template <- list(
       severity = list(
+        data = NA_character_,
 
 
       )
