@@ -23,11 +23,11 @@ create_config <- function(path = "config.yaml"){
       ),
         interval = NA_character_
 
-
-
       )
 
     )
+
+    yaml::write_yaml(config_template, path)
 
   }
 
