@@ -28,16 +28,15 @@ create_config <- function(path = file.path(tempdir(), "config.yaml")){
 
     yaml::write_yaml(config_template, path)
 
-}
+  }
 
-
- #  tryCatch({
- #   utils::file.edit(path)
- # }, error = function(e) {
- #   warning("Could not open file editor for: ", path)
- #  })
-
-  system(paste("open", shQuote(path)), wait = FALSE)
+  if (Sys.info()["sysname"] == "Darwin") {
+    system(paste("open", shQuote(path)), wait = FALSE)
+  } else if (Sys.info()["sysname"] == "Windows") {
+    shell.exec(path)
+  } else {
+    system(paste("xdg-open", shQuote(path)), wait = FALSE)
+  }
 
   invisible(path)
 }
