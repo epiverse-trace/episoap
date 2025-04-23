@@ -31,14 +31,14 @@ create_config <- function(path = file.path(tempdir(), "config.yaml")){
 }
 
 
- # tryCatch({
-  #  utils::file.edit(path)
+ #  tryCatch({
+ #   utils::file.edit(path)
  # }, error = function(e) {
  #   warning("Could not open file editor for: ", path)
-#  })
+ #  })
 
-  system("open ./config.yaml", wait = FALSE )
+  system(paste("open", shQuote(path)), wait = FALSE)
 
   invisible(path)
 }
-?tempdir
+
