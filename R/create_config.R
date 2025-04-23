@@ -1,16 +1,15 @@
-create_config <- function(path = "config.yaml"){
+create_config <- function(path = file.path(tempdir(), "config.yaml")){
 
-  if (file.exists(path)) {
+  if (!file.exists(path)) {
     config_template <- list(
       severity = list(
-
         data = NA_character_,
         disease_name = NA_character_,
         total_cases = NA_real_,
         total_deaths = NA_real_,
         death_in_confirmed = NA_real_,
         account_for_delay = TRUE,
-        epidist = list(
+        epidist_params = list(
           type = NA_character_,
           distribution = NA_character_,
         parameters = list(
@@ -32,12 +31,14 @@ create_config <- function(path = "config.yaml"){
 }
 
 
-  tryCatch({
-    utils::file.edit(path)
-  }, error = function(e) {
-    warning("Could not open file editor for: ", path)
-  })
+ # tryCatch({
+  #  utils::file.edit(path)
+ # }, error = function(e) {
+ #   warning("Could not open file editor for: ", path)
+#  })
 
+  system("open ./config.yaml", wait = FALSE )
 
   invisible(path)
 }
+?tempdir
