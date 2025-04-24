@@ -19,7 +19,8 @@ Imports:
     ggplot2,
     renv (>= 0.13.0),
     rmarkdown,
-    rstatix
+    rstatix,
+    yaml
 Suggests: 
     knitr,
     testthat (>= 3.0.0)

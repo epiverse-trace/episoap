@@ -3,6 +3,7 @@
 export(calculate_cfr)
 export(calculate_cfr_from_counts)
 export(convert_to_incidence)
+export(create_config)
 export(get_data_type)
 export(get_sequential_dates)
 export(get_severity)
