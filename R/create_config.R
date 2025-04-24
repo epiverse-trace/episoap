@@ -1,3 +1,27 @@
+#' Create and Open a Configuration YAML File Template
+#'
+#' This function generates a YAML configuration file with a structured template for epidemiological
+#' severity parameters. If the file does not exist at the specified path, it creates one with
+#' placeholder values. The file is then opened in the system's default application for YAML/text files.
+#'
+#' @param path Character. File path where the configuration file should be created/opened.
+#'   Defaults to a file named `config.yaml` in the system's temporary directory (`tempdir()`).
+#'
+#' @return Invisibly returns the `path` to the configuration file.
+#'
+#' @examples
+#' # Create/open config in temp directory
+#' create_config()
+#'
+#' # Create/open in working directory
+#' create_config("my_config.yaml")
+#'
+#' @note
+#' - Replace `NA` values with appropriate data before using the configuration.
+#' - The function does not validate YAML content after initial creation.
+#' - Ensure directories in `path` exist before calling this function.
+#'
+#' @export
 create_config <- function(path = file.path(tempdir(), "config.yaml")){
 
   if (!file.exists(path)) {
@@ -40,4 +64,5 @@ create_config <- function(path = file.path(tempdir(), "config.yaml")){
 
   invisible(path)
 }
+ usethis::use_test("create_config")
 
