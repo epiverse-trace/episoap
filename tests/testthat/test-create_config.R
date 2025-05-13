@@ -1,7 +1,7 @@
 test_that("create_config creates file with correct structure", {
   # Create temp directory for testing
-  test_dir <- tempfile()
-  dir.create(test_dir)
+  test_dir <- tempfile() # generates temp dir path
+  dir.create(test_dir) # create path
   withr::defer(unlink(test_dir, recursive = TRUE), teardown_env())
 
   test_path <- file.path(test_dir, "test_config.yaml")
@@ -19,21 +19,24 @@ test_that("create_config creates file with correct structure", {
   config <- yaml::read_yaml(test_path)
 
   # Check top-level structure
-  expect_named(config, "severity")
+  expect_named(config, c("data", "disease_name", "severity"))
   expect_named(config$severity,
-               c("total_cases", "total_deaths",
-                 "death_in_confirmed", "epidist", "epidist_params",
-                 "interval"))
-
-  # Check NA placeholders
-  expect_identical(config$data, NA_character_)
-  expect_identical(config$severity$total_cases, NA_real_)
+               c( "total_cases", "total_deaths",
+                 "death_in_confirmed", "account_for_delay", "interval", "epidist", "epidist_params" ))
 
   # Check epidist_params structure
   expect_named(config$severity$epidist_params,
                c("type", "distribution", "parameters"))
   expect_named(config$severity$epidist_params$parameters,
                c("meanlog", "sdlog", "shape", "scale"))
+
+
+  # Check NA placeholders
+  expect_identical(config$data, NA_character_)
+  expect_identical(config$severity$total_cases, NA_real_)
+
+
+
 })
 
 test_that("create_config doesn't overwrite existing files", {
@@ -62,18 +65,17 @@ test_that("default path uses tempdir", {
   expect_identical(basename(default_path), "config.yaml")
 })
 
-# test_that("handles paths with spaces", {
-#   test_dir <- file.path(tempdir(), "test dir with spaces")
-#   dir.create(test_dir, recursive = TRUE)
-#   withr::defer(unlink(test_dir, recursive = TRUE), teardown_env())
-#
-#   test_path <- file.path(test_dir, "test config.yaml")
-#
-#   expect_silent(create_config(test_path))
-#   expect_true(file.exists(test_path))
-# })
+ test_that("handles paths with spaces", {
+ test_dir <- file.path(tempdir(), "test dir with spaces")
+ dir.create(test_dir, recursive = TRUE)
+ withr::defer(unlink(test_dir, recursive = TRUE), teardown_env())
 
-# Optional: Test file opening (might need mocking)
+  test_path <- file.path(test_dir, "test config.yaml")
+
+  expect_silent(create_config(test_path))
+  expect_true(file.exists(test_path))
+})
+
 test_that("file opening command works on current OS", {
   test_path <- create_config()
 
