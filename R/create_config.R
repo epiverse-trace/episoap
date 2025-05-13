@@ -35,6 +35,7 @@ create_config <- function(path = file.path(tempdir(), "config.yaml")) {
         total_cases = NA_real_,
         total_deaths = NA_real_,
         death_in_confirmed = NA_real_,
+        account_for_delay = TRUE,
         interval = NA_character_,
         epidist = NULL,
         epidist_params = list(
@@ -46,7 +47,9 @@ create_config <- function(path = file.path(tempdir(), "config.yaml")) {
           shape = NA_real_,
           scale = NA_real_
         )
+
         )
+
       )
 
     )
@@ -55,22 +58,22 @@ create_config <- function(path = file.path(tempdir(), "config.yaml")) {
 
   }
 
-  # Open the config file template
-  system_info <- Sys.info()["sysname"]
-  switch(
-    system_info,
-    "Darwin" = system(paste("open", shQuote(path)), wait = FALSE),
-    "Windows" = shell.exec(path),
-    "Linux" = system(paste("xdg-open", shQuote(path)), wait = FALSE)
-  )
+  # # Open the config file template
+  # system_info <- Sys.info()["sysname"]
+  # switch(
+  #   system_info,
+  #   "Darwin" = system(paste("open", shQuote(path)), wait = FALSE),
+  #   "Windows" = shell.exec(path),
+  #   "Linux" = system(paste("xdg-open", shQuote(path)), wait = FALSE)
+  # )
 
-  # if (Sys.info()["sysname"] == "Darwin") {
-  #   system(paste("open", shQuote(path)), wait = FALSE)
-  # } else if (Sys.info()["sysname"] == "Windows") {
-  #   shell.exec(path)
-  # } else {
-  #   system(paste("xdg-open", shQuote(path)), wait = FALSE)
-  # }
+   if (Sys.info()["sysname"] == "Darwin") {
+    system(paste("open", shQuote(path)), wait = FALSE)
+  } else if (Sys.info()["sysname"] == "Windows") {
+    shell.exec(path)
+   } else {
+    system(paste("xdg-open", shQuote(path)), wait = FALSE)
+  }
 
   invisible(path)
 }
