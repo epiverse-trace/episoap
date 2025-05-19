@@ -26,7 +26,7 @@ Determine input data type for the severity pipeline
 get_data_type(total_count = 1500, total_death = 75)  # Returns "count_data"
 
 # 2. INCIDENCE OBJECT EXAMPLE
-# When using the incidence package's format
+# When using an incidence object
 dummy_inc <- structure(list(date = Sys.Date(), cases = 100, dead = 5),
                        class = "incidence")
 get_data_type(data = dummy_inc)  # Returns "incidence"

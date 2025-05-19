@@ -23,4 +23,11 @@ overall CFR and CFR in confirmed cases.
 \description{
 Calculate CFR from count data
 }
-\keyword{internal}
+\examples{
+cfr <- calculate_cfr_from_counts(
+  total_cases = 1150,
+  total_deaths = 12,
+  death_in_confirmed = 2
+)
+
+}
