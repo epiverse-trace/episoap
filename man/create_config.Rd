@@ -23,9 +23,8 @@ file is then opened in the system's default application for YAML/text files.
 }
 \note{
 \itemize{
-\item Replace \code{NA} values with appropriate data before using the configuration.
-\item The function does not validate YAML content after initial creation.
-\item Ensure directories in \code{path} exist before calling this function.
+\item Replace \code{NA} with appropriate values before using the configuration.
+\item The function does not validate YAML content.
 }
 }
 \examples{
